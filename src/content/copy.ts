@@ -1,40 +1,40 @@
 export const HERO = {
-  eyebrow: 'RFC 8259 · Client-side · Free',
-  title: 'Format, Validate, and Beautify JSON — Instantly',
+  eyebrow: 'RFC 8259 · Client-side · Free JSON Tools',
+  title: 'Format, Validate, Beautify & Minify JSON Online',
   subtitle:
-    'A fast, private JSON tool for developers. Paste, upload, or drop a file. Everything runs in your browser — no data leaves your device.',
+    'The best free JSON formatter and validator for developers. Format JSON, validate syntax, beautify, minify, debug, and view JSON tree. Paste, upload, or drop a file. Everything runs in your browser — no data leaves your device.',
 };
 
 export const FEATURES: Array<{ title: string; body: string }> = [
   {
-    title: 'Beautify & Minify',
-    body: 'Pretty-print with 2/4/tab indentation, or minify to the smallest valid representation.',
+    title: 'JSON Beautifier & Minifier',
+    body: 'Pretty-print and beautify JSON with 2/4/tab indentation, or minify JSON to the smallest valid representation.',
   },
   {
-    title: 'Rich validation',
-    body: 'Precise line and column errors with actionable suggestions for trailing commas, unquoted keys, and more.',
+    title: 'JSON Validator & Syntax Checker',
+    body: 'Validate JSON with precise line and column errors. Lint JSON and get actionable suggestions for trailing commas, unquoted keys, and RFC 8259 compliance.',
   },
   {
-    title: 'Tree explorer',
-    body: 'Virtualized JSON tree with expand/collapse, path breadcrumbs, and fast key/value search.',
+    title: 'JSON Tree View & Explorer',
+    body: 'Virtualized JSON tree viewer with expand/collapse, path breadcrumbs, and fast key/value search. Navigate and explore complex JSON structures.',
   },
   {
-    title: 'Diff view',
-    body: 'Side-by-side comparison of your original and formatted output for effortless review.',
+    title: 'JSON Diff Viewer',
+    body: 'Side-by-side comparison and diff view of your original and formatted JSON output for effortless review.',
   },
   {
-    title: 'Detailed stats',
-    body: 'Keys, objects, arrays, depth, characters, lines, file size, and estimated memory footprint.',
+    title: 'Detailed JSON Statistics',
+    body: 'JSON parser statistics: keys, objects, arrays, depth, characters, lines, file size, and estimated memory footprint.',
   },
   {
-    title: 'Keyboard-first',
-    body: 'Command palette, discoverable shortcuts, and full keyboard operation from paste to copy.',
+    title: 'JSON Editor & Keyboard Navigation',
+    body: 'Full-featured JSON editor with command palette, discoverable shortcuts, keyboard-first operation, and full keyboard navigation from paste to copy.',
   },
 ];
 
 export const WHY: Array<{ title: string; body: string }> = [
-  { title: 'Private by construction', body: 'No backend for your JSON. No telemetry. No third-party scripts.' },
-  { title: 'Fast', body: 'Parsing runs off the main thread in a Web Worker. Tree view is virtualized.' },
-  { title: 'Accessible', body: 'WCAG 2.2 AA, keyboard-first, reduced-motion friendly.' },
-  { title: 'Offline-ready', body: 'Works after the first load — no CDNs, no fonts fetched at runtime.' },
+  { title: 'Private & Secure', body: 'No backend server for your JSON data. Zero telemetry, no data collection, no third-party scripts. Your JSON never leaves your device.' },
+  { title: 'Lightning Fast', body: 'JSON parsing runs off the main thread in a Web Worker. Tree view is virtualized for instant loading of large JSON files.' },
+  { title: 'Accessible & Inclusive', body: 'WCAG 2.2 AA compliant JSON tool. Keyboard-first, reduced-motion friendly, full accessibility support for all users.' },
+  { title: 'Works Offline', body: 'Free JSON formatter that works offline after the first load. No CDNs, no fonts fetched at runtime, fully self-contained.' },
 ];

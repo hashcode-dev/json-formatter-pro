@@ -41,7 +41,8 @@ export function StatusBar({ status, error, stats, indent }: Props): JSX.Element 
         )}
       </div>
       <div className="flex items-center gap-3 text-subtle">
-        <span aria-label="Indentation">
+        <span>
+          <span className="sr-only">Indentation: </span>
           Indent: {indent === '\t' ? 'Tab' : `${indent} spaces`}
         </span>
         <span className="hidden md:inline">UTF-8</span>

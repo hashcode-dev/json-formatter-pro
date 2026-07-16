@@ -187,7 +187,8 @@ export function TreeView({ root }: Props): JSX.Element {
           }}
         >
           {virtualizer.getVirtualItems().map((virtualRow) => {
-            const row = filtered[virtualRow.index]!;
+            const row = filtered[virtualRow.index];
+            if (!row) return null;
             return (
               <TreeRow
                 key={row.id}

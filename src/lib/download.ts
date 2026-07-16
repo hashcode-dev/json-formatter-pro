@@ -8,6 +8,10 @@ export function downloadText(filename: string, text: string, mime = 'application
   document.body.appendChild(a);
   a.click();
   a.remove();
-  // Revoke on next tick so Safari doesn't cancel the download.
-  setTimeout(() => URL.revokeObjectURL(url), 0);
+  // Revoke after download completes. Safari needs longer timeout to avoid cancellation.
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => URL.revokeObjectURL(url));
+  } else {
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  }
 }

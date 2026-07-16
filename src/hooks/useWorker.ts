@@ -27,7 +27,13 @@ export function useJsonWorker(onMessage: (msg: WorkerResponse) => void): WorkerH
   }, []);
 
   return {
-    send: (msg) => workerRef.current?.postMessage(msg),
+    send: (msg) => {
+      if (!workerRef.current) {
+        console.warn('Worker not initialized or component unmounted');
+        return;
+      }
+      workerRef.current.postMessage(msg);
+    },
     terminate: () => workerRef.current?.terminate(),
   };
 }

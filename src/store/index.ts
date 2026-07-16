@@ -97,6 +97,5 @@ export const useStore = create<State>()(
 
 let toastCounter = 0;
 function nextToastId(): number {
-  toastCounter = (toastCounter + 1) % Number.MAX_SAFE_INTEGER;
-  return toastCounter;
+  return ++toastCounter;
 }

@@ -6,6 +6,7 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  keywords?: string;
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   image = '/og.png',
   type = 'website',
   noindex = false,
+  keywords,
 } = Astro.props;
 
 const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? 'https://json-formatter-pro.pages.dev';
@@ -23,6 +25,8 @@ const ogImage = new URL(image, siteUrl).toString();
 ---
 <title>{title}</title>
 <meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords} />}
+<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE_HERE" />
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 <meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)" />
