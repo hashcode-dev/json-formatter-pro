@@ -1,0 +1,53 @@
+---
+import faqData from '@/content/faq.json';
+
+interface Props {
+  includeFaq?: boolean;
+}
+const { includeFaq = false } = Astro.props;
+
+const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? 'https://json-formatter-pro.pages.dev';
+
+const webApp = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'JSON Formatter Pro',
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Any (browser-based)',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  url: siteUrl,
+  description:
+    'Fast, private, client-side JSON formatter, validator, beautifier, and minifier with tree view, diff, and stats.',
+  featureList: [
+    'Format', 'Validate', 'Beautify', 'Minify',
+    'Tree view', 'Diff view', 'Statistics',
+    'Sort keys', 'Remove nulls', 'Decode unicode escapes',
+  ],
+  browserRequirements: 'Requires JavaScript and a modern browser.',
+  isAccessibleForFree: true,
+  inLanguage: 'en',
+};
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'JSON Formatter Pro',
+  url: siteUrl,
+  logo: new URL('/favicon.svg', siteUrl).toString(),
+};
+
+const faq = includeFaq
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: (faqData as Array<{ q: string; a: string }>).map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    }
+  : null;
+---
+<script type="application/ld+json" set:html={JSON.stringify(webApp)} />
+<script type="application/ld+json" set:html={JSON.stringify(organization)} />
+{faq && <script type="application/ld+json" set:html={JSON.stringify(faq)} />}

@@ -1,0 +1,63 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { FormatterApp } from '@components/formatter/FormatterApp';
+import { FEATURES, HERO, WHY } from '@/content/copy';
+import faqData from '@/content/faq.json';
+---
+<BaseLayout
+  title="JSON Formatter & Validator — Free Online JSON Beautifier"
+  description="Format, validate, beautify, and minify JSON online. Client-side, private, and fast. Includes tree view, diff view, statistics, and keyboard shortcuts."
+  path="/"
+  includeFaq
+>
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">{HERO.eyebrow}</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">{HERO.title}</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">{HERO.subtitle}</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" />
+    </div>
+  </section>
+
+  <section aria-labelledby="features" class="mx-auto mt-16 max-w-[1400px] px-4">
+    <h2 id="features" class="text-lg font-semibold text-fg">Everything you need to work with JSON</h2>
+    <ul class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {FEATURES.map((f) => (
+        <li class="card p-5">
+          <h3 class="text-sm font-semibold text-fg">{f.title}</h3>
+          <p class="mt-1 text-sm text-subtle">{f.body}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="why" class="mx-auto mt-12 max-w-[1400px] px-4">
+    <h2 id="why" class="text-lg font-semibold text-fg">Why developers pick JSON Formatter Pro</h2>
+    <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {WHY.map((w) => (
+        <div class="card p-5">
+          <h3 class="text-sm font-semibold text-fg">{w.title}</h3>
+          <p class="mt-1 text-sm text-subtle">{w.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section aria-labelledby="faq" class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <h2 id="faq" class="text-lg font-semibold text-fg">Frequently asked questions</h2>
+    <div class="mt-6 divide-y divide-border rounded-lg border border-border bg-surface">
+      {faqData.map((item) => (
+        <details class="group">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden">
+            <span>{item.q}</span>
+            <span class="text-subtle transition-transform group-open:rotate-45">＋</span>
+          </summary>
+          <p class="px-4 pb-4 text-sm text-subtle">{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

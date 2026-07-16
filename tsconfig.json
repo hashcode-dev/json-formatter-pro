@@ -1,0 +1,24 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@lib/*": ["src/lib/*"],
+      "@components/*": ["src/components/*"],
+      "@store/*": ["src/store/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@workers/*": ["src/workers/*"],
+      "@styles/*": ["src/styles/*"]
+    },
+    "types": ["astro/client", "vite/client"],
+    "verbatimModuleSyntax": false,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src", "*.d.ts", "*.mjs"],
+  "exclude": ["node_modules", "dist", ".astro"]
+}

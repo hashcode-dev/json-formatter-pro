@@ -1,0 +1,54 @@
+---
+import '@styles/global.css';
+import Meta from '@components/seo/Meta.astro';
+import StructuredData from '@components/seo/StructuredData.astro';
+import Header from '@components/site/Header.astro';
+import Footer from '@components/site/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  includeFaq?: boolean;
+  fullHeight?: boolean;
+}
+
+const {
+  title, description, path,
+  includeFaq = false, fullHeight = false,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <Meta title={title} description={description} path={path} />
+    <StructuredData includeFaq={includeFaq} />
+    <script is:inline>
+      // Set theme early to avoid FOUC.
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem('json-formatter-pro') || '{}');
+          var pref = stored.state && stored.state.theme;
+          var mode = pref === 'light' || pref === 'dark'
+            ? pref
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = mode;
+        } catch (_) {
+          document.documentElement.dataset.theme =
+            window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen bg-bg text-fg antialiased">
+    <a class="skip-link" href="#main">Skip to editor</a>
+    <div class:list={['flex min-h-screen flex-col', fullHeight && 'h-screen overflow-hidden']}>
+      <Header />
+      <main id="main" class:list={['flex-1', fullHeight && 'min-h-0']}>
+        <slot />
+      </main>
+      {!fullHeight && <Footer />}
+    </div>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+    font-family: theme('fontFamily.sans');
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  ::selection {
+    background-color: rgb(var(--accent) / 0.25);
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  hr {
+    border-color: rgb(var(--border));
+  }
+
+  kbd {
+    font-family: theme('fontFamily.mono');
+    font-size: 0.72rem;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid rgb(var(--border));
+    background: rgb(var(--muted));
+    color: rgb(var(--fg));
+    line-height: 1;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-sm font-medium
+           border border-border bg-surface text-fg
+           hover:bg-muted active:translate-y-px transition-colors
+           disabled:opacity-50 disabled:pointer-events-none
+           focus-visible:outline-2 focus-visible:outline-offset-2;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-accent-fg border-transparent hover:bg-accent/90;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-sm
+           text-subtle hover:text-fg hover:bg-muted transition-colors;
+  }
+  .btn-icon {
+    @apply inline-flex items-center justify-center h-8 w-8 rounded-md
+           text-subtle hover:text-fg hover:bg-muted transition-colors;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-xs font-medium
+           border border-border bg-muted text-subtle;
+  }
+  .kbd-hint {
+    @apply hidden sm:inline-flex items-center gap-1 text-[10px] text-subtle;
+  }
+  .card {
+    @apply bg-surface border border-border rounded-lg;
+  }
+  .divider {
+    @apply h-px w-full bg-border;
+  }
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3
+           focus:z-50 focus:btn focus:btn-primary;
+  }
+}
+
+/* CodeMirror override — align with design tokens */
+.cm-editor {
+  height: 100%;
+  font-family: theme('fontFamily.mono');
+  font-size: 13.5px;
+  line-height: 1.55;
+  background-color: rgb(var(--surface)) !important;
+  color: rgb(var(--fg)) !important;
+}
+.cm-editor.cm-focused {
+  outline: none;
+}
+.cm-scroller {
+  font-family: theme('fontFamily.mono') !important;
+}
+.cm-gutters {
+  background-color: rgb(var(--surface)) !important;
+  border-right: 1px solid rgb(var(--border)) !important;
+  color: rgb(var(--subtle)) !important;
+}
+.cm-activeLine {
+  background-color: rgb(var(--muted) / 0.55) !important;
+}
+.cm-activeLineGutter {
+  background-color: rgb(var(--muted)) !important;
+  color: rgb(var(--fg)) !important;
+}
+.cm-selectionBackground,
+.cm-editor .cm-selectionBackground,
+.cm-editor.cm-focused .cm-selectionBackground {
+  background-color: rgb(var(--accent) / 0.22) !important;
+}
+.cm-line-error {
+  background: rgb(var(--danger) / 0.09);
+  border-bottom: 2px wavy rgb(var(--danger));
+}

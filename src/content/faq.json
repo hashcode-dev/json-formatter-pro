@@ -1,0 +1,34 @@
+[
+  {
+    "q": "Is my JSON sent to a server?",
+    "a": "No. All parsing, formatting, and validation happens in your browser. The tool has zero backend for user data and no network requests are made with your content."
+  },
+  {
+    "q": "What's the largest file I can format?",
+    "a": "Uploads are capped at 50 MB. Files over 5 MB show a confirmation prompt because parsing and rendering may briefly be slower on lower-end hardware. Formatting itself runs off the main thread in a Web Worker."
+  },
+  {
+    "q": "How do I fix 'Unexpected token' or similar errors?",
+    "a": "The status bar shows the exact line, column, and a plain-English suggestion. Common causes are trailing commas, single quotes instead of double quotes, unquoted property names, and stray comments — none of which are permitted by RFC 8259."
+  },
+  {
+    "q": "Can I use this offline?",
+    "a": "Yes. Once the page has loaded, all functionality — including the editor, worker, and views — runs entirely offline. No third-party scripts or fonts are loaded."
+  },
+  {
+    "q": "What's the difference between Minify and Format?",
+    "a": "Format (or Beautify) inserts whitespace and indentation so the JSON is easy to read. Minify strips every non-essential character to produce the smallest valid representation, which is useful for storage or transmission."
+  },
+  {
+    "q": "Does the tool support JSON with comments (JSONC) or trailing commas?",
+    "a": "It validates strict RFC 8259 JSON, so comments and trailing commas are reported as syntax errors. This is intentional — most APIs and configuration systems require strict JSON."
+  },
+  {
+    "q": "Are my settings and last input remembered between visits?",
+    "a": "Preferences (theme, indentation, transforms) and up to 512 KB of your last input are stored in your browser's localStorage. Nothing leaves your device. Use the Clear action to wipe the current buffer."
+  },
+  {
+    "q": "Is the tool accessible?",
+    "a": "Yes. The interface targets WCAG 2.2 AA — full keyboard navigation, ARIA landmarks, visible focus rings, reduced-motion support, and high-contrast light and dark themes."
+  }
+]

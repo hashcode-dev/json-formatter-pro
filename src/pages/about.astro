@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="About — JSON Formatter Pro"
+  description="A private, client-side JSON tool built for developers who want speed, accuracy, and a keyboard-first workflow."
+  path="/about"
+>
+  <article class="prose prose-neutral mx-auto max-w-3xl px-4 py-12 dark:prose-invert">
+    <h1 class="text-3xl font-semibold text-fg">About JSON Formatter Pro</h1>
+    <p class="text-subtle">
+      JSON Formatter Pro is a fast, private, developer-first web tool for formatting, validating,
+      minifying, and exploring JSON. It was built to remove friction from a task that most engineers
+      do many times a day.
+    </p>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Design principles</h2>
+    <ul class="mt-2 space-y-2 text-sm text-subtle">
+      <li><strong class="text-fg">Private by construction:</strong> No backend for your JSON. No telemetry. No third-party scripts.</li>
+      <li><strong class="text-fg">Fast:</strong> Parsing runs off the main thread in a Web Worker. The tree view is virtualized.</li>
+      <li><strong class="text-fg">Accessible:</strong> WCAG 2.2 AA. Full keyboard navigation. Reduced-motion friendly.</li>
+      <li><strong class="text-fg">Standards-correct:</strong> Strict RFC 8259 parsing with clear, actionable diagnostics.</li>
+      <li><strong class="text-fg">Offline-ready:</strong> Nothing is fetched at runtime beyond the initial static assets.</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">How it works</h2>
+    <p class="mt-2 text-sm text-subtle">
+      Your JSON is parsed by an RFC-compliant recursive-descent parser inside a Web Worker.
+      Statistics, transforms (sort keys, remove nulls, remove empty values, decode <code>\uXXXX</code>),
+      and output serialization all happen off the main thread so the UI stays responsive
+      even on multi-megabyte payloads.
+    </p>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Roadmap</h2>
+    <ul class="mt-2 space-y-1 text-sm text-subtle">
+      <li>YAML ↔ JSON and CSV ↔ JSON converters</li>
+      <li>JSONPath / JMESPath query playground</li>
+      <li>Structural diff with semantic hunks</li>
+      <li>JSON Schema draft-2020-12 validator and generator</li>
+      <li>PWA install and Service Worker for full offline caching</li>
+    </ul>
+  </article>
+</BaseLayout>

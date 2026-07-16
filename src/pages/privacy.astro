@@ -1,0 +1,44 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Privacy — JSON Formatter Pro"
+  description="JSON Formatter Pro is a client-side tool. Your JSON is processed entirely in your browser and never transmitted to any server."
+  path="/privacy"
+>
+  <article class="mx-auto max-w-3xl px-4 py-12 text-sm text-subtle">
+    <h1 class="text-3xl font-semibold text-fg">Privacy</h1>
+    <p class="mt-3">
+      JSON Formatter Pro is a client-side tool. Any JSON you paste, type, upload, or drop into the editor
+      is processed entirely in your browser. It is never uploaded to any server, and no analytics events
+      contain your content.
+    </p>
+
+    <h2 class="mt-8 text-base font-semibold text-fg">What is stored locally</h2>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li>Your last input (up to 512 KB) so the editor restores when you return.</li>
+      <li>Your formatting preferences: indentation, transforms, selected view, and theme.</li>
+    </ul>
+    <p class="mt-2">
+      These live in your browser's <code>localStorage</code> under the key
+      <code>json-formatter-pro</code>. Clearing your browser storage removes them completely.
+    </p>
+
+    <h2 class="mt-8 text-base font-semibold text-fg">Network requests</h2>
+    <p class="mt-2">
+      Once the page is loaded, JSON Formatter Pro makes no network requests with your content.
+      No third-party scripts, fonts, or trackers are loaded at runtime.
+    </p>
+
+    <h2 class="mt-8 text-base font-semibold text-fg">Analytics</h2>
+    <p class="mt-2">
+      If enabled by the site operator, Cloudflare Web Analytics may be used for aggregate, cookieless page
+      view counts. It does not receive your JSON content and does not identify individual users.
+    </p>
+
+    <h2 class="mt-8 text-base font-semibold text-fg">Contact</h2>
+    <p class="mt-2">
+      Questions about this policy can be sent through the project's public repository.
+    </p>
+  </article>
+</BaseLayout>
