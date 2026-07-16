@@ -30,5 +30,33 @@
   {
     "q": "Is the tool accessible?",
     "a": "Yes. The interface targets WCAG 2.2 AA — full keyboard navigation, ARIA landmarks, visible focus rings, reduced-motion support, and high-contrast light and dark themes."
+  },
+  {
+    "q": "How do I pretty print JSON?",
+    "a": "Simply paste or upload your JSON, and our formatter will automatically beautify it with proper indentation. You can choose between 2-space, 4-space, or tab indentation."
+  },
+  {
+    "q": "How can I validate my JSON online?",
+    "a": "Our JSON validator checks your code against RFC 8259 standards and reports any syntax errors with exact line and column numbers. It provides helpful suggestions for common mistakes."
+  },
+  {
+    "q": "What is JSON minification and when should I use it?",
+    "a": "JSON minification removes all unnecessary whitespace to reduce file size. It's useful for reducing API payloads, shrinking configuration files, and optimizing storage and transmission speed."
+  },
+  {
+    "q": "Can I convert JSON to other formats?",
+    "a": "Our formatter specializes in JSON formatting and validation. For conversions to XML, CSV, YAML, or other formats, you'll need a format conversion tool."
+  },
+  {
+    "q": "How do I debug JSON syntax errors?",
+    "a": "The JSON debugger shows you the exact location of syntax errors with helpful suggestions. Common issues like trailing commas, unquoted keys, and quote mismatches are highlighted."
+  },
+  {
+    "q": "Is there a free JSON formatter with no registration needed?",
+    "a": "Yes! Our JSON formatter is completely free with no sign-up, registration, or login required. It's also free from ads and tracking."
+  },
+  {
+    "q": "Can I view JSON in tree format?",
+    "a": "Yes. Our JSON tree view allows you to explore your JSON structure visually with expandable nodes, breadcrumb navigation, and fast key search."
   }
 ]

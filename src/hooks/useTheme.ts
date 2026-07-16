@@ -17,12 +17,17 @@ export function useThemeSync(): void {
       document.documentElement.dataset.theme = resolved;
     };
     apply();
-    if (theme === 'auto' && typeof window !== 'undefined') {
-      const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      const listener = () => apply();
-      mq.addEventListener('change', listener);
-      return () => mq.removeEventListener('change', listener);
+
+    // Only set up media query listener for auto theme
+    if (theme !== 'auto' || typeof window === 'undefined') {
+      return;
     }
-    return undefined;
+
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const listener = () => apply();
+    mq.addEventListener('change', listener);
+
+    // Clean up listener when theme changes
+    return () => mq.removeEventListener('change', listener);
   }, [theme]);
 }

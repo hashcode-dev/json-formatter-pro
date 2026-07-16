@@ -47,6 +47,7 @@ export function Toolbar(p: Props): JSX.Element {
         onClick={p.onMinify}
         className="btn"
         disabled={!p.canAct}
+        aria-keyshortcuts={`${modKey}+⇧+M`}
       >
         <MinifyIcon />
         <span>Minify</span>
@@ -78,6 +79,7 @@ export function Toolbar(p: Props): JSX.Element {
         type="file"
         accept=".json,.jsonc,.ndjson,.txt,application/json,text/plain"
         className="hidden"
+        aria-label="Upload JSON file"
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) p.onUpload(file);

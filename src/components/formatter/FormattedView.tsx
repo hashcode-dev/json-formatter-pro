@@ -31,6 +31,7 @@ export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Elem
       theme,
       EditorView.contentAttributes.of({
         'aria-label': ariaLabel,
+        'aria-multiline': 'true',
         'aria-readonly': 'true',
         role: 'textbox',
       }),

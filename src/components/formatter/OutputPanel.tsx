@@ -29,6 +29,7 @@ export function OutputPanel({ mode, onModeChange, children }: Props): JSX.Elemen
           return (
             <button
               key={t.id}
+              id={`tab-${t.id}`}
               type="button"
               role="tab"
               aria-selected={active}

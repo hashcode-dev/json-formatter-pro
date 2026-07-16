@@ -96,6 +96,8 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
       viewRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Note: extensions dependency intentionally omitted. The CodeMirror view should only initialize once.
+    // Extensions are stable via useMemo and don't warrant re-initialization on every change.
   }, []);
 
   // Keep external value in sync without stomping user typing.

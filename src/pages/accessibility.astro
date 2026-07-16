@@ -1,0 +1,159 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Accessibility Statement - JSON Formatter Pro"
+  description="JSON Formatter Pro is committed to accessibility. Learn about our WCAG 2.2 AA compliance and accessibility features."
+  path="/accessibility"
+  keywords="accessibility, WCAG, ADA, inclusive design"
+>
+  <article class="mx-auto max-w-3xl px-4 py-12 text-sm text-subtle">
+    <h1 class="text-3xl font-semibold text-fg">Accessibility Statement</h1>
+
+    <p class="mt-4 text-base text-fg font-semibold">
+      JSON Formatter Pro is committed to ensuring digital accessibility for people with disabilities.
+    </p>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Commitment to Accessibility</h2>
+    <p class="mt-2">
+      We are committed to providing an accessible web experience for all users, regardless of their abilities. We continuously work to improve the accessibility of JSON Formatter Pro to conform to <strong>WCAG 2.2 Level AA</strong> standards.
+    </p>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Accessibility Features</h2>
+
+    <h3 class="mt-6 text-base font-semibold text-fg">🎹 Keyboard Navigation</h3>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li>Full keyboard navigation throughout the entire application</li>
+      <li>Logical tab order for all interactive elements</li>
+      <li>Skip-to-editor link to bypass repetitive elements</li>
+      <li>Keyboard shortcuts available via command palette (Ctrl/Cmd + K)</li>
+      <li>All functionality accessible without a mouse</li>
+    </ul>
+
+    <h3 class="mt-6 text-base font-semibold text-fg">👁️ Vision</h3>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li><strong>High Contrast Themes:</strong> Light and dark modes with sufficient color contrast (WCAG AA compliant)</li>
+      <li><strong>Color Contrast:</strong> Text-to-background contrast ratio ≥ 4.5:1 for normal text</li>
+      <li><strong>Focus Indicators:</strong> Visible focus rings on all interactive elements</li>
+      <li><strong>Resizable Text:</strong> Text can be resized without loss of functionality (up to 200%)</li>
+      <li><strong>No Flashing:</strong> No content flashes more than 3 times per second</li>
+    </ul>
+
+    <h3 class="mt-6 text-base font-semibold text-fg">🔊 Screen Reader Support</h3>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li>Semantic HTML markup for proper structure</li>
+      <li>ARIA labels and descriptions for interactive elements</li>
+      <li>ARIA live regions for status updates and error messages</li>
+      <li>Proper heading hierarchy (H1, H2, H3, etc.)</li>
+      <li>Alternative text for all icons and images</li>
+      <li>Form labels associated with inputs</li>
+    </ul>
+
+    <h3 class="mt-6 text-base font-semibold text-fg">🎬 Motion & Animation</h3>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li><strong>Respects `prefers-reduced-motion`:</strong> Animations are disabled for users who prefer reduced motion</li>
+      <li><strong>No Auto-Play:</strong> No automatically playing audio or video content</li>
+      <li><strong>Minimal Animation:</strong> Subtle transitions that don't distract</li>
+    </ul>
+
+    <h3 class="mt-6 text-base font-semibold text-fg">📱 Responsive Design</h3>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li>Fully responsive on mobile, tablet, and desktop devices</li>
+      <li>Touch targets at least 44×44 CSS pixels</li>
+      <li>Readable on all device sizes without horizontal scrolling</li>
+    </ul>
+
+    <h3 class="mt-6 text-base font-semibold text-fg">🌐 Additional Support</h3>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li>Clear and simple language throughout</li>
+      <li>Consistent navigation and layout</li>
+      <li>Error messages with clear, actionable suggestions</li>
+      <li>No time limits for interaction with the tool</li>
+      <li>Works with browser zoom and text resizing</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Accessibility Testing</h2>
+    <p class="mt-2">
+      JSON Formatter Pro is regularly tested for accessibility compliance using:
+    </p>
+    <ul class="mt-3 list-disc space-y-1 pl-6">
+      <li>Automated accessibility scanners (axe, WAVE)</li>
+      <li>Manual keyboard navigation testing</li>
+      <li>Screen reader testing (NVDA, JAWS, VoiceOver)</li>
+      <li>Color contrast verification</li>
+      <li>WCAG 2.2 compliance audits</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Known Limitations</h2>
+    <p class="mt-2">
+      While we strive for full accessibility, some areas may have limitations:
+    </p>
+    <ul class="mt-3 list-disc space-y-1 pl-6">
+      <li>The JSON editor (CodeMirror) may have complex keyboard interactions for advanced users</li>
+      <li>Very large JSON files (50+ MB) may have performance impacts on some devices</li>
+      <li>Some color combinations in exported code blocks may not meet perfect contrast ratios</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Assistive Technology Compatibility</h2>
+    <p class="mt-2">
+      JSON Formatter Pro is tested and compatible with:
+    </p>
+    <ul class="mt-3 list-disc space-y-1 pl-6">
+      <li><strong>Screen Readers:</strong> NVDA, JAWS, VoiceOver (Mac/iOS), Narrator (Windows), TalkBack (Android)</li>
+      <li><strong>Browser Extensions:</strong> Password managers, ad blockers, accessibility extensions</li>
+      <li><strong>OS Features:</strong> Windows High Contrast Mode, macOS accessibility features, mobile accessibility features</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Standards & Guidelines</h2>
+    <p class="mt-2">
+      JSON Formatter Pro aims to comply with:
+    </p>
+    <ul class="mt-3 list-disc space-y-1 pl-6">
+      <li><strong>WCAG 2.2 Level AA:</strong> Web Content Accessibility Guidelines 2.2</li>
+      <li><strong>ADA:</strong> Americans with Disabilities Act</li>
+      <li><strong>AODA:</strong> Accessibility for Ontarians with Disabilities Act</li>
+      <li><strong>EN 301 549:</strong> European accessibility standard</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Feedback & Accessibility Issues</h2>
+    <p class="mt-2">
+      We welcome accessibility feedback. If you encounter any accessibility barriers while using JSON Formatter Pro, please:
+    </p>
+    <ul class="mt-3 list-disc space-y-1 pl-6">
+      <li>Email us at <a href="mailto:accessibility@json-formatter-pro.com" class="text-primary hover:underline">accessibility@json-formatter-pro.com</a></li>
+      <li><a href="/contact" class="text-primary hover:underline">Contact us</a> with details about the issue</li>
+      <li><a href="https://github.com/json-formatter-pro/json-formatter-pro/issues" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Open a GitHub issue</a></li>
+    </ul>
+    <p class="mt-3">
+      Please include:
+    </p>
+    <ul class="mt-2 list-disc space-y-1 pl-6">
+      <li>Description of the accessibility barrier</li>
+      <li>The browser and assistive technology you're using</li>
+      <li>Steps to reproduce the issue</li>
+      <li>How the issue impacts your ability to use the tool</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Third-Party Content</h2>
+    <p class="mt-2">
+      JSON Formatter Pro may include third-party content (e.g., ads) that we don't control. We make reasonable efforts to ensure third-party content is also accessible, but we recommend reporting any accessibility issues with ads or external content.
+    </p>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Continuous Improvement</h2>
+    <p class="mt-2">
+      Accessibility is an ongoing commitment. We continuously work to:
+    </p>
+    <ul class="mt-3 list-disc space-y-1 pl-6">
+      <li>Improve accessibility of existing features</li>
+      <li>Test new features for accessibility before release</li>
+      <li>Stay updated with WCAG guidelines and best practices</li>
+      <li>Incorporate user feedback on accessibility</li>
+      <li>Train our team on accessibility best practices</li>
+    </ul>
+
+    <h2 class="mt-8 text-lg font-semibold text-fg">Last Updated</h2>
+    <p class="mt-2">
+      This Accessibility Statement was last updated in July 2026. We review and update this statement regularly.
+    </p>
+  </article>
+</BaseLayout>

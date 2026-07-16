@@ -60,6 +60,7 @@ export function CommandPalette({ open, onClose, commands }: Props): JSX.Element 
       setIndex((i) => Math.max(0, i - 1));
     } else if (e.key === 'Enter') {
       e.preventDefault();
+      if (filtered.length === 0) return;
       const cmd = filtered[index];
       if (cmd) {
         cmd.run();
