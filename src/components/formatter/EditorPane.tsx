@@ -85,7 +85,7 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   );
 
   useEffect(() => {
-    const timer = requestAnimationFrame(() => {
+    const timer = setTimeout(() => {
       if (!hostRef.current) return;
       if (viewRef.current) return;
 
@@ -98,10 +98,10 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
       } catch (err) {
         console.error('Failed to create CodeMirror view:', err);
       }
-    });
+    }, 50);
 
     return () => {
-      cancelAnimationFrame(timer);
+      clearTimeout(timer);
       if (viewRef.current) {
         try {
           viewRef.current.destroy();
