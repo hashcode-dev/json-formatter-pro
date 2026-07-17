@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import type { OutputMode } from '@store/index';
-import { DiffIcon, StatsIcon, TreeIcon, WandIcon } from './icons';
+import { StatsIcon, TreeIcon, WandIcon } from './icons';
 
 interface Props {
   mode: OutputMode;
@@ -11,7 +11,6 @@ interface Props {
 const TABS: Array<{ id: OutputMode; label: string; icon: React.ComponentType<{ className?: string }> }> = [
   { id: 'formatted', label: 'Formatted', icon: WandIcon },
   { id: 'tree', label: 'Tree', icon: TreeIcon },
-  { id: 'diff', label: 'Diff', icon: DiffIcon },
   { id: 'stats', label: 'Stats', icon: StatsIcon },
 ];
 
