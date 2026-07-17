@@ -36,6 +36,8 @@ const {
       keywords={keywords}
     />
     <StructuredData includeFaq={includeFaq} />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TKJSHMQD3E"></script>
     <script is:inline>
       // Set theme early to avoid FOUC.
       (function () {
@@ -63,6 +65,12 @@ const {
             : "light";
         }
       })();
+
+      // Google Analytics
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-TKJSHMQD3E');
     </script>
   </head>
   <body class="min-h-screen bg-bg text-fg antialiased">
