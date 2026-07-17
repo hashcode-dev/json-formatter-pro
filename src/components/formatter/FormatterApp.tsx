@@ -100,12 +100,12 @@ export function FormatterApp(): JSX.Element {
   // Auto-parse on input / option changes (debounced).
   useDebouncedEffect(sendProcess, [input, options], 160);
 
-  // Seed sample on very first load if store is empty.
+  // Seed sample on very first load
   useEffect(() => {
-    if (useStore.getState().input === '') {
+    const state = useStore.getState();
+    if (state.input === '') {
       setInput(SAMPLE);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const doFormat = useCallback(() => {
