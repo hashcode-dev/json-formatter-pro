@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { EditorState, StateEffect, StateField } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, highlightActiveLine, drawSelection, Decoration } from '@codemirror/view';
 import type { DecorationSet } from '@codemirror/view';
-import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
+import { defaultKeymap, history, historyKeymap, indentWithTab, selectAll } from '@codemirror/commands';
 import { json as jsonLang } from '@codemirror/lang-json';
 import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
@@ -44,6 +44,8 @@ const baseTheme = EditorView.theme({
   '.cm-gutters': { fontSize: '12px' },
   '.cm-lineNumbers .cm-gutterElement': { padding: '0 12px 0 8px' },
   '.cm-placeholder': { color: 'rgb(var(--subtle))', fontStyle: 'italic' },
+  '.cm-selectionBackground': { backgroundColor: '#ADD8E6 !important' },
+  '&.cm-focused .cm-selectionBackground': { backgroundColor: '#87CEEB !important' },
 });
 
 export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.Element {
@@ -52,8 +54,13 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
-  const extensions = useMemo(
-    () => [
+  const extensions = useMemo(() => {
+    const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+    const selectAllKeymap = isMac
+      ? [{ key: 'Cmd-a', run: selectAll, preventDefault: true }]
+      : [{ key: 'Ctrl-a', run: selectAll, preventDefault: true }];
+
+    return [
       lineNumbers(),
       history(),
       drawSelection(),
@@ -65,7 +72,7 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
       jsonLang(),
       errorField,
       baseTheme,
-      keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
+      keymap.of([...selectAllKeymap, ...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
       EditorView.updateListener.of((v) => {
         if (v.docChanged) {
           const next = v.state.doc.toString();
@@ -80,9 +87,8 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
         autocapitalize: 'off',
         autocorrect: 'off',
       }),
-    ],
-    [ariaLabel],
-  );
+    ];
+  }, [ariaLabel]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -127,6 +133,25 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   useEffect(() => {
     viewRef.current?.dispatch({ effects: setErrorEffect.of(error) });
   }, [error]);
+
+  // Handle native copy for selected text
+  useEffect(() => {
+    const handleCopy = (e: ClipboardEvent) => {
+      const view = viewRef.current;
+      if (!view) return;
+      const selection = view.state.selection.main;
+      if (selection.empty) return;
+      const selectedText = view.state.doc.sliceString(selection.from, selection.to);
+      e.clipboardData?.setData('text/plain', selectedText);
+      e.preventDefault();
+    };
+
+    const hostElement = hostRef.current;
+    if (hostElement) {
+      hostElement.addEventListener('copy', handleCopy);
+      return () => hostElement.removeEventListener('copy', handleCopy);
+    }
+  }, []);
 
   return (
     <div

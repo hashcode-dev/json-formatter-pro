@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView, lineNumbers, drawSelection } from '@codemirror/view';
+import { EditorView, lineNumbers, drawSelection, keymap } from '@codemirror/view';
 import { json as jsonLang } from '@codemirror/lang-json';
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
+import { selectAll } from '@codemirror/commands';
 
 interface Props {
   value: string;
@@ -13,14 +14,21 @@ interface Props {
 const theme = EditorView.theme({
   '&': { height: '100%' },
   '.cm-content': { padding: '10px 0' },
+  '.cm-selectionBackground': { backgroundColor: '#ADD8E6 !important' },
+  '&.cm-focused .cm-selectionBackground': { backgroundColor: '#87CEEB !important' },
 });
 
 export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Element {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
 
-  const extensions = useMemo(
-    () => [
+  const extensions = useMemo(() => {
+    const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+    const selectAllKeymap = isMac
+      ? [{ key: 'Cmd-a', run: selectAll, preventDefault: true }]
+      : [{ key: 'Ctrl-a', run: selectAll, preventDefault: true }];
+
+    return [
       EditorState.readOnly.of(true),
       EditorView.editable.of(false),
       lineNumbers(),
@@ -29,15 +37,15 @@ export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Elem
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       jsonLang(),
       theme,
+      keymap.of(selectAllKeymap),
       EditorView.contentAttributes.of({
         'aria-label': ariaLabel,
         'aria-multiline': 'true',
         'aria-readonly': 'true',
         role: 'textbox',
       }),
-    ],
-    [ariaLabel],
-  );
+    ];
+  }, [ariaLabel]);
 
   useEffect(() => {
     if (!hostRef.current) return;
@@ -60,6 +68,25 @@ export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Elem
     if (current === value) return;
     view.dispatch({ changes: { from: 0, to: current.length, insert: value } });
   }, [value]);
+
+  // Handle native copy for selected text in read-only view
+  useEffect(() => {
+    const handleCopy = (e: ClipboardEvent) => {
+      const view = viewRef.current;
+      if (!view) return;
+      const selection = view.state.selection.main;
+      if (selection.empty) return;
+      const selectedText = view.state.doc.sliceString(selection.from, selection.to);
+      e.clipboardData?.setData('text/plain', selectedText);
+      e.preventDefault();
+    };
+
+    const hostElement = hostRef.current;
+    if (hostElement) {
+      hostElement.addEventListener('copy', handleCopy);
+      return () => hostElement.removeEventListener('copy', handleCopy);
+    }
+  }, []);
 
   const isEmpty = value.length === 0;
 
