@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
 
-Sitemap: https://json-formatter-pro.pages.dev/sitemap-index.xml
+Sitemap: https://www.formatjson.in/sitemap-index.xml

@@ -10,7 +10,7 @@ Sitemap: ${siteUrl}/sitemap-index.xml
 };
 
 export const GET: APIRoute = ({ site }) => {
-  const siteUrl = (site?.href ?? 'https://json-formatter-pro.pages.dev').replace(/\/$/, '');
+  const siteUrl = (site?.href ?? 'https://formatjson.in').replace(/\/$/, '');
 
   return new Response(getRobotsTxt(siteUrl), {
     headers: {
