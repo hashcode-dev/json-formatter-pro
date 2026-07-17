@@ -99,6 +99,17 @@
 .cm-editor.cm-focused {
   outline: none;
 }
+.cm-content {
+  color: rgb(var(--fg)) !important;
+  background-color: rgb(var(--surface)) !important;
+  caret-color: rgb(var(--fg)) !important;
+}
+.cm-line {
+  color: rgb(var(--fg)) !important;
+}
+.cm-cursor {
+  border-left-color: rgb(var(--fg)) !important;
+}
 .cm-scroller {
   font-family: theme('fontFamily.mono') !important;
 }
@@ -122,4 +133,19 @@
 .cm-line-error {
   background: rgb(var(--danger) / 0.09);
   border-bottom: 2px wavy rgb(var(--danger));
+}
+
+/* Syntax highlighting tokens */
+.cm-string {
+  color: rgb(var(--success)) !important;
+}
+.cm-number,
+.cm-atom {
+  color: rgb(var(--accent)) !important;
+}
+.cm-property,
+.cm-variable,
+.cm-operator,
+.cm-bracket {
+  color: rgb(var(--fg)) !important;
 }
