@@ -75,7 +75,9 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   const hostRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
+  const valueRef = useRef(value);
   onChangeRef.current = onChange;
+  valueRef.current = value;
 
   const extensions = useMemo(() => {
     const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
@@ -114,24 +116,43 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   }, [ariaLabel]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let timer: NodeJS.Timeout | null = null;
+    let retryTimer: NodeJS.Timeout | null = null;
+
+    timer = setTimeout(() => {
       if (!hostRef.current) return;
       if (viewRef.current) return;
 
       try {
-        const currentValue = useStore.getState().input;
+        const currentValue = valueRef.current;
         const view = new EditorView({
           state: EditorState.create({ doc: currentValue, extensions }),
           parent: hostRef.current,
         });
         viewRef.current = view;
+
+        if (currentValue === '') {
+          retryTimer = setTimeout(() => {
+            if (!viewRef.current) return;
+            const updatedValue = valueRef.current;
+            if (updatedValue !== '') {
+              const current = viewRef.current.state.doc.toString();
+              if (current === '') {
+                viewRef.current.dispatch({
+                  changes: { from: 0, to: 0, insert: updatedValue },
+                });
+              }
+            }
+          }, 100);
+        }
       } catch (err) {
         console.error('Failed to create CodeMirror view:', err);
       }
-    }, 150);
+    }, 300);
 
     return () => {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
+      if (retryTimer) clearTimeout(retryTimer);
       if (viewRef.current) {
         try {
           viewRef.current.destroy();
