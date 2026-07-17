@@ -85,19 +85,28 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   );
 
   useEffect(() => {
-    if (!hostRef.current) return;
-    const view = new EditorView({
-      state: EditorState.create({ doc: value, extensions }),
-      parent: hostRef.current,
-    });
-    viewRef.current = view;
+    const timer = setTimeout(() => {
+      if (!hostRef.current) return;
+      if (viewRef.current) return;
+      try {
+        const view = new EditorView({
+          state: EditorState.create({ doc: value, extensions }),
+          parent: hostRef.current,
+        });
+        viewRef.current = view;
+      } catch (err) {
+        console.error('Failed to create CodeMirror view:', err);
+      }
+    }, 0);
+
     return () => {
-      view.destroy();
-      viewRef.current = null;
+      clearTimeout(timer);
+      if (viewRef.current) {
+        viewRef.current.destroy();
+        viewRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // Note: extensions dependency intentionally omitted. The CodeMirror view should only initialize once.
-    // Extensions are stable via useMemo and don't warrant re-initialization on every change.
   }, []);
 
   // Keep external value in sync without stomping user typing.
