@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { EditorState } from '@codemirror/state';
-import { EditorView, lineNumbers, drawSelection, keymap } from '@codemirror/view';
+import { EditorState, StateField } from '@codemirror/state';
+import { EditorView, lineNumbers, keymap, Decoration } from '@codemirror/view';
+import type { DecorationSet } from '@codemirror/view';
 import { json as jsonLang } from '@codemirror/lang-json';
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
 import { selectAll } from '@codemirror/commands';
@@ -11,11 +12,34 @@ interface Props {
   emptyLabel: string;
 }
 
+const selectionHighlight = Decoration.mark({ class: 'cm-selection-highlight' });
+
+const selectionField = StateField.define<DecorationSet>({
+  create(state) {
+    const decorations: ReturnType<typeof Decoration.range>[] = [];
+    for (const range of state.selection.ranges) {
+      if (!range.empty) {
+        decorations.push(selectionHighlight.range(range.from, range.to));
+      }
+    }
+    return Decoration.set(decorations);
+  },
+  update(deco, tr) {
+    const decorations: ReturnType<typeof Decoration.range>[] = [];
+    for (const range of tr.state.selection.ranges) {
+      if (!range.empty) {
+        decorations.push(selectionHighlight.range(range.from, range.to));
+      }
+    }
+    return Decoration.set(decorations);
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
+
 const theme = EditorView.theme({
   '&': { height: '100%' },
   '.cm-content': { padding: '10px 0' },
-  '.cm-selectionBackground': { backgroundColor: '#ADD8E6 !important' },
-  '&.cm-focused .cm-selectionBackground': { backgroundColor: '#87CEEB !important' },
+  '.cm-selection-highlight': { backgroundColor: '#ADD8E6' },
 });
 
 export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Element {
@@ -32,10 +56,10 @@ export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Elem
       EditorState.readOnly.of(true),
       EditorView.editable.of(false),
       lineNumbers(),
-      drawSelection(),
       bracketMatching(),
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       jsonLang(),
+      selectionField,
       theme,
       keymap.of(selectAllKeymap),
       EditorView.contentAttributes.of({

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { EditorState, StateEffect, StateField } from '@codemirror/state';
-import { EditorView, keymap, lineNumbers, highlightActiveLine, drawSelection, Decoration } from '@codemirror/view';
+import { EditorView, keymap, lineNumbers, highlightActiveLine, Decoration } from '@codemirror/view';
 import type { DecorationSet } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap, indentWithTab, selectAll } from '@codemirror/commands';
 import { json as jsonLang } from '@codemirror/lang-json';
@@ -38,21 +38,46 @@ const errorField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
+const selectionHighlight = Decoration.mark({ class: 'cm-selection-highlight' });
+
+const selectionField = StateField.define<DecorationSet>({
+  create(state) {
+    const decorations: ReturnType<typeof Decoration.range>[] = [];
+    for (const range of state.selection.ranges) {
+      if (!range.empty) {
+        decorations.push(selectionHighlight.range(range.from, range.to));
+      }
+    }
+    return Decoration.set(decorations);
+  },
+  update(deco, tr) {
+    const decorations: ReturnType<typeof Decoration.range>[] = [];
+    for (const range of tr.state.selection.ranges) {
+      if (!range.empty) {
+        decorations.push(selectionHighlight.range(range.from, range.to));
+      }
+    }
+    return Decoration.set(decorations);
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
+
 const baseTheme = EditorView.theme({
   '&': { height: '100%' },
   '.cm-content': { caretColor: 'rgb(var(--fg))', padding: '10px 0' },
   '.cm-gutters': { fontSize: '12px' },
   '.cm-lineNumbers .cm-gutterElement': { padding: '0 12px 0 8px' },
   '.cm-placeholder': { color: 'rgb(var(--subtle))', fontStyle: 'italic' },
-  '.cm-selectionBackground': { backgroundColor: '#ADD8E6 !important' },
-  '&.cm-focused .cm-selectionBackground': { backgroundColor: '#87CEEB !important' },
+  '.cm-selection-highlight': { backgroundColor: '#ADD8E6' },
 });
 
 export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.Element {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
+  const valueRef = useRef(value);
   onChangeRef.current = onChange;
+  valueRef.current = value;
 
   const extensions = useMemo(() => {
     const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
@@ -63,7 +88,6 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
     return [
       lineNumbers(),
       history(),
-      drawSelection(),
       indentOnInput(),
       bracketMatching(),
       highlightActiveLine(),
@@ -71,6 +95,7 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       jsonLang(),
       errorField,
+      selectionField,
       baseTheme,
       keymap.of([...selectAllKeymap, ...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
       EditorView.updateListener.of((v) => {
@@ -91,23 +116,43 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   }, [ariaLabel]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let timer: NodeJS.Timeout | null = null;
+    let retryTimer: NodeJS.Timeout | null = null;
+
+    timer = setTimeout(() => {
       if (!hostRef.current) return;
       if (viewRef.current) return;
 
       try {
+        const currentValue = valueRef.current;
         const view = new EditorView({
-          state: EditorState.create({ doc: value, extensions }),
+          state: EditorState.create({ doc: currentValue, extensions }),
           parent: hostRef.current,
         });
         viewRef.current = view;
+
+        if (currentValue === '') {
+          retryTimer = setTimeout(() => {
+            if (!viewRef.current) return;
+            const updatedValue = valueRef.current;
+            if (updatedValue !== '') {
+              const current = viewRef.current.state.doc.toString();
+              if (current === '') {
+                viewRef.current.dispatch({
+                  changes: { from: 0, to: 0, insert: updatedValue },
+                });
+              }
+            }
+          }, 100);
+        }
       } catch (err) {
         console.error('Failed to create CodeMirror view:', err);
       }
-    }, 50);
+    }, 300);
 
     return () => {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
+      if (retryTimer) clearTimeout(retryTimer);
       if (viewRef.current) {
         try {
           viewRef.current.destroy();
