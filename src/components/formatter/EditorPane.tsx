@@ -85,24 +85,26 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!hostRef.current) return;
-      if (viewRef.current) return;
-      try {
-        const view = new EditorView({
-          state: EditorState.create({ doc: value, extensions }),
-          parent: hostRef.current,
-        });
-        viewRef.current = view;
-      } catch (err) {
-        console.error('Failed to create CodeMirror view:', err);
-      }
-    }, 0);
+    if (!hostRef.current) return;
+    if (viewRef.current) return;
+
+    try {
+      const view = new EditorView({
+        state: EditorState.create({ doc: value, extensions }),
+        parent: hostRef.current,
+      });
+      viewRef.current = view;
+    } catch (err) {
+      console.error('Failed to create CodeMirror view:', err);
+    }
 
     return () => {
-      clearTimeout(timer);
       if (viewRef.current) {
-        viewRef.current.destroy();
+        try {
+          viewRef.current.destroy();
+        } catch (err) {
+          console.error('Failed to destroy CodeMirror view:', err);
+        }
         viewRef.current = null;
       }
     };
