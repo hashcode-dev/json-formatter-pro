@@ -19,3 +19,6 @@
 
 /robots.txt
   Cache-Control: public, max-age=86400
+
+https://json-formatter-pro.pages.dev/*
+  X-Robots-Tag: noindex

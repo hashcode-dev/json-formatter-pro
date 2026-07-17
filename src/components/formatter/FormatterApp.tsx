@@ -13,7 +13,6 @@ import { EditorPane } from './EditorPane';
 import { OutputPanel } from './OutputPanel';
 import { FormattedView } from './FormattedView';
 import { TreeView } from './TreeView';
-import { DiffView } from './DiffView';
 import { StatsPanel } from './StatsPanel';
 import { StatusBar } from './StatusBar';
 import { Toaster } from './Toaster';
@@ -22,7 +21,7 @@ import { CommandPalette, HelpSheet, type PaletteCommand } from './CommandPalette
 const SAMPLE = `{
   "app": "JSON Formatter Pro",
   "version": "1.0.0",
-  "features": ["format", "validate", "minify", "tree", "diff", "stats"],
+  "features": ["format", "validate", "minify", "tree", "stats"],
   "author": {
     "name": "You",
     "email": "you@example.com"
@@ -176,7 +175,6 @@ export function FormatterApp(): JSX.Element {
       { id: 'clear', label: 'Clear editor', run: doClear },
       { id: 'tab-formatted', label: 'Show Formatted view', run: () => setMode('formatted') },
       { id: 'tab-tree', label: 'Show Tree view', run: () => setMode('tree') },
-      { id: 'tab-diff', label: 'Show Diff view', run: () => setMode('diff') },
       { id: 'tab-stats', label: 'Show Stats view', run: () => setMode('stats') },
       { id: 'sort', label: 'Toggle: Sort keys', run: () => setOptions({ sortKeys: !options.sortKeys }) },
       { id: 'strip-null', label: 'Toggle: Remove nulls', run: () => setOptions({ stripNull: !options.stripNull }) },
@@ -200,7 +198,6 @@ export function FormatterApp(): JSX.Element {
       case 'help': return toggleHelp(true);
       case 'tab-formatted': return setMode('formatted');
       case 'tab-tree': return setMode('tree');
-      case 'tab-diff': return setMode('diff');
       case 'tab-stats': return setMode('stats');
     }
   });
@@ -257,7 +254,6 @@ export function FormatterApp(): JSX.Element {
               />
             )}
             {mode === 'tree' && <TreeView root={value} />}
-            {mode === 'diff' && <DiffView original={input} modified={formatted} />}
             {mode === 'stats' && <StatsPanel stats={stats} />}
           </OutputPanel>
         </section>
