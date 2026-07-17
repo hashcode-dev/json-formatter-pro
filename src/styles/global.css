@@ -135,10 +135,11 @@
   background-color: rgb(var(--muted)) !important;
   color: rgb(var(--fg)) !important;
 }
-.cm-selectionBackground,
-.cm-editor .cm-selectionBackground,
-.cm-editor.cm-focused .cm-selectionBackground {
-  background-color: rgb(var(--accent) / 0.22) !important;
+.cm-selection-highlight {
+  background-color: #ADD8E6 !important;
+}
+.cm-editor.cm-focused .cm-selection-highlight {
+  background-color: #ADD8E6 !important;
 }
 .cm-line-error {
   background: rgb(var(--danger) / 0.09);
