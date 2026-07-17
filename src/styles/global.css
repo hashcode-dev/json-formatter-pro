@@ -95,9 +95,11 @@
   line-height: 1.55;
   background-color: rgb(var(--surface)) !important;
   color: rgb(var(--fg)) !important;
+  cursor: text;
 }
 .cm-editor.cm-focused {
   outline: none;
+  background-color: rgb(var(--surface)) !important;
 }
 .cm-content {
   color: rgb(var(--fg)) !important;
