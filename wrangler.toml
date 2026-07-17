@@ -1,2 +1,6 @@
 name = "json-formatter-pro"
 pages_build_output_dir = "dist"
+
+[build]
+command = "npm run build"
+cwd = "./"
