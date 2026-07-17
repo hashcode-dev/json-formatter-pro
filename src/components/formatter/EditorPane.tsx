@@ -119,15 +119,16 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
       if (viewRef.current) return;
 
       try {
+        const currentValue = useStore.getState().input;
         const view = new EditorView({
-          state: EditorState.create({ doc: value, extensions }),
+          state: EditorState.create({ doc: currentValue, extensions }),
           parent: hostRef.current,
         });
         viewRef.current = view;
       } catch (err) {
         console.error('Failed to create CodeMirror view:', err);
       }
-    }, 50);
+    }, 150);
 
     return () => {
       clearTimeout(timer);
