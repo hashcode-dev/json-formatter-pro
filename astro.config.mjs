@@ -31,15 +31,6 @@ export default defineConfig({
     build: {
       cssMinify: true,
       sourcemap: false,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes('@codemirror') || id.includes('codemirror')) return 'codemirror';
-            if (id.includes('node_modules')) return 'vendor';
-            return undefined;
-          },
-        },
-      },
     },
   },
 });
