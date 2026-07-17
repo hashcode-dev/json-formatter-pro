@@ -4,7 +4,7 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
-const SITE_URL = process.env.PUBLIC_SITE_URL ?? 'https://formatjson.in';
+const SITE_URL = process.env.PUBLIC_SITE_URL ?? 'https://www.formatjson.in';
 const r = (p) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
