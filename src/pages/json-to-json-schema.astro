@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to JSON Schema Generator - Draft-07 Specification Pro";
+const description =
+  "Generate Draft-07 JSON Schema specifications from sample JSON objects. Infer property data types, required fields, array items, and object hierarchies.";
+const keywords =
+  "json to json schema, json schema generator, draft 07 schema, generate json schema, infer json schema from json, json schema creator, Ajv schema validator generator";
+
+const faqs = [
+  {
+    q: "What is JSON Schema and why is it used?",
+    a: "JSON Schema is a vocabulary that allows you to annotate and validate the structure, data types, and required fields of JSON documents. It is widely used for contract testing, REST API validation (using libraries like Ajv or jsonschema), and API gateway configuration."
+  },
+  {
+    q: "Which JSON Schema draft specification is generated?",
+    a: "Our generator outputs standard Draft-07 compliant JSON Schema objects (`\"$schema\": \"http://json-schema.org/draft-07/schema#\"`), compatible with virtually all modern JSON Schema validator libraries in Node.js, Python, Java, and Go."
+  },
+  {
+    q: "How are object properties and required fields inferred?",
+    a: "The tool recursively inspects every object key and value type, creating `properties` mappings with appropriate data types (`string`, `number`, `integer`, `boolean`, `array`, `object`, `null`). It automatically marks present property keys under the `required` array."
+  },
+  {
+    q: "Is my JSON payload kept private during schema generation?",
+    a: "Yes! Processing happens 100% locally inside your browser runtime using background Web Workers. No server uploads occur."
+  }
+];
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-json-schema" customFaq={faqs}>
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Schema Generator</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to JSON Schema Generator Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Automatically infer Draft-07 compliant JSON Schema definitions from sample JSON payloads for API contract validation.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="schema" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Generating JSON Schema Specifications</h2>
+      <p>
+        Enforcing strict contract validation between microservices and frontend clients requires a clear data contract. **JSON Schema** provides a standardized format to validate that incoming HTTP payloads contain the expected fields, primitive data types, and structural hierarchies.
+      </p>
+      <p>
+        <strong>JSON to JSON Schema Generator Pro</strong> automatically derives complete, valid **Draft-07 JSON Schema** definitions from real-world JSON samples in milliseconds, saving hours of manual schema editing.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Generate JSON Schema Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste Sample JSON:</strong> Paste a representative JSON payload into the left input editor pane.</li>
+        <li><strong>Automatic Inference:</strong> The tool analyzes the AST and generates a structured Draft-07 `$schema` document in the output panel.</li>
+        <li><strong>Export & Integrate:</strong> Click <em>Copy</em> to copy the schema string or <em>Download</em> to save a `.json` schema file for use in Ajv, OpenAPI, or Postman validation suites.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Key Technical Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📐 Standard Draft-07 Compliance</h4>
+          <p class="text-xs">Produces fully compliant Draft-07 schemas complete with `$schema`, `type`, `properties`, `items`, and `required` definitions.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔍 Granular Type Identification</h4>
+          <p class="text-xs">Accurately distinguishes between `integer` and `number` floating-point types, strings, booleans, objects, and array item types.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⚡ Background Worker Acceleration</h4>
+          <p class="text-xs">Offloads recursive schema generation to background Web Worker threads for zero UI main-thread lockups.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Local Data Privacy</h4>
+          <p class="text-xs">Runs strictly inside your browser memory. Your proprietary business data and schemas are never exposed to remote servers.</p>
+        </div>
+      </div>
+    </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </section>
+</BaseLayout>

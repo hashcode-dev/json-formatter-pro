@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to TypeScript Type Generator - Generate TS Interfaces Pro";
+const description =
+  "Automatically generate TypeScript types and export interface declarations from sample JSON. Infer nested objects, primitive types, array unions, and optional fields.";
+const keywords =
+  "json to typescript, convert json to typescript, json to ts interface, generate typescript types from json, json2ts, typescript type generator, API type inference";
+
+const faqs = [
+  {
+    q: "How does JSON to TypeScript type inference work?",
+    a: "Our generator analyzes the structural layout of your sample JSON object tree. It infers primitive types (`string`, `number`, `boolean`, `null`), detects nested child objects to create sub-interfaces, and extracts array element types (including union types like `(string | number)[]`)."
+  },
+  {
+    q: "Are nested objects converted into separate interface declarations?",
+    a: "Yes. Nested objects are cleanly extracted into named sub-interfaces (e.g. `export interface Address`, `export interface UserProfile`), promoting clean type reusability across your TypeScript project."
+  },
+  {
+    q: "Why use an automated JSON to TypeScript generator?",
+    a: "Writing TypeScript interface definitions manually for complex API responses is tedious and error-prone. Generating types automatically saves development time and guarantees type safety when fetching API data in React, Next.js, Vue, Angular, or Node.js."
+  },
+  {
+    q: "Is my JSON payload kept private during type generation?",
+    a: "Yes! Type inference runs 100% locally in your browser thread via Web Workers. Zero bytes of your JSON data or generated code are sent to external servers."
+  }
+];
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-typescript" customFaq={faqs}>
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Type Generator</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to TypeScript Type & Interface Generator Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Automatically infer strong TypeScript interfaces and type declarations from sample JSON API responses.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="typescript" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Generating TypeScript Interfaces from JSON</h2>
+      <p>
+        In modern full-stack web development, <strong>TypeScript</strong> provides indispensable type safety. However, when connecting frontend applications (React, Next.js, Vue, Svelte) to third-party REST or GraphQL APIs, developers often spend hours writing repetitive `interface` and `type` definitions by hand.
+      </p>
+      <p>
+        <strong>JSON to TypeScript Generator Pro</strong> eliminates manual boilerplate by automatically inferring type annotations directly from real-world JSON samples in milliseconds.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Generate TypeScript Interfaces Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste Sample JSON:</strong> Paste an example API JSON payload into the left input editor.</li>
+        <li><strong>Automatic Inference:</strong> The tool analyzes the JSON AST and generates formatted `export interface` blocks in the output panel.</li>
+        <li><strong>Copy & Paste:</strong> Click <em>Copy</em> to copy the generated TypeScript definitions directly into your `.ts` or `.tsx` source code files.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Key Capabilities & Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔷 Accurate Primitive Type Detection</h4>
+          <p class="text-xs">Correctly identifies primitive types including `string`, `number`, `boolean`, `null`, and `any` fallback types.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📦 Modular Sub-Interface Extraction</h4>
+          <p class="text-xs">Decomposes complex nested JSON objects into clean, reusable sub-interfaces with pascal-case naming conventions.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⚡ Instant Web Worker Generation</h4>
+          <p class="text-xs">Type inference executes off the main thread via Web Workers, keeping your browser responsive even on huge API payloads.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side Privacy</h4>
+          <p class="text-xs">Your proprietary API data and data models remain completely private within your local browser runtime.</p>
+        </div>
+      </div>
+    </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </section>
+</BaseLayout>
