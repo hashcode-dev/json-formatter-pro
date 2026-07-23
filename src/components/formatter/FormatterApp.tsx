@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useStore } from '@store/index';
+import { useStore, type OutputMode } from '@store/index';
 import { useJsonWorker } from '@hooks/useWorker';
 import { useDebouncedEffect } from '@hooks/useDebouncedEffect';
 import { useHotkeys } from '@hooks/useHotkeys';
@@ -17,11 +17,13 @@ import { StatsPanel } from './StatsPanel';
 import { StatusBar } from './StatusBar';
 import { Toaster } from './Toaster';
 import { CommandPalette, HelpSheet, type PaletteCommand } from './CommandPalette';
+import { ConvertersPane } from '@components/tools/ConvertersPane';
+import { JwtInspector } from '@components/tools/JwtInspector';
 
 const SAMPLE = `{
   "app": "JSON Formatter Pro",
   "version": "1.0.0",
-  "features": ["format", "validate", "minify", "tree", "stats"],
+  "features": ["format", "validate", "minify", "tree", "stats", "converters", "jwt"],
   "author": {
     "name": "You",
     "email": "you@example.com"
@@ -105,13 +107,23 @@ export function FormatterApp(): JSX.Element {
     if (state.input === '') {
       setInput(SAMPLE);
     }
-  }, []);
+  }, [setInput]);
+
+  // Listen for tool select events from Header Tools Dropdown
+  useEffect(() => {
+    const handleToolSelect = (e: Event) => {
+      const customEvent = e as CustomEvent<{ mode: OutputMode }>;
+      if (customEvent.detail && customEvent.detail.mode) {
+        setMode(customEvent.detail.mode);
+      }
+    };
+    window.addEventListener('json-tool-select', handleToolSelect);
+    return () => window.removeEventListener('json-tool-select', handleToolSelect);
+  }, [setMode]);
 
   const doFormat = useCallback(() => {
     const raw = useStore.getState().input;
     if (raw.trim().length === 0) return;
-    // Re-run processing immediately (bypasses the input debounce) so the right
-    // panel reflects the latest input/options. The input itself is never mutated.
     sendProcess();
     setMode('formatted');
   }, [sendProcess, setMode]);
@@ -176,6 +188,12 @@ export function FormatterApp(): JSX.Element {
       { id: 'tab-formatted', label: 'Show Formatted view', run: () => setMode('formatted') },
       { id: 'tab-tree', label: 'Show Tree view', run: () => setMode('tree') },
       { id: 'tab-stats', label: 'Show Stats view', run: () => setMode('stats') },
+      { id: 'tool-yaml', label: 'Convert to YAML', run: () => setMode('yaml') },
+      { id: 'tool-xml', label: 'Convert to XML', run: () => setMode('xml') },
+      { id: 'tool-csv', label: 'Convert to CSV', run: () => setMode('csv') },
+      { id: 'tool-ts', label: 'Convert to TypeScript Types', run: () => setMode('typescript') },
+      { id: 'tool-schema', label: 'Generate JSON Schema', run: () => setMode('schema') },
+      { id: 'tool-jwt', label: 'Inspect JWT Token', run: () => setMode('jwt') },
       { id: 'sort', label: 'Toggle: Sort keys', run: () => setOptions({ sortKeys: !options.sortKeys }) },
       { id: 'strip-null', label: 'Toggle: Remove nulls', run: () => setOptions({ stripNull: !options.stripNull }) },
       { id: 'strip-empty', label: 'Toggle: Remove empty', run: () => setOptions({ stripEmpty: !options.stripEmpty }) },
@@ -255,6 +273,10 @@ export function FormatterApp(): JSX.Element {
             )}
             {mode === 'tree' && <TreeView root={value} />}
             {mode === 'stats' && <StatsPanel stats={stats} />}
+            {(mode === 'yaml' || mode === 'xml' || mode === 'csv' || mode === 'typescript' || mode === 'schema') && (
+              <ConvertersPane type={mode} />
+            )}
+            {mode === 'jwt' && <JwtInspector />}
           </OutputPanel>
         </section>
       </div>

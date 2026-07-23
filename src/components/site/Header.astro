@@ -1,5 +1,7 @@
 ---
 import { ThemeToggle } from "./ThemeToggle";
+import { ToolsDropdown } from "./ToolsDropdown";
+
 const pathname = Astro.url.pathname;
 const links = [
   { href: "/", label: "Formatter" },
@@ -43,7 +45,10 @@ const links = [
       </svg>
       <span>JSON Formatter Pro</span>
     </a>
-    <nav aria-label="Primary" class="ml-4 hidden items-center gap-1 sm:flex">
+    <div class="hidden sm:block">
+      <ToolsDropdown client:load />
+    </div>
+    <nav aria-label="Primary" class="ml-2 hidden items-center gap-1 sm:flex">
       {
         links.map((l) => (
           <a
