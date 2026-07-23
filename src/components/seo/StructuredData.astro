@@ -3,8 +3,9 @@ import faqData from "@/content/faq.json";
 
 interface Props {
   includeFaq?: boolean;
+  customFaq?: Array<{ q: string; a: string }>;
 }
-const { includeFaq = false } = Astro.props;
+const { includeFaq = false, customFaq } = Astro.props;
 
 const siteUrl =
   import.meta.env.PUBLIC_SITE_URL ?? "https://json-formatter-pro.pages.dev";
@@ -18,28 +19,8 @@ const webApp = {
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   url: siteUrl,
   description:
-    "Fast, private, client-side JSON formatter, validator, beautifier, minifier, and checker. Format, validate, minify JSON online. Includes tree view, diff viewer, JSON parser, syntax checker, and API formatter.",
-  keywords: "JSON formatter, JSON beautifier, JSON validator, JSON minifier, JSON checker, JSON cleaner, online JSON formatter, format JSON, JSON parser, JSON converter",
-  featureList: [
-    "Format JSON",
-    "Validate JSON",
-    "Beautify JSON",
-    "Minify JSON",
-    "JSON Lint",
-    "JSON Checker",
-    "JSON Parser",
-    "Tree view",
-    "Diff view",
-    "Statistics",
-    "Sort keys",
-    "Remove nulls",
-    "Decode unicode escapes",
-    "Pretty Print JSON",
-    "JSON Debugger",
-    "Copy to clipboard",
-    "Download JSON",
-    "Upload JSON files",
-  ],
+    "Fast, private, client-side JSON formatter, validator, beautifier, minifier, and converter tools suite.",
+  keywords: "JSON formatter, JSON beautifier, JSON validator, JSON minifier, JSON converter, JSON to YAML, JSON to XML, JSON to CSV, JSON to TypeScript, JWT decoder",
   browserRequirements: "Requires JavaScript and a modern browser.",
   isAccessibleForFree: true,
   inLanguage: "en",
@@ -52,30 +33,22 @@ const organization = {
   url: siteUrl,
   logo: new URL("/favicon.svg", siteUrl).toString(),
   description:
-    "Fast, private, client-side JSON formatter, validator, beautifier, minifier, and checker. Format JSON online with tree view, diff, and statistics. No data sent to servers.",
+    "Fast, private, client-side JSON developer tools suite. 100% browser-based with zero server uploads.",
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "Customer Support",
     email: "hashcode.dev@gmail.com",
   },
   sameAs: ["https://github.com/hashcode-dev/json-formatter-pro"],
-  knowsAbout: [
-    "JSON formatting",
-    "JSON validation",
-    "JSON beautification",
-    "JSON minification",
-    "JSON parsing",
-    "JSON linting",
-    "Web development",
-    "API testing",
-  ],
 };
 
-const faq = includeFaq
+const effectiveFaqData = customFaq || (includeFaq ? faqData : null);
+
+const faq = effectiveFaqData
   ? {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: (faqData as Array<{ q: string; a: string }>).map((item) => ({
+      mainEntity: (effectiveFaqData as Array<{ q: string; a: string }>).map((item) => ({
         "@type": "Question",
         name: item.q,
         acceptedAnswer: { "@type": "Answer", text: item.a },
@@ -87,3 +60,4 @@ const faq = includeFaq
 <script type="application/ld+json" set:html={JSON.stringify(webApp)} />
 <script type="application/ld+json" set:html={JSON.stringify(organization)} />
 {faq && <script type="application/ld+json" set:html={JSON.stringify(faq)} />}
+

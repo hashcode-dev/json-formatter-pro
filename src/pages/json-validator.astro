@@ -1,0 +1,98 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON Validator & Repair Tool - RFC 8259 Syntax Checker";
+const description =
+  "Validate JSON against RFC 8259 standards. Get precise line and column error locations, missing comma hints, single quote auto-fix, and unquoted key repair.";
+const keywords =
+  "json validator, json lint, fix json error, json syntax checker, json repair online, validate json rfc 8259, jsonlint online";
+
+const faqs = [
+  {
+    q: "What makes this JSON validator superior to standard JSON.parse()?",
+    a: "Standard JSON.parse() in JavaScript fails atomically with cryptic error messages like 'Unexpected token in JSON at position 42'. Our validator uses Microsoft's tolerant jsonc-parser AST engine to pinpoint exact line and column coordinates of syntax errors, while providing human-readable repair suggestions!"
+  },
+  {
+    q: "What common JSON syntax errors does this validator detect?",
+    a: "It detects trailing commas in arrays or objects, single-quoted strings or property names, unquoted property keys, missing colons or commas, unterminated strings, invalid numeric formats (e.g. leading zeros), and forbidden JavaScript literals (undefined, NaN, Infinity)."
+  },
+  {
+    q: "Does this validator comply with RFC 8259 JSON standards?",
+    a: "Yes. It strictly validates payloads against the RFC 8259 specification for JSON data interchange format, ensuring your code works seamlessly across all programming languages (Python, Java, Go, C#, JavaScript, Rust)."
+  },
+  {
+    q: "Is my JSON data kept private during validation?",
+    a: "Yes! 100% of AST parsing and validation runs locally in your browser thread via Web Workers. Zero bytes of your data are sent over the network."
+  }
+];
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-validator" customFaq={faqs}>
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Validator & Repair</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON Validator & Syntax Repair Tool Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Tolerant AST validation with line/column diagnostic markers, missing comma detection, and one-click automatic syntax repair hints.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="formatted" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Comprehensive Guide to Online JSON Validation & Error Repair</h2>
+      <p>
+        Syntax errors in JSON payloads are one of the leading causes of API integration failures, broken deployment scripts, and runtime application crashes. Because strict JSON rules forbid trailing commas, single quotes, comments, or unquoted keys, finding a subtle syntax bug in a 1,000-line JSON document by hand can take hours.
+      </p>
+      <p>
+        <strong>JSON Validator Pro</strong> provides an instant, intelligent linting and diagnostic workbench that pinpoints exact line numbers, column offsets, and recommended code fixes in real time.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Validate & Fix JSON Syntax Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste or Load Code:</strong> Paste your JSON string into the editor pane or drag and drop a `.json` file.</li>
+        <li><strong>Review Live Diagnostics:</strong> If syntax errors exist, a red diagnostic bar will immediately highlight the exact line and column number.</li>
+        <li><strong>Read Auto-Fix Suggestions:</strong> Hover over the error marker to view actionable hints (e.g. <em>"Remove trailing comma before closing brace"</em> or <em>"Convert single quotes to double quotes"</em>).</li>
+        <li><strong>Format & Export:</strong> Once repaired, click <em>Format / Beautify</em> to obtain clean, valid RFC 8259 JSON ready for production.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Top 4 Most Common Syntax Errors & How We Help Fix Them</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">1. Trailing Commas</h4>
+          <p class="text-xs">Trailing commas after the last array item or object key are invalid in JSON. Our engine pinpoints the exact trailing comma for effortless removal.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">2. Single Quotes</h4>
+          <p class="text-xs">JSON requires strict double quotes around keys and string values. Single quotes from JavaScript literals are highlighted with automated fix prompts.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">3. Unquoted Keys</h4>
+          <p class="text-xs">Property names must be wrapped in double quotes. Our AST scanner identifies raw key names and prompts one-click quote insertion.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">4. Unescaped Characters & Comments</h4>
+          <p class="text-xs">Unescaped newlines or raw comments violate RFC 8259. We identify forbidden comments and escape characters instantly.</p>
+        </div>
+      </div>
+    </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </section>
+</BaseLayout>

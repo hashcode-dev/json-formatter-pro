@@ -11,6 +11,7 @@ interface Props {
   description: string;
   path?: string;
   includeFaq?: boolean;
+  customFaq?: Array<{ q: string; a: string }>;
   fullHeight?: boolean;
   keywords?: string;
 }
@@ -20,6 +21,7 @@ const {
   description,
   path,
   includeFaq = false,
+  customFaq,
   fullHeight = false,
   keywords,
 } = Astro.props;
@@ -34,6 +36,27 @@ const {
       async
       data-cfasync="false"
       is:inline></script>
+    <script is:inline>
+      // Google Consent Mode v2 Initializer
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+
+      var savedConsent =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("cookie-consent")
+          : null;
+      var isGranted = savedConsent === "granted" || savedConsent === "accepted";
+
+      gtag("consent", "default", {
+        ad_storage: isGranted ? "granted" : "denied",
+        ad_user_data: isGranted ? "granted" : "denied",
+        ad_personalization: isGranted ? "granted" : "denied",
+        analytics_storage: isGranted ? "granted" : "denied",
+        wait_for_update: 500,
+      });
+    </script>
     <meta charset="UTF-8" />
     <Meta
       title={title}
@@ -41,7 +64,7 @@ const {
       path={path}
       keywords={keywords}
     />
-    <StructuredData includeFaq={includeFaq} />
+    <StructuredData includeFaq={includeFaq} customFaq={customFaq} />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TKJSHMQD3E"
     ></script>

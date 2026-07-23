@@ -1,13 +1,6 @@
 ---
 import { ThemeToggle } from "./ThemeToggle";
-const pathname = Astro.url.pathname;
-const links = [
-  { href: "/", label: "Formatter" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
-  { href: "/privacy", label: "Privacy" },
-];
+import { ToolsDropdown } from "./ToolsDropdown";
 ---
 
 <header
@@ -43,24 +36,9 @@ const links = [
       </svg>
       <span>JSON Formatter Pro</span>
     </a>
-    <nav aria-label="Primary" class="ml-4 hidden items-center gap-1 sm:flex">
-      {
-        links.map((l) => (
-          <a
-            href={l.href}
-            class:list={[
-              "inline-flex h-8 items-center rounded-md px-3 text-sm transition-colors",
-              pathname === l.href
-                ? "text-fg bg-muted"
-                : "text-subtle hover:text-fg hover:bg-muted",
-            ]}
-            aria-current={pathname === l.href ? "page" : undefined}
-          >
-            {l.label}
-          </a>
-        ))
-      }
-    </nav>
+    <div class="hidden sm:block">
+      <ToolsDropdown client:load />
+    </div>
     <div class="ml-auto flex items-center gap-2">
       <a
         href="https://github.com/hashcode-dev/json-formatter-pro"

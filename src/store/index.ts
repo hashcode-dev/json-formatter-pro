@@ -4,7 +4,18 @@ import { DEFAULT_FORMAT_OPTIONS } from '@lib/json/types';
 import type { FormatOptions, JsonError, JsonStats, JsonValue } from '@lib/json/types';
 import type { Theme } from '@hooks/useTheme';
 
-export type OutputMode = 'formatted' | 'tree' | 'stats';
+export type OutputMode =
+  | 'formatted'
+  | 'tree'
+  | 'stats'
+  | 'yaml'
+  | 'xml'
+  | 'csv'
+  | 'typescript'
+  | 'schema'
+  | 'jsonpath'
+  | 'jwt'
+  | 'base64';
 export type Status = 'idle' | 'parsing' | 'valid' | 'invalid';
 
 export interface Toast {

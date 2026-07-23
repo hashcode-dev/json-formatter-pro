@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to YAML Converter Pro - Free Online Developer Tool";
+const description =
+  "Convert JSON payloads to clean YAML configuration files instantly. 100% client-side, zero server uploads, customizable indenting, copy and download support.";
+const keywords =
+  "json to yaml, convert json to yaml, online json to yaml converter, json2yaml, yaml converter, client side yaml generator, kubernetes yaml converter";
+
+const faqs = [
+  {
+    q: "Why convert JSON to YAML?",
+    a: "YAML (YAML Ain't Markup Language) is much easier for humans to read and edit than JSON because it uses clean indentation instead of braces `{}` and brackets `[]`. YAML is the industry standard format for Kubernetes manifests, Docker Compose files, Ansible playbooks, GitHub Actions workflows, and OpenAPI specifications."
+  },
+  {
+    q: "Are JSON arrays and nested objects accurately converted into YAML?",
+    a: "Yes! JSON arrays become clean dash-prefixed YAML lists (`- item`), nested objects become indented key-value pairs, string primitives retain proper quoting when necessary, and booleans/nulls map directly to native YAML values."
+  },
+  {
+    q: "Is my JSON data kept private during YAML conversion?",
+    a: "100% private. All parsing and YAML serialization execute inside your browser thread via Web Workers. No data is sent over the network or saved anywhere on external servers."
+  },
+  {
+    q: "Can I convert large JSON documents into YAML?",
+    a: "Yes. Our background worker architecture easily processes multi-megabyte JSON files without causing main-thread browser lag."
+  }
+];
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-yaml" customFaq={faqs}>
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Converter</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to YAML Converter Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Convert JSON objects to clean, human-readable YAML for Kubernetes manifests, Docker Compose, Ansible, and OpenAPI specs.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="yaml" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Free Online JSON to YAML Converter for Developers</h2>
+      <p>
+        Modern cloud-native DevOps infrastructure relies heavily on <strong>YAML</strong> configuration files. From Kubernetes deployments and Docker Compose services to CI/CD pipelines in GitHub Actions and GitLab, YAML is the preferred configuration language due to its strict indentation-based readability.
+      </p>
+      <p>
+        <strong>JSON to YAML Converter Pro</strong> bridges the gap between web APIs (which output JSON) and cloud infrastructure tools (which consume YAML). Convert raw API payloads into pristine YAML configurations in milliseconds.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert JSON to YAML Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste JSON Input:</strong> Paste your JSON string into the left editor or upload a `.json` file.</li>
+        <li><strong>Automatic Conversion:</strong> The converter instantly parses your JSON AST and renders formatted YAML in the output panel.</li>
+        <li><strong>Copy or Download:</strong> Click <em>Copy</em> to copy the YAML output to your clipboard or <em>Download</em> to export a `.yaml` file.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Key Industry Use Cases for JSON to YAML</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">☸️ Kubernetes & Helm Configuration</h4>
+          <p class="text-xs">Convert JSON API responses or pod specs directly into valid Kubernetes `.yaml` manifest files (`Deployment`, `Service`, `ConfigMap`).</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🐳 Docker Compose & Container Services</h4>
+          <p class="text-xs">Generate clean `docker-compose.yml` service definitions from exported container inspection JSON objects.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📘 OpenAPI & Swagger Specifications</h4>
+          <p class="text-xs">Transform JSON OpenAPI schema definitions into human-friendly YAML documentation for API portals.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side Data Security</h4>
+          <p class="text-xs">Perform sensitive infrastructure conversions locally. No servers, zero data logging, complete peace of mind.</p>
+        </div>
+      </div>
+    </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </section>
+</BaseLayout>

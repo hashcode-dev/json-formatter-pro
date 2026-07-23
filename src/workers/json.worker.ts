@@ -4,6 +4,13 @@ import { parse } from '@lib/json/parser';
 import { stringify, minify, decodeUnicodeEscapes } from '@lib/json/formatter';
 import { sortKeys, stripNulls, stripEmpty } from '@lib/json/transforms';
 import { computeStats } from '@lib/json/stats';
+import {
+  jsonToYaml,
+  jsonToXml,
+  jsonToCsv,
+  jsonToTypeScript,
+  jsonToJsonSchema,
+} from '@lib/json/converters';
 import type { WorkerRequest, WorkerResponse } from './protocol';
 import type { JsonValue } from '@lib/json/types';
 
@@ -41,6 +48,7 @@ ctx.addEventListener('message', (event: MessageEvent<WorkerRequest>) => {
       ctx.postMessage(response);
       return;
     }
+
     if (msg.kind === 'minify') {
       const result = parse(msg.raw);
       if (!result.ok) {
@@ -48,6 +56,30 @@ ctx.addEventListener('message', (event: MessageEvent<WorkerRequest>) => {
         return;
       }
       ctx.postMessage({ id: msg.id, kind: 'minify', ok: true, minified: minify(result.value) } as WorkerResponse);
+      return;
+    }
+
+    if (
+      msg.kind === 'convert-yaml' ||
+      msg.kind === 'convert-xml' ||
+      msg.kind === 'convert-csv' ||
+      msg.kind === 'convert-ts' ||
+      msg.kind === 'convert-schema'
+    ) {
+      const result = parse(msg.raw);
+      if (!result.ok) {
+        ctx.postMessage({ id: msg.id, kind: msg.kind, ok: false, error: result.error } as WorkerResponse);
+        return;
+      }
+
+      let output = '';
+      if (msg.kind === 'convert-yaml') output = jsonToYaml(result.value);
+      else if (msg.kind === 'convert-xml') output = jsonToXml(result.value);
+      else if (msg.kind === 'convert-csv') output = jsonToCsv(result.value);
+      else if (msg.kind === 'convert-ts') output = jsonToTypeScript(result.value);
+      else if (msg.kind === 'convert-schema') output = jsonToJsonSchema(result.value);
+
+      ctx.postMessage({ id: msg.id, kind: msg.kind, ok: true, output } as WorkerResponse);
       return;
     }
   } catch (err) {
