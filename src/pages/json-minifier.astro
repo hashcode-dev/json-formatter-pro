@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON Minifier & Payload Compressor - Free Online Tool";
+const description =
+  "Compress and minify JSON payloads instantly. Strip unnecessary whitespace, comments, and line breaks to minimize payload byte size for web APIs and storage.";
+const keywords =
+  "json minifier, minify json online, json compressor, reduce json size, strip json whitespace, compact json payload";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-minifier">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Minifier & Compressor</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON Minifier & Payload Compressor</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Strip whitespace and comments to compress JSON payload byte sizes for high-performance HTTP APIs.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="formatted" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Online JSON Minifier & Payload Compressor</h2>
+      <p>
+        Reduce the transfer size of your JSON documents with our high-performance <strong>JSON Minifier</strong>. Minification strips all unneeded spaces, newlines, and tabs from your JSON data, producing the smallest possible byte count for network transmission over HTTP APIs.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Benefits of Minifying JSON</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Reduced Bandwidth:</strong> Smaller payload sizes mean faster response times and reduced network costs.</li>
+        <li><strong>Client-Side Processing:</strong> Instant minification performed directly in your browser with complete privacy.</li>
+        <li><strong>Syntax Validation:</strong> Automatically verifies JSON validity before minifying to prevent broken API requests.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>

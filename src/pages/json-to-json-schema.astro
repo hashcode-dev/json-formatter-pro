@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to JSON Schema Generator - Draft-07 Specification";
+const description =
+  "Generate Draft-07 JSON Schema specifications from sample JSON objects. Infer property data types, required fields, array items, and object hierarchies.";
+const keywords =
+  "json to json schema, json schema generator, draft 07 schema, generate json schema, infer json schema from json, json schema creator";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-json-schema">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Schema Generator</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to JSON Schema Generator</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Generate standard Draft-07 JSON Schema specifications from sample JSON payloads.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="schema" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Free Online JSON to JSON Schema Generator</h2>
+      <p>
+        Automatically derive standard <strong>Draft-07 JSON Schema</strong> specifications from existing JSON payloads to validate API requests, automate contract testing, or enforce schema compliance.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Highlights</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Draft-07 Specification:</strong> Outputs compliant `$schema` schemas with `properties`, `required`, and `type` rules.</li>
+        <li><strong>Type Detection:</strong> Distinguishes integers, floats, booleans, strings, objects, arrays, and null primitives.</li>
+        <li><strong>Developer Ready:</strong> Copy schema JSON or download directly for use with Ajv or OpenAPI suites.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>

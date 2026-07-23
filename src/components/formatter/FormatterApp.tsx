@@ -35,7 +35,11 @@ const SAMPLE = `{
   }
 }`;
 
-export function FormatterApp(): JSX.Element {
+interface FormatterAppProps {
+  initialMode?: OutputMode;
+}
+
+export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Element {
   useThemeSync();
 
   const {
@@ -45,6 +49,12 @@ export function FormatterApp(): JSX.Element {
     setMode, setOptions, togglePalette, toggleHelp,
     pushToast, clear,
   } = useStore();
+
+  useEffect(() => {
+    if (initialMode) {
+      setMode(initialMode);
+    }
+  }, [initialMode, setMode]);
 
   const nextId = useRef(1);
   const lastRequestId = useRef(0);

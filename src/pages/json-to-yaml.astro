@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to YAML Converter - Online Free Developer Tool";
+const description =
+  "Convert JSON payloads to clean YAML configuration files instantly. 100% client-side, zero server uploads, customizable indenting, copy and download support.";
+const keywords =
+  "json to yaml, convert json to yaml, online json to yaml converter, json2yaml, yaml converter, client side yaml generator";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-yaml">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Converter</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to YAML Converter Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Convert JSON objects to clean, human-readable YAML for Kubernetes, Docker Compose, and OpenAPI specs.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="yaml" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Free Online JSON to YAML Converter</h2>
+      <p>
+        Convert JSON data objects directly into human-readable <strong>YAML (YAML Ain't Markup Language)</strong> formatting. Perfect for Kubernetes manifests, Docker Compose files, Ansible playbooks, and OpenAPI specification documents.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Features</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Strict Data Preservation:</strong> Accurately converts primitives, nested objects, arrays, booleans, and nulls.</li>
+        <li><strong>Instant Preview & Download:</strong> View formatted YAML output instantly, copy to clipboard, or save as a `.yaml` file.</li>
+        <li><strong>Private & Secure:</strong> All transformations execute locally in browser memory without sending data to third parties.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>

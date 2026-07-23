@@ -1,0 +1,53 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "Online JSON Formatter & Beautifier Pro - Free & Private";
+const description =
+  "Format, beautify, and validate JSON online instantly. 100% client-side, zero server logs, customizable indentation (2/4 spaces or tabs), and virtualized tree view.";
+const keywords =
+  "json formatter, online json beautifier, pretty print json, format json online, json editor, client-side json formatter";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-formatter">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Formatter & Beautifier</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Online JSON Formatter & Beautifier Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Pretty print, format, and validate JSON payloads with 100% client-side privacy and custom indents.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="formatted" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Free Online JSON Formatter & Beautifier</h2>
+      <p>
+        Welcome to <strong>JSON Formatter Pro</strong>, the ultimate privacy-first developer utility for formatting, beautifying, and debugging JSON payloads. Designed for high performance and strict security, our formatter processes all data 100% client-side in your browser using background Web Workers and CodeMirror 6.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Why Use Our Online JSON Formatter?</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>100% Client-Side Privacy:</strong> Your JSON data never touches a remote server or third-party database.</li>
+        <li><strong>Customizable Indentation:</strong> Format code with 2 spaces, 4 spaces, or tab indents based on your team's style guide.</li>
+        <li><strong>High-Speed Worker Engine:</strong> Handles payloads up to 50 MB smoothly without locking your UI main thread.</li>
+        <li><strong>Tolerant AST Validation:</strong> Pinpoint syntax errors down to exact line and column positions with automatic one-click fix hints.</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold text-fg">Frequently Asked Questions (FAQ)</h3>
+      <div class="space-y-4">
+        <div>
+          <h4 class="font-medium text-fg">Is my JSON data stored or tracked?</h4>
+          <p>No. We operate under zero-telemetry architecture. All parsing and formatting operations execute locally inside your Web browser.</p>
+        </div>
+        <div>
+          <h4 class="font-medium text-fg">Can I format large JSON files?</h4>
+          <p>Yes! Thanks to virtualized rendering and background worker threads, payloads up to 50 MB can be parsed and rendered efficiently.</p>
+        </div>
+      </div>
+    </article>
+  </section>
+</BaseLayout>

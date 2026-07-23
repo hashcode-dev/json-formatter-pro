@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to XML Converter - Free Online Developer Tool";
+const description =
+  "Transform JSON objects into structured XML documents. Includes custom root node tags, XML entity escaping, and one-click file download.";
+const keywords =
+  "json to xml, convert json to xml, online json to xml converter, json2xml, xml exporter, client-side json to xml";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-xml">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Converter</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to XML Converter Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Transform complex JSON data into structured XML documents with root tags and XML entity escaping.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="xml" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Free Online JSON to XML Converter</h2>
+      <p>
+        Easily transform complex JSON data models into well-formed <strong>XML (Extensible Markup Language)</strong> documents for legacy APIs, enterprise integration pipelines, or RSS feed generation.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Capabilities</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Automatic Root Wrapping:</strong> Encloses JSON payloads inside standard XML root element tags.</li>
+        <li><strong>Entity Escaping:</strong> Safely encodes special XML characters (<code>&amp;</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&quot;</code>, <code>&apos;</code>) to prevent parsing errors.</li>
+        <li><strong>Array Mapping:</strong> Recursively maps JSON array entries into clean XML child node elements.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>

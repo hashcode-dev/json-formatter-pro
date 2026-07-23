@@ -1,0 +1,41 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const title = "Privacy Policy & Data Disclosures - JSON Formatter Pro";
+const description =
+  "Our Privacy Policy outlines how JSON Formatter Pro protects user data with 100% client-side processing, zero remote server logs, and Google Consent Mode v2 compliance.";
+const keywords = "privacy policy, data privacy, zero telemetry, cookie disclosures, google consent mode v2";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/privacy-policy">
+  <div class="mx-auto max-w-4xl px-4 py-10 space-y-6 text-sm text-subtle leading-relaxed">
+    <h1 class="text-3xl font-bold text-fg">Privacy Policy & Cookie Disclosures</h1>
+    <p class="text-xs text-subtle">Effective Date: January 1, 2026 | Last Updated: July 23, 2026</p>
+
+    <div class="space-y-4">
+      <h2 class="text-lg font-semibold text-fg">1. Zero Server-Side Payload Logging</h2>
+      <p>
+        At <strong>JSON Formatter Pro</strong>, privacy is foundational to our architecture. All JSON formatting, parsing, minification, conversion, and decoding operations run 100% client-side inside your web browser. Your inputs, payload contents, and formatted outputs are never uploaded to remote servers, saved to cloud storage, or processed by third-party backend servers.
+      </p>
+
+      <h2 class="text-lg font-semibold text-fg">2. Analytics & Cookies</h2>
+      <p>
+        We use privacy-compliant telemetry and analytics tools (Google Analytics with Consent Mode v2) solely to measure aggregated site usage metrics (such as page views and browser compatibility). We do not correlate analytics metrics with your code payloads.
+      </p>
+
+      <h2 class="text-lg font-semibold text-fg">3. Google Consent Mode v2 Compliance</h2>
+      <p>
+        In compliance with global data protection laws (GDPR, CCPA, ePrivacy Directive), our platform supports Google Consent Mode v2. Consent flags (`ad_storage`, `analytics_storage`, `ad_user_data`, `ad_personalization`) default to denied until explicitly granted via our cookie preferences dialog.
+      </p>
+
+      <h2 class="text-lg font-semibold text-fg">4. Contact Information</h2>
+      <p>
+        For inquiries regarding our privacy policy or technical disclosures, please contact us at:
+        <br />
+        <strong>Email:</strong> hashcode.dev@gmail.com
+        <br />
+        <strong>Organization:</strong> Hash Code Technologies & Software Solutions
+      </p>
+    </div>
+  </div>
+</BaseLayout>

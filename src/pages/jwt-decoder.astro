@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JWT Inspector & Token Decoder - Free Online Tool";
+const description =
+  "Decode JSON Web Tokens (JWT) safely in your browser. Inspect Header, Claims Payload, Signature, Issued At, and Expiration timestamps with complete privacy.";
+const keywords =
+  "jwt decoder, jwt inspector, decode jwt online, view jwt claims, check jwt expiration, jwt tool, client side jwt debugger";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/jwt-decoder">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Security & Inspector</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JWT Inspector & Token Decoder Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Decode JSON Web Token headers, payload claims, signatures, and expiration dates 100% locally.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="jwt" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Free Online JWT Inspector & Decoder</h2>
+      <p>
+        Safely inspect and decode <strong>JSON Web Tokens (JWT)</strong> without sending credentials to remote servers. Parse token headers, JSON claims payloads, signature hashes, and human-readable `exp` / `iat` timestamps directly in browser memory.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Security & Privacy Assurance</h3>
+      <p>
+        Tokens are decoded 100% locally using client-side JavaScript Base64URL decoding algorithms. Your bearer tokens, secret claims, and authorization keys are never logged or stored.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Token Breakdown Features</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Header Inspection:</strong> View hashing algorithms (`HS256`, `RS256`) and token type (`JWT`).</li>
+        <li><strong>Payload Claims:</strong> Formatted JSON inspection of subject (`sub`), issuer (`iss`), audience (`aud`), and custom claims.</li>
+        <li><strong>Expiration Audit:</strong> Automatic verification of token validity and calculated expiration date/time.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>

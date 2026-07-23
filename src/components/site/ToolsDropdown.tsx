@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 interface ToolItem {
   name: string;
   desc: string;
+  href: string;
   mode: string;
   icon: string;
 }
@@ -18,35 +19,35 @@ const CATEGORIES: Category[] = [
     title: 'Format & Validate',
     icon: '🛠️',
     items: [
-      { name: 'JSON Formatter', desc: 'Beautify with 2/4 spaces or tabs', mode: 'formatted', icon: '✨' },
-      { name: 'JSON Minifier', desc: 'Strip whitespace to minimal payload', mode: 'formatted', icon: '⚡' },
-      { name: 'JSON Validator', desc: 'Tolerant AST parser with auto-fix hints', mode: 'formatted', icon: '✅' },
+      { name: 'JSON Formatter', desc: 'Beautify with 2/4 spaces or tabs', href: '/json-formatter', mode: 'formatted', icon: '✨' },
+      { name: 'JSON Minifier', desc: 'Strip whitespace to minimal payload', href: '/json-minifier', mode: 'formatted', icon: '⚡' },
+      { name: 'JSON Validator', desc: 'Tolerant AST parser with auto-fix hints', href: '/json-validator', mode: 'formatted', icon: '✅' },
     ],
   },
   {
     title: 'Converters',
     icon: '🔄',
     items: [
-      { name: 'JSON to YAML', desc: 'Clean YAML document conversion', mode: 'yaml', icon: '📝' },
-      { name: 'JSON to XML', desc: 'Structured XML with custom roots', mode: 'xml', icon: '📄' },
-      { name: 'JSON to CSV', desc: 'Tabular CSV / TSV spreadsheet format', mode: 'csv', icon: '📊' },
-      { name: 'JSON to TypeScript', desc: 'Generate typed TS interfaces', mode: 'typescript', icon: '🔷' },
-      { name: 'JSON to Schema', desc: 'Draft-07 JSON Schema inference', mode: 'schema', icon: '📐' },
+      { name: 'JSON to YAML', desc: 'Clean YAML document conversion', href: '/json-to-yaml', mode: 'yaml', icon: '📝' },
+      { name: 'JSON to XML', desc: 'Structured XML with custom roots', href: '/json-to-xml', mode: 'xml', icon: '📄' },
+      { name: 'JSON to CSV', desc: 'Tabular CSV / TSV spreadsheet format', href: '/json-to-csv', mode: 'csv', icon: '📊' },
+      { name: 'JSON to TypeScript', desc: 'Generate typed TS interfaces', href: '/json-to-typescript', mode: 'typescript', icon: '🔷' },
+      { name: 'JSON to Schema', desc: 'Draft-07 JSON Schema inference', href: '/json-to-json-schema', mode: 'schema', icon: '📐' },
     ],
   },
   {
     title: 'Query & Compare',
     icon: '🔍',
     items: [
-      { name: 'Virtualized Tree', desc: 'High-speed $O(1)$ node explorer', mode: 'tree', icon: '🌲' },
-      { name: 'Structure & Metrics', desc: 'Depth, key count, and memory stats', mode: 'stats', icon: '📈' },
+      { name: 'Virtualized Tree', desc: 'High-speed O(1) node explorer', href: '/json-formatter', mode: 'tree', icon: '🌲' },
+      { name: 'Structure & Metrics', desc: 'Depth, key count, and memory stats', href: '/json-formatter', mode: 'stats', icon: '📈' },
     ],
   },
   {
     title: 'Security & Utilities',
     icon: '🔒',
     items: [
-      { name: 'JWT Inspector', desc: 'Decode header, payload & claim validity', mode: 'jwt', icon: '🔑' },
+      { name: 'JWT Inspector', desc: 'Decode header, payload & claim validity', href: '/jwt-decoder', mode: 'jwt', icon: '🔑' },
     ],
   },
 ];
@@ -67,10 +68,12 @@ export const ToolsDropdown: React.FC = () => {
     }, 150);
   };
 
-  const handleToolClick = (mode: string) => {
+  const handleToolClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, mode: string) => {
     setIsOpen(false);
-    // Dispatch custom event so React app updates active mode cleanly
-    window.dispatchEvent(new CustomEvent('json-tool-select', { detail: { mode } }));
+    // If on the root page or current tool page, dispatch event for instantaneous mode switch
+    if (window.location.pathname === href || window.location.pathname === '/') {
+      window.dispatchEvent(new CustomEvent('json-tool-select', { detail: { mode } }));
+    }
   };
 
   useEffect(() => {
@@ -120,9 +123,10 @@ export const ToolsDropdown: React.FC = () => {
                 </div>
                 <div className="space-y-0.5">
                   {cat.items.map((item) => (
-                    <button
+                    <a
                       key={item.name}
-                      onClick={() => handleToolClick(item.mode)}
+                      href={item.href}
+                      onClick={(e) => handleToolClick(e, item.href, item.mode)}
                       className="group flex w-full flex-col gap-0.5 rounded-lg px-2 py-1.5 text-left hover:bg-muted/80 transition-colors"
                       role="menuitem"
                     >
@@ -133,7 +137,7 @@ export const ToolsDropdown: React.FC = () => {
                       <span className="text-[11px] text-subtle line-clamp-1 leading-tight">
                         {item.desc}
                       </span>
-                    </button>
+                    </a>
                   ))}
                 </div>
               </div>

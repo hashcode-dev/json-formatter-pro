@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON to TypeScript Type Generator - Generate TS Interfaces";
+const description =
+  "Automatically generate TypeScript types and export interface declarations from sample JSON. Infer nested objects, primitive types, array unions, and optional fields.";
+const keywords =
+  "json to typescript, convert json to typescript, json to ts interface, generate typescript types from json, json2ts, typescript type generator";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-typescript">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Type Generator</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to TypeScript Type & Interface Generator</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Automatically infer TypeScript interfaces and types from sample JSON payloads.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="typescript" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">JSON to TypeScript Type & Interface Generator</h2>
+      <p>
+        Accelerate your frontend and backend development by generating strong <strong>TypeScript interface definitions</strong> directly from JSON API payloads or database records.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Capabilities</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Smart Type Inference:</strong> Detects strings, numbers, booleans, arrays, nulls, and nested child object structures.</li>
+        <li><strong>Array Union Extraction:</strong> Infers array element unions (e.g. <code>(string | number)[]</code>).</li>
+        <li><strong>Exported Interfaces:</strong> Produces ready-to-use `export interface` blocks formatted for your TS codebase.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>

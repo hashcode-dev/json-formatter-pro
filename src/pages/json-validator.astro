@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+
+const title = "JSON Validator & Repair Tool - RFC 8259 Syntax Checker";
+const description =
+  "Validate JSON against RFC 8259 standards. Get precise line and column error locations, missing comma hints, single quote auto-fix, and unquoted key repair.";
+const keywords =
+  "json validator, json lint, fix json error, json syntax checker, json repair online, validate json rfc 8259";
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-validator">
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Validator & Repair</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON Validator & Syntax Repair Tool</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Tolerant AST validation with line/column diagnostic markers and one-click automatic syntax repair.</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode="formatted" />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
+    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">JSON Validator & Syntax Repair Tool</h2>
+      <p>
+        Debug malformed JSON instantly with our <strong>Tolerant AST JSON Validator</strong>. Powered by `jsonc-parser`, our diagnostic engine highlights precise error line and column positions and provides smart repair suggestions for common syntax issues.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Common JSON Errors Fixed Automatically</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Trailing Commas:</strong> Easily detect and remove trailing commas in objects and arrays.</li>
+        <li><strong>Single Quotes:</strong> Automatically convert JavaScript single-quoted strings to valid JSON double quotes.</li>
+        <li><strong>Unquoted Keys:</strong> Identify property keys missing double quotes.</li>
+      </ul>
+    </article>
+  </section>
+</BaseLayout>
