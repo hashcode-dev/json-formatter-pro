@@ -6,14 +6,33 @@ const title = "JSON to XML Converter - Free Online Developer Tool";
 const description =
   "Transform JSON objects into structured XML documents. Includes custom root node tags, XML entity escaping, and one-click file download.";
 const keywords =
-  "json to xml, convert json to xml, online json to xml converter, json2xml, xml exporter, client-side json to xml";
+  "json to xml, convert json to xml, online json to xml converter, json2xml, xml exporter, client-side json to xml, SOAP API XML generator";
+
+const faqs = [
+  {
+    q: "How does the JSON to XML conversion work?",
+    a: "Our converter recursively traverses your JSON object tree and maps each key-value pair into XML elements (`<key>value</key>`). JSON array items are mapped into repeated child elements wrapped inside a root tag (`<root>`), with special characters automatically entity-escaped."
+  },
+  {
+    q: "How are special characters (`&`, `<`, `>`, `\"`, `'`) handled in XML output?",
+    a: "All special XML characters inside string values are automatically entity-escaped (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`), producing fully valid XML documents that comply with W3C XML standards."
+  },
+  {
+    q: "Why convert JSON to XML for enterprise applications?",
+    a: "Many legacy enterprise systems, SOAP web services, financial networks, Android manifest files, and RSS/Sitemap feeds require XML input. Converting modern REST JSON payloads to XML allows seamless integration with legacy IT infrastructure."
+  },
+  {
+    q: "Is my JSON data kept private during XML transformation?",
+    a: "Yes! The conversion executes entirely inside your browser using Web Workers. Zero bytes of your JSON or XML data are uploaded to external servers."
+  }
+];
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-xml">
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-xml" customFaq={faqs}>
   <section class="mx-auto max-w-[1400px] px-4 pt-6">
     <p class="text-xs font-medium uppercase tracking-wide text-subtle">Converter</p>
     <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to XML Converter Pro</h1>
-    <p class="mt-1 max-w-2xl text-sm text-subtle">Transform complex JSON data into structured XML documents with root tags and XML entity escaping.</p>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Transform complex JSON payloads into well-formed XML documents with root element tags, array node mapping, and entity escaping.</p>
   </section>
 
   <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
@@ -22,19 +41,57 @@ const keywords =
     </div>
   </section>
 
-  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
-    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
-      <h2 class="text-xl font-bold text-fg">Free Online JSON to XML Converter</h2>
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Online JSON to XML Conversion</h2>
       <p>
-        Easily transform complex JSON data models into well-formed <strong>XML (Extensible Markup Language)</strong> documents for legacy APIs, enterprise integration pipelines, or RSS feed generation.
+        While modern web APIs predominantly exchange data using JSON, enterprise environments, legacy SOAP web services, banking networks, and publishing systems often demand <strong>XML (Extensible Markup Language)</strong> format.
+      </p>
+      <p>
+        <strong>JSON to XML Converter Pro</strong> makes bridging modern JSON APIs with legacy XML data pipelines effortless. It translates nested JSON structures, primitive data types, and arrays into clean, indented XML markup.
       </p>
 
-      <h3 class="text-lg font-semibold text-fg">Capabilities</h3>
-      <ul class="list-disc pl-5 space-y-2">
-        <li><strong>Automatic Root Wrapping:</strong> Encloses JSON payloads inside standard XML root element tags.</li>
-        <li><strong>Entity Escaping:</strong> Safely encodes special XML characters (<code>&amp;</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&quot;</code>, <code>&apos;</code>) to prevent parsing errors.</li>
-        <li><strong>Array Mapping:</strong> Recursively maps JSON array entries into clean XML child node elements.</li>
-      </ul>
+      <h3 class="text-lg font-semibold text-fg">How to Convert JSON to XML Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Input JSON Payload:</strong> Paste JSON data into the left input editor or drag and drop a `.json` file.</li>
+        <li><strong>Real-time Transformation:</strong> The converter automatically parses the JSON AST and generates formatted, indented XML in the output panel.</li>
+        <li><strong>Copy or Download:</strong> Click <em>Copy</em> to copy the XML string or click <em>Download</em> to save an `.xml` file.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Key Technical Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🏷️ Automatic Root Element Wrapping</h4>
+          <p class="text-xs">Ensures XML document validity by automatically enclosing top-level JSON objects or arrays inside standard `<root>` tags.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🛡️ W3C Compliant Entity Escaping</h4>
+          <p class="text-xs">Safely escapes reserved XML syntax characters (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`) to prevent XML parsing exceptions.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⚡ Fast Web Worker Processing</h4>
+          <p class="text-xs">Offloads XML string construction to background Web Workers, maintaining smooth browser interactions even on large payloads.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side Privacy</h4>
+          <p class="text-xs">Your data is processed strictly in your local browser memory. Zero network requests, zero telemetry logs.</p>
+        </div>
+      </div>
     </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
   </section>
 </BaseLayout>

@@ -4,16 +4,35 @@ import { FormatterApp } from "@components/formatter/FormatterApp";
 
 const title = "Online JSON Formatter & Beautifier Pro - Free & Private";
 const description =
-  "Format, beautify, and validate JSON online instantly. 100% client-side, zero server logs, customizable indentation (2/4 spaces or tabs), and virtualized tree view.";
+  "Format, beautify, and validate JSON online instantly. 100% client-side, zero server uploads, customizable indentation (2/4 spaces or tabs), and virtualized tree view.";
 const keywords =
-  "json formatter, online json beautifier, pretty print json, format json online, json editor, client-side json formatter";
+  "json formatter, online json beautifier, pretty print json, format json online, json editor, client-side json formatter, json lint, API debug tool";
+
+const faqs = [
+  {
+    q: "Is my JSON payload safe and private when using this online formatter?",
+    a: "Yes, 100% safe. All parsing, validation, and formatting algorithms run locally inside your web browser using Web Workers. Zero bytes of your JSON data are ever transmitted to any remote server or third-party storage."
+  },
+  {
+    q: "What indentation options are supported for formatting JSON?",
+    a: "You can format your JSON using 2 spaces, 4 spaces, or tab indentation. You can also toggle key sorting, null value stripping, empty value removal, and automatic Unicode escape sequence decoding."
+  },
+  {
+    q: "Can I format very large JSON files (e.g., 20 MB or 50 MB)?",
+    a: "Yes. JSON Formatter Pro uses background Web Worker processing and TanStack Virtual list virtualization. This prevents UI freezes and allows silky-smooth rendering even for massive multi-megabyte payloads."
+  },
+  {
+    q: "How does the syntax validator handle invalid JSON?",
+    a: "Our parser uses Microsoft's tolerant jsonc-parser AST scanner to detect exact line and column numbers of syntax errors. It provides actionable auto-fix hints for common errors like trailing commas, single quotes, or unquoted keys."
+  }
+];
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} path="/json-formatter">
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-formatter" customFaq={faqs}>
   <section class="mx-auto max-w-[1400px] px-4 pt-6">
     <p class="text-xs font-medium uppercase tracking-wide text-subtle">Formatter & Beautifier</p>
     <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Online JSON Formatter & Beautifier Pro</h1>
-    <p class="mt-1 max-w-2xl text-sm text-subtle">Pretty print, format, and validate JSON payloads with 100% client-side privacy and custom indents.</p>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Pretty print, format, and validate JSON payloads with 100% client-side privacy, custom indents, and instant AST diagnostics.</p>
   </section>
 
   <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
@@ -22,32 +41,58 @@ const keywords =
     </div>
   </section>
 
-  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
-    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
-      <h2 class="text-xl font-bold text-fg">Free Online JSON Formatter & Beautifier</h2>
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Comprehensive Guide to Online JSON Formatting & Beautification</h2>
       <p>
-        Welcome to <strong>JSON Formatter Pro</strong>, the ultimate privacy-first developer utility for formatting, beautifying, and debugging JSON payloads. Designed for high performance and strict security, our formatter processes all data 100% client-side in your browser using background Web Workers and CodeMirror 6.
+        JSON (JavaScript Object Notation) is the standard data interchange format powering modern web APIs, microservices, database storage (MongoDB, PostgreSQL JSONB), and application configuration files. However, raw JSON stringified from network responses is often compressed into single unreadable lines. 
+      </p>
+      <p>
+        <strong>JSON Formatter Pro</strong> provides an instant, privacy-first workbench for converting raw, compact, or messy JSON into beautifully structured, indented code. Built on CodeMirror 6 and Web Workers, it offers real-time syntax checking, line numbering, folding, and structural analytics.
       </p>
 
-      <h3 class="text-lg font-semibold text-fg">Why Use Our Online JSON Formatter?</h3>
-      <ul class="list-disc pl-5 space-y-2">
-        <li><strong>100% Client-Side Privacy:</strong> Your JSON data never touches a remote server or third-party database.</li>
-        <li><strong>Customizable Indentation:</strong> Format code with 2 spaces, 4 spaces, or tab indents based on your team's style guide.</li>
-        <li><strong>High-Speed Worker Engine:</strong> Handles payloads up to 50 MB smoothly without locking your UI main thread.</li>
-        <li><strong>Tolerant AST Validation:</strong> Pinpoint syntax errors down to exact line and column positions with automatic one-click fix hints.</li>
-      </ul>
+      <h3 class="text-lg font-semibold text-fg">How to Use the Online JSON Formatter</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Input Your Data:</strong> Paste raw JSON code directly into the left editor pane, drag and drop a `.json` file, or click <em>Load Sample</em>.</li>
+        <li><strong>Choose Formatting Preferences:</strong> Select your desired indentation (2 spaces, 4 spaces, or tabs) and optionally enable key sorting, null stripping, or Unicode unescaping in the toolbar.</li>
+        <li><strong>Instant Processing:</strong> The output automatically formats in real time without refreshing the page.</li>
+        <li><strong>Inspect & Export:</strong> Toggle between the <em>Formatted Code</em> view, <em>Virtualized Tree View</em>, or <em>Structural Stats</em> panel. Click <em>Copy</em> or <em>Download</em> to save your formatted file.</li>
+      </ol>
 
-      <h3 class="text-lg font-semibold text-fg">Frequently Asked Questions (FAQ)</h3>
-      <div class="space-y-4">
-        <div>
-          <h4 class="font-medium text-fg">Is my JSON data stored or tracked?</h4>
-          <p>No. We operate under zero-telemetry architecture. All parsing and formatting operations execute locally inside your Web browser.</p>
+      <h3 class="text-lg font-semibold text-fg">Key Technical Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Browser Client-Side Security</h4>
+          <p class="text-xs">Your confidential API tokens, passwords, and user records remain completely private. Processing occurs exclusively inside your browser memory.</p>
         </div>
-        <div>
-          <h4 class="font-medium text-fg">Can I format large JSON files?</h4>
-          <p>Yes! Thanks to virtualized rendering and background worker threads, payloads up to 50 MB can be parsed and rendered efficiently.</p>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⚡ Background Web Worker Processing</h4>
+          <p class="text-xs">Heavy parsing algorithms are offloaded to background threads (`json.worker.ts`), keeping the browser UI completely responsive even during 50MB file operations.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔍 Precise AST Error Diagnostics</h4>
+          <p class="text-xs">Instantly highlights syntax errors with exact line and column markers, recommending fixes for single quotes, trailing commas, or missing brackets.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🌲 Virtualized Tree & Stats Explorer</h4>
+          <p class="text-xs">Explore deep objects with high-speed depth-first virtualized tree rendering, key frequency metrics, and payload size measurements.</p>
         </div>
       </div>
     </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
   </section>
 </BaseLayout>

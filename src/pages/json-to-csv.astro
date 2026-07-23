@@ -2,18 +2,37 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { FormatterApp } from "@components/formatter/FormatterApp";
 
-const title = "JSON to CSV Converter - Tabular Data Exporter";
+const title = "JSON to CSV Converter - Tabular Data Exporter Pro";
 const description =
-  "Flatten JSON arrays and objects into clean CSV spreadsheets. Export to Excel or Google Sheets instantly with automatic header detection and quote escaping.";
+  "Flatten JSON arrays and objects into clean CSV spreadsheets. Export to Excel or Google Sheets instantly with automatic header detection and RFC 4180 quote escaping.";
 const keywords =
-  "json to csv, convert json to csv, online json to csv converter, json2csv, export json to excel, json to spreadsheet";
+  "json to csv, convert json to csv, online json to csv converter, json2csv, export json to excel, json to spreadsheet, JSON to TSV converter";
+
+const faqs = [
+  {
+    q: "How does JSON to CSV conversion work?",
+    a: "Our converter inspects your JSON input (either an array of objects or a single object) and automatically extracts all unique keys across all records to build the CSV header row. It then maps each object's property values into corresponding CSV table cells."
+  },
+  {
+    q: "How are nested JSON objects or arrays handled in CSV rows?",
+    a: "Nested objects or child arrays are automatically stringified or flattened into JSON strings inside their respective CSV cells, keeping the table structure clean and compatible with spreadsheet applications like Excel and Google Sheets."
+  },
+  {
+    q: "Does the CSV output comply with RFC 4180 standards for Excel?",
+    a: "Yes. Fields containing commas, newlines, or double quotes are automatically enclosed in double quotes with internal quotes escaped (`\"\"`), ensuring 100% compatibility with Microsoft Excel, Apple Numbers, and pandas."
+  },
+  {
+    q: "Is my tabular data kept private during conversion?",
+    a: "Yes! All processing takes place locally inside your browser memory using Web Workers. No data is ever uploaded to servers."
+  }
+];
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-csv">
+<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-csv" customFaq={faqs}>
   <section class="mx-auto max-w-[1400px] px-4 pt-6">
     <p class="text-xs font-medium uppercase tracking-wide text-subtle">Converter</p>
-    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to CSV / TSV Converter</h1>
-    <p class="mt-1 max-w-2xl text-sm text-subtle">Flatten JSON objects into tabular CSV format for Microsoft Excel, Google Sheets, and data analysis.</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to CSV / TSV Converter Pro</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">Flatten JSON payloads into tabular CSV spreadsheets for Microsoft Excel, Google Sheets, and data analytics software.</p>
   </section>
 
   <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
@@ -22,19 +41,57 @@ const keywords =
     </div>
   </section>
 
-  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
-    <article class="card p-6 space-y-6 text-sm text-subtle leading-relaxed">
-      <h2 class="text-xl font-bold text-fg">Free Online JSON to CSV Converter</h2>
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Converting JSON Data to CSV Spreadsheets</h2>
       <p>
-        Flatten nested JSON objects and arrays into tabular <strong>CSV (Comma-Separated Values)</strong> data ready for import into Microsoft Excel, Google Sheets, or data analytics software.
+        Data engineers, analysts, and developers frequently need to export raw JSON API data into <strong>CSV (Comma-Separated Values)</strong> format. CSV files are the standard format for importing data into spreadsheet applications like Microsoft Excel, Google Sheets, Apple Numbers, or data science libraries like Python pandas and R.
+      </p>
+      <p>
+        <strong>JSON to CSV Converter Pro</strong> automatically flattens arrays of JSON objects into structured tabular columns and rows, handling header detection and field escaping automatically.
       </p>
 
-      <h3 class="text-lg font-semibold text-fg">Features</h3>
-      <ul class="list-disc pl-5 space-y-2">
-        <li><strong>Automatic Header Extraction:</strong> Scans all array items to generate comprehensive CSV column headers.</li>
-        <li><strong>Quote Escaping:</strong> Safely wraps fields containing commas, double quotes, or line breaks according to RFC 4180 standards.</li>
-        <li><strong>Instant Download:</strong> Download exported data directly as a `.csv` file.</li>
-      </ul>
+      <h3 class="text-lg font-semibold text-fg">How to Convert JSON to CSV Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste JSON Data:</strong> Paste a JSON array or object into the left editor pane, or drag and drop a `.json` file.</li>
+        <li><strong>Automatic Header Detection:</strong> The tool analyzes all records, aggregates all property keys, and constructs the CSV header row.</li>
+        <li><strong>Copy or Export:</strong> Click <em>Copy</em> to copy CSV text to your clipboard, or click <em>Download</em> to save a `.csv` file ready for Excel.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Key Technical Capabilities</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📊 Automatic Schema Union Header Extraction</h4>
+          <p class="text-xs">Aggregates keys across all array items, ensuring no fields are dropped even if some objects have missing or optional properties.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🛡️ RFC 4180 Compliant Quote Escaping</h4>
+          <p class="text-xs">Properly escapes quotes, newlines, and commas inside string fields, guaranteeing clean parsing in Microsoft Excel and Google Sheets.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⚡ Background Web Worker Engine</h4>
+          <p class="text-xs">Processes tens of thousands of JSON rows smoothly off the main thread without browser latency.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Private Client-Side Tool</h4>
+          <p class="text-xs">Conversion happens exclusively in your browser memory. Your business metrics and user data remain completely private.</p>
+        </div>
+      </div>
     </article>
+
+    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+        {faqs.map((item) => (
+          <details class="group">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+              <span>{item.q}</span>
+              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+            </summary>
+            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
   </section>
 </BaseLayout>
