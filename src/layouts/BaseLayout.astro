@@ -30,12 +30,7 @@ const {
 <!doctype html>
 <html lang="en">
   <head>
-    <script
-      src="https://quge5.com/88/tag.min.js"
-      data-zone="262899"
-      async
-      data-cfasync="false"
-      is:inline></script>
+
     <script is:inline>
       // Google Consent Mode v2 Initializer
       window.dataLayer = window.dataLayer || [];
@@ -64,7 +59,7 @@ const {
       path={path}
       keywords={keywords}
     />
-    <StructuredData includeFaq={includeFaq} customFaq={customFaq} />
+    <StructuredData includeFaq={includeFaq} customFaq={customFaq} path={path} pageTitle={title} />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TKJSHMQD3E"
     ></script>
@@ -120,5 +115,11 @@ const {
       {!fullHeight && <Footer />}
     </div>
     <CookieConsent client:load />
+    <script
+      src="https://quge5.com/88/tag.min.js"
+      data-zone="262899"
+      async
+      data-cfasync="false"
+      is:inline></script>
   </body>
 </html>
