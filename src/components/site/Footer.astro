@@ -4,20 +4,51 @@ const year = new Date().getFullYear();
 
 <footer class="border-t border-border bg-surface">
   <div
-    class="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-4 px-4 py-6 text-xs text-subtle sm:flex-row sm:items-center"
+    class="mx-auto max-w-[1400px] px-4 py-8 text-xs text-subtle"
   >
-    <p>
-      © {year} JSON Formatter Pro. All rights reserved | Operated by Hash Code Technologies
-      & Software Solutions
-    </p>
-    <div class="flex flex-wrap items-center gap-4">
-      <a href="/about" class="hover:text-fg">About</a>
-      <a href="/faq" class="hover:text-fg">FAQ</a>
-      <a href="/accessibility" class="hover:text-fg">Accessibility</a>
-      <a href="/privacy" class="hover:text-fg">Privacy</a>
-      <a href="/terms" class="hover:text-fg">Terms</a>
-      <a href="/contact" class="hover:text-fg">Contact</a>
-      <a href="/cookies" class="hover:text-fg">Cookies</a>
+    <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-fg">Tools</h3>
+        <nav aria-label="JSON tool pages" class="flex flex-col gap-1.5">
+          <a href="/json-formatter" class="hover:text-fg">JSON Formatter</a>
+          <a href="/json-validator" class="hover:text-fg">JSON Validator</a>
+          <a href="/json-minifier" class="hover:text-fg">JSON Minifier</a>
+          <a href="/jwt-decoder" class="hover:text-fg">JWT Decoder</a>
+        </nav>
+      </div>
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-fg">Converters</h3>
+        <nav aria-label="JSON converter pages" class="flex flex-col gap-1.5">
+          <a href="/json-to-yaml" class="hover:text-fg">JSON to YAML</a>
+          <a href="/json-to-xml" class="hover:text-fg">JSON to XML</a>
+          <a href="/json-to-csv" class="hover:text-fg">JSON to CSV</a>
+          <a href="/json-to-typescript" class="hover:text-fg">JSON to TypeScript</a>
+          <a href="/json-to-json-schema" class="hover:text-fg">JSON to Schema</a>
+        </nav>
+      </div>
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-fg">Company</h3>
+        <nav aria-label="Company pages" class="flex flex-col gap-1.5">
+          <a href="/about" class="hover:text-fg">About</a>
+          <a href="/faq" class="hover:text-fg">FAQ</a>
+          <a href="/contact" class="hover:text-fg">Contact</a>
+        </nav>
+      </div>
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-fg">Legal</h3>
+        <nav aria-label="Legal pages" class="flex flex-col gap-1.5">
+          <a href="/privacy" class="hover:text-fg">Privacy</a>
+          <a href="/terms" class="hover:text-fg">Terms</a>
+          <a href="/cookies" class="hover:text-fg">Cookies</a>
+          <a href="/accessibility" class="hover:text-fg">Accessibility</a>
+        </nav>
+      </div>
+    </div>
+    <div class="mt-8 border-t border-border pt-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+      <p>
+        © {year} JSON Formatter Pro. All rights reserved | Operated by Hash Code Technologies
+        & Software Solutions
+      </p>
     </div>
   </div>
 </footer>

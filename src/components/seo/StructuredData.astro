@@ -4,11 +4,13 @@ import faqData from "@/content/faq.json";
 interface Props {
   includeFaq?: boolean;
   customFaq?: Array<{ q: string; a: string }>;
+  path?: string;
+  pageTitle?: string;
 }
-const { includeFaq = false, customFaq } = Astro.props;
+const { includeFaq = false, customFaq, path = "/", pageTitle } = Astro.props;
 
 const siteUrl =
-  import.meta.env.PUBLIC_SITE_URL ?? "https://json-formatter-pro.pages.dev";
+  import.meta.env.PUBLIC_SITE_URL ?? "https://www.formatjson.in";
 
 const webApp = {
   "@context": "https://schema.org",
@@ -55,9 +57,54 @@ const faq = effectiveFaqData
       })),
     }
   : null;
+
+// BreadcrumbList JSON-LD — build from the current page path
+const segments = path.replace(/^\/|\/$/g, "").split("/").filter(Boolean);
+const breadcrumbItems = [
+  { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+];
+segments.forEach((seg, i) => {
+  const url = new URL("/" + segments.slice(0, i + 1).join("/"), siteUrl).toString();
+  const label = i === segments.length - 1 && pageTitle
+    ? pageTitle
+    : seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  breadcrumbItems.push({
+    "@type": "ListItem",
+    position: i + 2,
+    name: label,
+    item: url,
+  });
+});
+const breadcrumb = segments.length > 0
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbItems,
+    }
+  : null;
+
+// WebSite schema — rendered only on the homepage for sitelinks search box
+const isHomepage = path === "/" || path === "";
+const webSite = isHomepage
+  ? {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "JSON Formatter Pro",
+      url: siteUrl,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${siteUrl}/?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    }
+  : null;
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(webApp)} />
 <script type="application/ld+json" set:html={JSON.stringify(organization)} />
 {faq && <script type="application/ld+json" set:html={JSON.stringify(faq)} />}
-
+{breadcrumb && <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />}
+{webSite && <script type="application/ld+json" set:html={JSON.stringify(webSite)} />}
