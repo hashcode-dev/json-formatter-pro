@@ -123,20 +123,20 @@ export const useStore = create<State>()(
     }),
     {
       name: 'json-formatter-pro',
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => localStorage),
+      // Neither `mode` nor `activeTool` is persisted: every page declares its
+      // own view via `initMode`, so a load always starts on that page's default
+      // with no tool tab carried over from a previous visit.
       partialize: (s) => ({
         input: s.input.length <= MAX_PERSISTED_INPUT ? s.input : '',
         options: s.options,
         theme: s.theme,
-        mode: s.mode,
       }),
-      // `activeTool` is session-only: no tool tab on a fresh load. A restored
-      // tool mode still needs its tab, else the active view would have none.
-      merge: (persisted, current) => {
-        const next = { ...current, ...(persisted as Partial<State>) };
-        if (isToolMode(next.mode)) next.activeTool = next.mode;
-        return next;
+      // v1 persisted `mode`; drop it so old entries can't restore a stale view.
+      migrate: (persisted) => {
+        const { mode: _mode, ...rest } = (persisted ?? {}) as Record<string, unknown>;
+        return rest as Partial<State>;
       },
     },
   ),
