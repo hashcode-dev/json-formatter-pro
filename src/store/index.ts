@@ -4,10 +4,8 @@ import { DEFAULT_FORMAT_OPTIONS } from '@lib/json/types';
 import type { FormatOptions, JsonError, JsonStats, JsonValue } from '@lib/json/types';
 import type { Theme } from '@hooks/useTheme';
 
-export type OutputMode =
-  | 'formatted'
-  | 'tree'
-  | 'stats'
+export type CoreMode = 'formatted' | 'tree' | 'stats';
+export type ToolMode =
   | 'yaml'
   | 'xml'
   | 'csv'
@@ -16,7 +14,20 @@ export type OutputMode =
   | 'jsonpath'
   | 'jwt'
   | 'base64';
+export type OutputMode = CoreMode | ToolMode;
 export type Status = 'idle' | 'parsing' | 'valid' | 'invalid';
+
+/** Views always available for every tool. */
+export const CORE_MODES: readonly CoreMode[] = ['formatted', 'tree', 'stats'];
+
+/** Opt-in views: hidden until the user explicitly opens the tool. */
+export const TOOL_MODES: readonly ToolMode[] = [
+  'yaml', 'xml', 'csv', 'typescript', 'schema', 'jsonpath', 'jwt', 'base64',
+];
+
+export function isToolMode(m: OutputMode): m is ToolMode {
+  return (TOOL_MODES as readonly string[]).includes(m);
+}
 
 export interface Toast {
   id: number;
@@ -32,6 +43,11 @@ interface State {
   error: JsonError | null;
   stats: JsonStats | null;
   mode: OutputMode;
+  /**
+   * The one tool tab on show, if any. Core views are always shown; picking a
+   * tool replaces whichever tool was there before, so tabs never accumulate.
+   */
+  activeTool: ToolMode | null;
   options: FormatOptions;
   theme: Theme;
   paletteOpen: boolean;
@@ -45,6 +61,8 @@ interface State {
   setError: (e: JsonError | null) => void;
   setStats: (s: JsonStats | null) => void;
   setMode: (m: OutputMode) => void;
+  initMode: (m: OutputMode) => void;
+  closeTool: () => void;
   setOptions: (patch: Partial<FormatOptions>) => void;
   setTheme: (t: Theme) => void;
   togglePalette: (open?: boolean) => void;
@@ -66,6 +84,7 @@ export const useStore = create<State>()(
       error: null,
       stats: null,
       mode: 'formatted',
+      activeTool: null,
       options: DEFAULT_FORMAT_OPTIONS,
       theme: 'auto',
       paletteOpen: false,
@@ -78,7 +97,17 @@ export const useStore = create<State>()(
       setStatus: (s) => set({ status: s }),
       setError: (e) => set({ error: e }),
       setStats: (s) => set({ stats: s }),
-      setMode: (m) => set({ mode: m }),
+      // Picking a tool swaps it in for the previous one. Core views leave the
+      // tool tab alone, so switching to Formatted and back stays possible.
+      setMode: (m) => set((s) => ({ mode: m, activeTool: isToolMode(m) ? m : s.activeTool })),
+      // A page declaring its own view wins outright, so a tool tab left over
+      // from the last session never bleeds onto a core-view page.
+      initMode: (m) => set({ mode: m, activeTool: isToolMode(m) ? m : null }),
+      closeTool: () =>
+        set((s) => ({
+          activeTool: null,
+          mode: isToolMode(s.mode) ? 'formatted' : s.mode,
+        })),
       setOptions: (patch) => set((s) => ({ options: { ...s.options, ...patch } })),
       setTheme: (t) => set({ theme: t }),
       togglePalette: (open) => set((s) => ({ paletteOpen: open ?? !s.paletteOpen })),
@@ -102,6 +131,13 @@ export const useStore = create<State>()(
         theme: s.theme,
         mode: s.mode,
       }),
+      // `activeTool` is session-only: no tool tab on a fresh load. A restored
+      // tool mode still needs its tab, else the active view would have none.
+      merge: (persisted, current) => {
+        const next = { ...current, ...(persisted as Partial<State>) };
+        if (isToolMode(next.mode)) next.activeTool = next.mode;
+        return next;
+      },
     },
   ),
 );

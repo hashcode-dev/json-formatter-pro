@@ -44,17 +44,17 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
 
   const {
     input, formatted, value, error, status, stats,
-    mode, options, paletteOpen, helpOpen,
+    mode, activeTool, options, paletteOpen, helpOpen,
     setInput, setFormatted, setValue, setError, setStatus, setStats,
-    setMode, setOptions, togglePalette, toggleHelp,
+    setMode, initMode, closeTool, setOptions, togglePalette, toggleHelp,
     pushToast, clear,
   } = useStore();
 
   useEffect(() => {
     if (initialMode) {
-      setMode(initialMode);
+      initMode(initialMode);
     }
-  }, [initialMode, setMode]);
+  }, [initialMode, initMode]);
 
   const nextId = useRef(1);
   const lastRequestId = useRef(0);
@@ -273,7 +273,12 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
         </section>
 
         <section aria-label="Output" className="flex min-h-[45vh] flex-col bg-surface lg:min-h-0">
-          <OutputPanel mode={mode} onModeChange={setMode}>
+          <OutputPanel
+            mode={mode}
+            activeTool={activeTool}
+            onModeChange={setMode}
+            onCloseTool={closeTool}
+          >
             {mode === 'formatted' && (
               <FormattedView
                 value={formatted}

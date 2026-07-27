@@ -25,37 +25,49 @@ const {
   fullHeight = false,
   keywords,
 } = Astro.props;
+
+// Ad zones are bound to the production domain: on localhost the network answers
+// with a 307 to a no-CORS endpoint, which only spams the dev console.
+const showAds = import.meta.env.PROD;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <script
-      src="https://5gvci.com/act/files/tag.min.js?z=11420413"
-      data-cfasync="false"
-      async></script>
-    <script>
-      (function (s) {
-        ((s.dataset.zone = "11420357"),
-          (s.src = "https://n6wxm.com/vignette.min.js"));
-      })(
-        [document.documentElement, document.body]
-          .filter(Boolean)
-          .pop()!
-          .appendChild(document.createElement("script")),
-      );
-    </script>
-    <script>
-      (function (s) {
-        ((s.dataset.zone = "11420378"),
-          (s.src = "https://nap5k.com/tag.min.js"));
-      })(
-        [document.documentElement, document.body]
-          .filter(Boolean)
-          .pop()!
-          .appendChild(document.createElement("script")),
-      );
-    </script>
+    {
+      showAds && (
+        <Fragment>
+          <script
+            is:inline
+            src="https://5gvci.com/act/files/tag.min.js?z=11420413"
+            data-cfasync="false"
+            async
+          />
+          <script is:inline>
+            {`(function (s) {
+              s.dataset.zone = "11420357";
+              s.src = "https://n6wxm.com/vignette.min.js";
+            })(
+              [document.documentElement, document.body]
+                .filter(Boolean)
+                .pop()
+                .appendChild(document.createElement("script")),
+            );`}
+          </script>
+          <script is:inline>
+            {`(function (s) {
+              s.dataset.zone = "11420378";
+              s.src = "https://nap5k.com/tag.min.js";
+            })(
+              [document.documentElement, document.body]
+                .filter(Boolean)
+                .pop()
+                .appendChild(document.createElement("script")),
+            );`}
+          </script>
+        </Fragment>
+      )
+    }
     <script is:inline>
       // Google Consent Mode v2 Initializer
       window.dataLayer = window.dataLayer || [];

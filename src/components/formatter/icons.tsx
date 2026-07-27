@@ -137,6 +137,16 @@ export const KeyboardIcon = (p: P) => (
     <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12" />
   </Icon>
 );
+export const PlusIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+);
+export const CloseIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </Icon>
+);
 export const CommandIcon = (p: P) => (
   <Icon {...p}>
     <path d="M18 3a3 3 0 1 0-3 3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12" />
