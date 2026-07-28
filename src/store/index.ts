@@ -118,7 +118,7 @@ export const useStore = create<State>()(
     }),
     {
       name: STORE_KEY,
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       // Neither `mode` nor `activeTool` is persisted: every page declares its
       // own view via `initMode`, so a load always starts on that page's default
@@ -129,9 +129,15 @@ export const useStore = create<State>()(
         theme: s.theme,
       }),
       // v1 persisted `mode`; drop it so old entries can't restore a stale view.
+      // v2 → v3 added `options.spec`; backfill from defaults so older entries
+      // hydrate with a valid spec instead of `undefined`.
       migrate: (persisted) => {
         const { mode: _mode, ...rest } = (persisted ?? {}) as Record<string, unknown>;
-        return rest as Partial<State>;
+        const restTyped = rest as Partial<State>;
+        return {
+          ...restTyped,
+          options: { ...DEFAULT_FORMAT_OPTIONS, ...(restTyped.options ?? {}) },
+        } as Partial<State>;
       },
     },
   ),

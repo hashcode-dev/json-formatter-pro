@@ -22,7 +22,8 @@ function fail(id: number, kind: WorkerKind, error: JsonError): void {
  * callers narrow on `ok` — a valid `null` document must not read as a failure.
  */
 function parseOrFail(msg: WorkerRequest): ParseResult {
-  const result = parse(msg.raw);
+  const spec = msg.kind === 'process' ? msg.options.spec : undefined;
+  const result = parse(msg.raw, spec);
   if (!result.ok) fail(msg.id, msg.kind, result.error);
   return result;
 }

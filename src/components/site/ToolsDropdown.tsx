@@ -109,13 +109,13 @@ export const ToolsDropdown: React.FC = () => {
 
       {isOpen && (
         <div
-          className="absolute left-0 top-full z-50 mt-1 w-[720px] max-w-[90vw] rounded-xl border border-border bg-surface/95 p-4 shadow-2xl backdrop-blur-md animate-slide-up"
+          className="absolute left-0 top-full z-50 mt-1 w-[900px] max-w-[95vw] rounded-xl border border-border bg-surface/95 p-4 shadow-2xl backdrop-blur-md animate-slide-up"
           role="menu"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {CATEGORIES.map((cat) => (
               <div key={cat.title} className="space-y-2">
-                <div className="flex items-center gap-1.5 px-2 text-xs font-bold uppercase tracking-wider text-accent/90">
+                <div className="flex items-center gap-1.5 whitespace-nowrap px-2 text-xs font-bold uppercase tracking-wider text-accent/90">
                   <span>{cat.icon}</span>
                   <span>{cat.title}</span>
                 </div>

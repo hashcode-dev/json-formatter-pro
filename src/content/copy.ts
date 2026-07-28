@@ -1,5 +1,4 @@
 export const HERO = {
-  eyebrow: 'RFC 8259 · Client-side · Free JSON Tools',
   title: 'Format, Validate, Beautify & Minify JSON Online',
   subtitle:
     'The best free JSON formatter and validator for developers. Format JSON, validate syntax, beautify, minify, debug, and view JSON tree. Paste, upload, or drop a file. Everything runs in your browser — no data leaves your device.',

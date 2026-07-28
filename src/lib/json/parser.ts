@@ -1,6 +1,6 @@
 import { parseTree, printParseErrorCode } from 'jsonc-parser';
 import type { ParseError, Node } from 'jsonc-parser';
-import type { JsonError, JsonValue, ParseResult } from './types';
+import type { JsonError, JsonSpec, JsonValue, ParseResult } from './types';
 import { messageForCode, suggestFix } from './suggestions';
 
 function offsetToLineColumn(source: string, offset: number): { line: number; column: number } {
@@ -62,7 +62,7 @@ function toJsonError(source: string, err: ParseError): JsonError {
   };
 }
 
-export function parse(raw: string): ParseResult {
+export function parse(raw: string, spec: JsonSpec = 'RFC8259'): ParseResult {
   const trimmed = raw.trim();
   if (trimmed.length === 0) {
     return {
@@ -77,10 +77,11 @@ export function parse(raw: string): ParseResult {
       },
     };
   }
+  const lenient = spec === 'SKIP';
   const errors: ParseError[] = [];
   const tree = parseTree(raw, errors, {
-    allowTrailingComma: false,
-    disallowComments: true,
+    allowTrailingComma: lenient,
+    disallowComments: !lenient,
     allowEmptyContent: false,
   });
   if (errors.length > 0 || !tree) {
@@ -94,6 +95,21 @@ export function parse(raw: string): ParseResult {
         offset: 0,
         length: raw.length,
         message: 'Unable to parse JSON',
+      },
+    };
+  }
+  // RFC 4627 forbids top-level primitives — only object or array are allowed.
+  if (spec === 'RFC4627' && tree.type !== 'object' && tree.type !== 'array') {
+    const { line, column } = offsetToLineColumn(raw, tree.offset);
+    return {
+      ok: false,
+      error: {
+        line,
+        column,
+        offset: tree.offset,
+        length: tree.length,
+        message: 'RFC 4627 requires the top-level value to be an object or array.',
+        suggestion: 'Wrap the value, or switch to RFC 7159 / RFC 8259 / ECMA-404.',
       },
     };
   }
