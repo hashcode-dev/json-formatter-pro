@@ -119,13 +119,14 @@ function IndentSelect({
         value={String(value)}
         onChange={(e) => {
           const raw = e.target.value;
-          const next: IndentOption = raw === 'tab' ? '\t' : (Number(raw) as 2 | 4);
+          const next: IndentOption = raw === 'tab' ? '\t' : (Number(raw) as 2 | 3 | 4);
           onChange(next);
         }}
         className="h-8 rounded-md border border-border bg-surface px-2 pr-6 text-sm text-fg"
         aria-label="Indent size"
       >
         <option value="2">2 spaces</option>
+        <option value="3">3 spaces</option>
         <option value="4">4 spaces</option>
         <option value="tab">Tab</option>
       </select>

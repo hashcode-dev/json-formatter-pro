@@ -26,7 +26,7 @@ export interface JsonStats {
   estimatedMemoryBytes: number;
 }
 
-export type IndentOption = 2 | 4 | '\t';
+export type IndentOption = 2 | 3 | 4 | '\t';
 
 export interface FormatOptions {
   indent: IndentOption;
