@@ -5,24 +5,13 @@ import type { FormatOptions, JsonError, JsonStats, JsonValue } from '@lib/json/t
 import type { Theme } from '@hooks/useTheme';
 
 export type CoreMode = 'formatted' | 'tree' | 'stats';
-export type ToolMode =
-  | 'yaml'
-  | 'xml'
-  | 'csv'
-  | 'typescript'
-  | 'schema'
-  | 'jsonpath'
-  | 'jwt'
-  | 'base64';
+export type ToolMode = 'yaml' | 'xml' | 'csv' | 'typescript' | 'schema' | 'jwt';
 export type OutputMode = CoreMode | ToolMode;
 export type Status = 'idle' | 'parsing' | 'valid' | 'invalid';
 
-/** Views always available for every tool. */
-export const CORE_MODES: readonly CoreMode[] = ['formatted', 'tree', 'stats'];
-
 /** Opt-in views: hidden until the user explicitly opens the tool. */
 export const TOOL_MODES: readonly ToolMode[] = [
-  'yaml', 'xml', 'csv', 'typescript', 'schema', 'jsonpath', 'jwt', 'base64',
+  'yaml', 'xml', 'csv', 'typescript', 'schema', 'jwt',
 ];
 
 export function isToolMode(m: OutputMode): m is ToolMode {
@@ -74,6 +63,12 @@ interface State {
 
 const MAX_PERSISTED_INPUT = 512 * 1024; // 512 KB
 
+/**
+ * localStorage key for the persisted store. BaseLayout's pre-hydration theme
+ * script reads it directly (it cannot import this module), so the two must agree.
+ */
+export const STORE_KEY = 'json-formatter-pro';
+
 export const useStore = create<State>()(
   persist(
     (set) => ({
@@ -122,7 +117,7 @@ export const useStore = create<State>()(
         }),
     }),
     {
-      name: 'json-formatter-pro',
+      name: STORE_KEY,
       version: 2,
       storage: createJSONStorage(() => localStorage),
       // Neither `mode` nor `activeTool` is persisted: every page declares its

@@ -3,7 +3,6 @@ import type { WorkerRequest, WorkerResponse } from '@workers/protocol';
 
 export interface WorkerHandle {
   send: (msg: WorkerRequest) => void;
-  terminate: () => void;
 }
 
 export function useJsonWorker(onMessage: (msg: WorkerResponse) => void): WorkerHandle {
@@ -34,6 +33,5 @@ export function useJsonWorker(onMessage: (msg: WorkerResponse) => void): WorkerH
       }
       workerRef.current.postMessage(msg);
     },
-    terminate: () => workerRef.current?.terminate(),
   };
 }

@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { useStore } from '@store/index';
+import type { OutputMode } from '@store/index';
+import type { JsonValue } from '@lib/json/types';
 import {
   jsonToYaml,
   jsonToXml,
@@ -7,96 +9,81 @@ import {
   jsonToTypeScript,
   jsonToJsonSchema,
 } from '@lib/json/converters';
-import { copyToClipboard } from '@lib/clipboard';
 import { downloadText } from '@lib/download';
+import { useCopyWithToast } from '@hooks/useCopyWithToast';
+
+interface Converter {
+  run: (value: JsonValue) => string;
+  ext: string;
+  mime: string;
+  label: string;
+}
+
+/** Note: `ext` deliberately differs from the key for typescript and schema. */
+const CONVERTERS = {
+  yaml: { run: jsonToYaml, ext: 'yaml', mime: 'text/yaml', label: 'YAML Output' },
+  xml: { run: jsonToXml, ext: 'xml', mime: 'application/xml', label: 'XML Output' },
+  csv: { run: jsonToCsv, ext: 'csv', mime: 'text/csv', label: 'CSV Output' },
+  typescript: {
+    run: jsonToTypeScript,
+    ext: 'ts',
+    mime: 'text/typescript',
+    label: 'TypeScript Interfaces',
+  },
+  schema: {
+    run: jsonToJsonSchema,
+    ext: 'json',
+    mime: 'application/json',
+    label: 'JSON Schema (Draft-07)',
+  },
+} satisfies Record<string, Converter>;
+
+export type ConverterMode = keyof typeof CONVERTERS;
+
+export function isConverterMode(mode: OutputMode): mode is ConverterMode {
+  return mode in CONVERTERS;
+}
+
+const PLACEHOLDER: Omit<Converter, 'run'> & { output: string } = {
+  output: '// Provide a valid JSON payload in the editor to convert.',
+  ext: 'txt',
+  mime: 'text/plain',
+  label: 'Output',
+};
 
 interface Props {
-  type: 'yaml' | 'xml' | 'csv' | 'typescript' | 'schema';
+  type: ConverterMode;
 }
 
 export const ConvertersPane: React.FC<Props> = ({ type }) => {
   const value = useStore((s) => s.value);
   const pushToast = useStore((s) => s.pushToast);
+  const copyWithToast = useCopyWithToast();
 
-  const { output, fileExtension, mimeType, label } = useMemo(() => {
-    if (value === null) {
-      return {
-        output: '// Provide a valid JSON payload in the editor to convert.',
-        fileExtension: 'txt',
-        mimeType: 'text/plain',
-        label: 'Output',
-      };
-    }
-
+  const { output, ext, mime, label } = useMemo(() => {
+    const converter = CONVERTERS[type];
+    if (value === null || !converter) return PLACEHOLDER;
+    const { run, ...meta } = converter;
     try {
-      switch (type) {
-        case 'yaml':
-          return {
-            output: jsonToYaml(value),
-            fileExtension: 'yaml',
-            mimeType: 'text/yaml',
-            label: 'YAML Output',
-          };
-        case 'xml':
-          return {
-            output: jsonToXml(value),
-            fileExtension: 'xml',
-            mimeType: 'application/xml',
-            label: 'XML Output',
-          };
-        case 'csv':
-          return {
-            output: jsonToCsv(value),
-            fileExtension: 'csv',
-            mimeType: 'text/csv',
-            label: 'CSV Output',
-          };
-        case 'typescript':
-          return {
-            output: jsonToTypeScript(value),
-            fileExtension: 'ts',
-            mimeType: 'text/typescript',
-            label: 'TypeScript Interfaces',
-          };
-        case 'schema':
-          return {
-            output: jsonToJsonSchema(value),
-            fileExtension: 'json',
-            mimeType: 'application/json',
-            label: 'JSON Schema (Draft-07)',
-          };
-        default:
-          return {
-            output: '',
-            fileExtension: 'txt',
-            mimeType: 'text/plain',
-            label: 'Output',
-          };
-      }
+      return { ...meta, output: run(value) };
     } catch (err) {
       return {
+        ...PLACEHOLDER,
         output: `// Error converting JSON: ${err instanceof Error ? err.message : String(err)}`,
-        fileExtension: 'txt',
-        mimeType: 'text/plain',
         label: 'Error',
       };
     }
   }, [value, type]);
 
-  const handleCopy = async () => {
-    const ok = await copyToClipboard(output);
-    pushToast({
-      kind: ok ? 'success' : 'error',
-      message: ok ? `Copied ${label} to clipboard!` : 'Failed to copy to clipboard',
+  const handleCopy = () =>
+    void copyWithToast(output, {
+      success: `Copied ${label} to clipboard!`,
+      error: 'Failed to copy to clipboard',
     });
-  };
 
   const handleDownload = () => {
-    downloadText(`converted.${fileExtension}`, output, mimeType);
-    pushToast({
-      kind: 'info',
-      message: `Downloaded converted.${fileExtension}`,
-    });
+    downloadText(`converted.${ext}`, output, mime);
+    pushToast({ kind: 'info', message: `Downloaded converted.${ext}` });
   };
 
   return (

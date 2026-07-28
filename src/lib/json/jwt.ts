@@ -9,9 +9,6 @@ export interface JwtParsedResult {
   error?: string;
 }
 
-/**
- * Decodes a Base64URL string safely in browser environment.
- */
 function base64UrlDecode(str: string): string {
   let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
   while (base64.length % 4) {
@@ -25,9 +22,6 @@ function base64UrlDecode(str: string): string {
   );
 }
 
-/**
- * Inspects and parses a JSON Web Token (JWT).
- */
 export function parseJwt(token: string): JwtParsedResult {
   const cleanToken = token.trim();
   if (!cleanToken) {

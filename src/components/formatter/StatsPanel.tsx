@@ -1,5 +1,6 @@
 import type { JsonStats } from '@lib/json/types';
 import { formatBytes, formatCount } from '@lib/format-bytes';
+import { EmptyPane } from './EmptyPane';
 
 interface Props {
   stats: JsonStats | null;
@@ -34,11 +35,7 @@ function toCards(s: JsonStats): Card[] {
 
 export function StatsPanel({ stats }: Props): JSX.Element {
   if (!stats) {
-    return (
-      <div className="flex h-full items-center justify-center px-6 text-center text-sm text-subtle">
-        Statistics will appear here after successful validation.
-      </div>
-    );
+    return <EmptyPane>Statistics will appear here after successful validation.</EmptyPane>;
   }
   const cards = toCards(stats);
   return (

@@ -1,6 +1,5 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { FormatterApp } from "@components/formatter/FormatterApp";
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
 
 const title = "JSON to TypeScript Type Generator - Generate TS Interfaces Pro";
 const description =
@@ -28,21 +27,17 @@ const faqs = [
 ];
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} path="/json-to-typescript" customFaq={faqs}>
-  <section class="mx-auto max-w-[1400px] px-4 pt-6">
-    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Type Generator</p>
-    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON to TypeScript Type & Interface Generator Pro</h1>
-    <p class="mt-1 max-w-2xl text-sm text-subtle">Automatically infer strong TypeScript interfaces and type declarations from sample JSON API responses.</p>
-  </section>
-
-  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
-    <div class="card h-full overflow-hidden shadow-pop">
-      <FormatterApp client:only="react" initialMode="typescript" />
-    </div>
-  </section>
-
-  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
-    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-to-typescript"
+  eyebrow="Type Generator"
+  heading="JSON to TypeScript Type & Interface Generator Pro"
+  subtitle="Automatically infer strong TypeScript interfaces and type declarations from sample JSON API responses."
+  mode="typescript"
+  faqs={faqs}
+>
       <h2 class="text-xl font-bold text-fg">Complete Guide to Generating TypeScript Interfaces from JSON</h2>
       <p>
         In modern full-stack web development, <strong>TypeScript</strong> provides indispensable type safety. However, when connecting frontend applications (React, Next.js, Vue, Svelte) to third-party REST or GraphQL APIs, developers often spend hours writing repetitive `interface` and `type` definitions by hand.
@@ -77,21 +72,5 @@ const faqs = [
           <p class="text-xs">Your proprietary API data and data models remain completely private within your local browser runtime.</p>
         </div>
       </div>
-    </article>
-
-    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
-      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
-      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
-        {faqs.map((item) => (
-          <details class="group">
-            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
-              <span>{item.q}</span>
-              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
-            </summary>
-            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
-          </details>
-        ))}
-      </div>
-    </section>
-  </section>
-</BaseLayout>
+    
+</ToolPageLayout>

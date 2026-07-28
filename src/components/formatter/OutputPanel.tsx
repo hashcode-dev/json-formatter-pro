@@ -35,7 +35,8 @@ const TOOL_TABS: Array<TabDef<ToolMode> & { group: string; hint: string }> = [
   { id: 'jwt', label: 'JWT Inspector', tag: 'SECURITY', group: 'Security', hint: 'Decode header & claims' },
 ];
 
-const TOOL_GROUPS = ['Converters', 'Types & Spec', 'Security'];
+/** Derived so a new tool tab cannot introduce a group the menu forgets to render. */
+const TOOL_GROUPS = [...new Set(TOOL_TABS.map((t) => t.group))];
 
 export function OutputPanel({ mode, activeTool, onModeChange, onCloseTool, children }: Props): JSX.Element {
   const toolTab = TOOL_TABS.find((t) => t.id === activeTool);

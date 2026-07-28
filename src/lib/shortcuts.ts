@@ -6,34 +6,45 @@ export interface Shortcut {
   group: 'file' | 'edit' | 'view' | 'help';
 }
 
-const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+export const isMac =
+  typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
 export const modKey = isMac ? '⌘' : 'Ctrl';
 
 const mod = (e: KeyboardEvent) => (isMac ? e.metaKey : e.ctrlKey);
+
+/** Mod+Shift+<letter>, matching either case as the browser reports it. */
+const modShift =
+  (letter: string) =>
+  (e: KeyboardEvent): boolean =>
+    mod(e) && e.shiftKey && e.key.toLowerCase() === letter.toLowerCase();
+
+/** A bare digit, ignored while the caret is in an editor or form field. */
+const bareKey =
+  (key: string) =>
+  (e: KeyboardEvent): boolean =>
+    !mod(e) && !e.altKey && e.key === key && !isTypingTarget(e);
 
 export const SHORTCUTS: Shortcut[] = [
   { id: 'format', label: 'Format / Beautify', keys: `${modKey} ⏎`, group: 'edit',
     keyMatcher: (e) => mod(e) && e.key === 'Enter' },
   { id: 'minify', label: 'Minify', keys: `${modKey} ⇧ M`, group: 'edit',
-    keyMatcher: (e) => mod(e) && e.shiftKey && (e.key === 'M' || e.key === 'm') },
+    keyMatcher: modShift('m') },
   { id: 'copy', label: 'Copy output', keys: `${modKey} ⇧ C`, group: 'file',
-    keyMatcher: (e) => mod(e) && e.shiftKey && (e.key === 'C' || e.key === 'c') },
+    keyMatcher: modShift('c') },
   { id: 'download', label: 'Download', keys: `${modKey} ⇧ S`, group: 'file',
-    keyMatcher: (e) => mod(e) && e.shiftKey && (e.key === 'S' || e.key === 's') },
+    keyMatcher: modShift('s') },
   { id: 'clear', label: 'Clear editor', keys: `${modKey} ⇧ ⌫`, group: 'edit',
     keyMatcher: (e) => mod(e) && e.shiftKey && (e.key === 'Backspace' || e.key === 'Delete') },
   { id: 'palette', label: 'Command palette', keys: `${modKey} K`, group: 'view',
-    keyMatcher: (e) => mod(e) && (e.key === 'k' || e.key === 'K') },
+    keyMatcher: (e) => mod(e) && e.key.toLowerCase() === 'k' },
   { id: 'help', label: 'Keyboard shortcuts', keys: `${modKey} /`, group: 'help',
     keyMatcher: (e) => mod(e) && e.key === '/' },
   { id: 'tab-formatted', label: 'Show Formatted', keys: '1', group: 'view',
-    keyMatcher: (e) => !mod(e) && !e.altKey && e.key === '1' && !isTypingTarget(e) },
+    keyMatcher: bareKey('1') },
   { id: 'tab-tree', label: 'Show Tree', keys: '2', group: 'view',
-    keyMatcher: (e) => !mod(e) && !e.altKey && e.key === '2' && !isTypingTarget(e) },
-  { id: 'tab-diff', label: 'Show Diff', keys: '3', group: 'view',
-    keyMatcher: (e) => !mod(e) && !e.altKey && e.key === '3' && !isTypingTarget(e) },
+    keyMatcher: bareKey('2') },
   { id: 'tab-stats', label: 'Show Stats', keys: '4', group: 'view',
-    keyMatcher: (e) => !mod(e) && !e.altKey && e.key === '4' && !isTypingTarget(e) },
+    keyMatcher: bareKey('4') },
 ];
 
 function isTypingTarget(e: KeyboardEvent): boolean {

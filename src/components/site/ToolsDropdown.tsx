@@ -55,7 +55,6 @@ const CATEGORIES: Category[] = [
 export const ToolsDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -68,7 +67,7 @@ export const ToolsDropdown: React.FC = () => {
     }, 150);
   };
 
-  const handleToolClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, mode: string) => {
+  const handleToolClick = (href: string, mode: string) => {
     setIsOpen(false);
     // If on the root page or current tool page, dispatch event for instantaneous mode switch
     if (window.location.pathname === href || window.location.pathname === '/') {
@@ -86,7 +85,6 @@ export const ToolsDropdown: React.FC = () => {
 
   return (
     <div
-      ref={dropdownRef}
       className="relative inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -111,7 +109,7 @@ export const ToolsDropdown: React.FC = () => {
 
       {isOpen && (
         <div
-          className="absolute left-0 top-full z-50 mt-1 w-[720px] max-w-[90vw] rounded-xl border border-border bg-surface/95 p-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-2 duration-150"
+          className="absolute left-0 top-full z-50 mt-1 w-[720px] max-w-[90vw] rounded-xl border border-border bg-surface/95 p-4 shadow-2xl backdrop-blur-md animate-slide-up"
           role="menu"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -126,7 +124,7 @@ export const ToolsDropdown: React.FC = () => {
                     <a
                       key={item.name}
                       href={item.href}
-                      onClick={(e) => handleToolClick(e, item.href, item.mode)}
+                      onClick={() => handleToolClick(item.href, item.mode)}
                       className="group flex w-full flex-col gap-0.5 rounded-lg px-2 py-1.5 text-left hover:bg-muted/80 transition-colors"
                       role="menuitem"
                     >

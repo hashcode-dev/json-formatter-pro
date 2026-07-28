@@ -18,7 +18,6 @@ export function useThemeSync(): void {
     };
     apply();
 
-    // Only set up media query listener for auto theme
     if (theme !== 'auto' || typeof window === 'undefined') {
       return;
     }
@@ -26,8 +25,6 @@ export function useThemeSync(): void {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const listener = () => apply();
     mq.addEventListener('change', listener);
-
-    // Clean up listener when theme changes
     return () => mq.removeEventListener('change', listener);
   }, [theme]);
 }

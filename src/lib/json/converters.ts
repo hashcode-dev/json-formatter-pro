@@ -1,8 +1,6 @@
 import type { JsonValue } from './types';
+import { isPlainObject } from './transforms';
 
-/**
- * Converts a JSON value to YAML format.
- */
 export function jsonToYaml(val: JsonValue, indentLevel = 0): string {
   const indent = '  '.repeat(indentLevel);
   if (val === null) return 'null';
@@ -19,7 +17,7 @@ export function jsonToYaml(val: JsonValue, indentLevel = 0): string {
     if (val.length === 0) return '[]';
     return val
       .map((item) => {
-        if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+        if (isPlainObject(item)) {
           const itemYaml = jsonToYaml(item, indentLevel + 1).trimStart();
           return `${indent}- ${itemYaml}`;
         }
@@ -52,9 +50,6 @@ export function jsonToYaml(val: JsonValue, indentLevel = 0): string {
   return String(val);
 }
 
-/**
- * Converts a JSON value to XML format.
- */
 export function jsonToXml(val: JsonValue, rootName = 'root'): string {
   function escapeXml(str: string): string {
     return str
@@ -89,23 +84,20 @@ export function jsonToXml(val: JsonValue, rootName = 'root'): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n${toXmlNode(val, rootName)}`;
 }
 
-/**
- * Converts a JSON array of objects to CSV format.
- */
+/** Requires an object or an array of objects; anything else has no tabular form. */
 export function jsonToCsv(val: JsonValue): string {
-  let rows: Record<string, unknown>[] = [];
+  let rows: Record<string, JsonValue>[] = [];
 
   if (Array.isArray(val)) {
-    rows = val.filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null && !Array.isArray(item));
-  } else if (typeof val === 'object' && val !== null) {
-    rows = [val as Record<string, unknown>];
+    rows = val.filter(isPlainObject);
+  } else if (isPlainObject(val)) {
+    rows = [val];
   }
 
   if (rows.length === 0) {
     return 'No tabular data found (JSON must be an object or array of objects)';
   }
 
-  // Gather all unique keys across rows
   const headersSet = new Set<string>();
   rows.forEach((r) => Object.keys(r).forEach((k) => headersSet.add(k)));
   const headers = Array.from(headersSet);
@@ -125,9 +117,6 @@ export function jsonToCsv(val: JsonValue): string {
   return [headerLine, ...rowLines].join('\n');
 }
 
-/**
- * Converts JSON structure into TypeScript Interface declarations.
- */
 export function jsonToTypeScript(val: JsonValue, rootName = 'Root'): string {
   const interfaces: string[] = [];
 
@@ -167,9 +156,6 @@ export function jsonToTypeScript(val: JsonValue, rootName = 'Root'): string {
   return interfaces.reverse().join('\n\n');
 }
 
-/**
- * Generates a JSON Schema (Draft-07) from a JSON value.
- */
 export function jsonToJsonSchema(val: JsonValue): string {
   function generateSchema(node: JsonValue): Record<string, unknown> {
     if (node === null) return { type: 'null' };
