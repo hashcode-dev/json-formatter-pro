@@ -9,7 +9,6 @@ export interface PaletteCommand {
   hint?: string;
   keys?: string;
   run: () => void;
-  keywords?: string;
 }
 
 interface Props {
@@ -32,7 +31,7 @@ export function CommandPalette({ open, onClose, commands }: Props): JSX.Element 
     const q = query.trim().toLowerCase();
     if (!q) return withKeys;
     return withKeys.filter((c) =>
-      `${c.label} ${c.hint ?? ''} ${c.keywords ?? ''}`.toLowerCase().includes(q),
+      `${c.label} ${c.hint ?? ''}`.toLowerCase().includes(q),
     );
   }, [withKeys, query]);
 
@@ -70,18 +69,13 @@ export function CommandPalette({ open, onClose, commands }: Props): JSX.Element 
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-[10vh] backdrop-blur-sm animate-fade-in"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Command palette"
-      onClick={onClose}
+    <ModalShell
+      label="Command palette"
+      align="top"
+      width="max-w-lg"
+      onClose={onClose}
       onKeyDown={handleKey}
     >
-      <div
-        className="w-full max-w-lg overflow-hidden rounded-xl border border-border bg-elevated shadow-pop animate-slide-up"
-        onClick={(e) => e.stopPropagation()}
-      >
         <div className="flex items-center gap-2 border-b border-border px-3">
           <SearchIcon className="h-4 w-4 text-subtle" />
           <input
@@ -121,8 +115,7 @@ export function CommandPalette({ open, onClose, commands }: Props): JSX.Element 
             </li>
           ))}
         </ul>
-      </div>
-    </div>
+    </ModalShell>
   );
 }
 
@@ -135,17 +128,7 @@ export function HelpSheet({ open, onClose }: { open: boolean; onClose: () => voi
     { title: 'Help', group: 'help' },
   ];
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-fade-in"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Keyboard shortcuts"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-elevated shadow-pop animate-slide-up"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <ModalShell label="Keyboard shortcuts" align="center" width="max-w-xl" onClose={onClose}>
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <h2 className="text-sm font-semibold">Keyboard shortcuts</h2>
           <button type="button" onClick={onClose} className="btn-icon" aria-label="Close">×</button>
@@ -165,6 +148,49 @@ export function HelpSheet({ open, onClose }: { open: boolean; onClose: () => voi
             </div>
           ))}
         </div>
+    </ModalShell>
+  );
+}
+
+/**
+ * Backdrop + centred panel shared by the palette and the help sheet. Alignment,
+ * width and accessible name differ per dialog and stay parameterized.
+ */
+function ModalShell({
+  label,
+  align,
+  width,
+  onClose,
+  onKeyDown,
+  children,
+}: {
+  label: string;
+  align: 'top' | 'center';
+  width: string;
+  onClose: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+  children: React.ReactNode;
+}): JSX.Element {
+  return (
+    <div
+      className={clsx(
+        'fixed inset-0 z-50 flex justify-center bg-black/40 p-4 backdrop-blur-sm animate-fade-in',
+        align === 'top' ? 'items-start pt-[10vh]' : 'items-center',
+      )}
+      role="dialog"
+      aria-modal="true"
+      aria-label={label}
+      onClick={onClose}
+      onKeyDown={onKeyDown}
+    >
+      <div
+        className={clsx(
+          'w-full overflow-hidden rounded-xl border border-border bg-elevated shadow-pop animate-slide-up',
+          width,
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
       </div>
     </div>
   );

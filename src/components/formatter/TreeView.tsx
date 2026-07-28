@@ -3,11 +3,11 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { clsx } from 'clsx';
 import { ChevronDownIcon, ChevronRightIcon, SearchIcon } from './icons';
 import type { JsonValue } from '@lib/json/types';
+import { EmptyPane } from './EmptyPane';
 
 type NodeKind = 'object' | 'array' | 'string' | 'number' | 'boolean' | 'null';
 
 interface FlatRow {
-  id: string;
   depth: number;
   key: string | number | null;
   kind: NodeKind;
@@ -27,44 +27,49 @@ function typeOf(v: JsonValue): NodeKind {
   return 'object';
 }
 
+function childCount(kind: NodeKind, value: JsonValue): number {
+  if (kind === 'array') return (value as unknown[]).length;
+  if (kind === 'object') return Object.keys(value as object).length;
+  return 0;
+}
+
+/**
+ * Visit each child of a container, building its path. Callers decide whether to
+ * descend further, which is why the two walkers below can share this.
+ */
+function eachChild(
+  value: JsonValue,
+  kind: NodeKind,
+  path: string,
+  visit: (child: JsonValue, key: string | number, childPath: string) => void,
+): void {
+  if (kind === 'array') {
+    (value as JsonValue[]).forEach((child, i) => visit(child, i, `${path}[${i}]`));
+  } else if (kind === 'object') {
+    for (const [k, v] of Object.entries(value as Record<string, JsonValue>)) {
+      visit(v, k, `${path}.${k}`);
+    }
+  }
+}
+
 function flatten(root: JsonValue, expanded: Set<string>): FlatRow[] {
   const rows: FlatRow[] = [];
   const visit = (
     value: JsonValue,
     key: string | number | null,
     depth: number,
-    path: string,
+    rawPath: string,
   ): void => {
     const kind = typeOf(value);
-    const hasChildren =
-      (kind === 'object' && Object.keys(value as object).length > 0) ||
-      (kind === 'array' && (value as unknown[]).length > 0);
-    const childrenCount =
-      kind === 'object'
-        ? Object.keys(value as object).length
-        : kind === 'array'
-          ? (value as unknown[]).length
-          : 0;
-    rows.push({
-      id: path || '$',
-      depth,
-      key,
-      kind,
-      value,
-      childrenCount,
-      hasChildren,
-      path: path || '$',
-    });
-    if (!hasChildren) return;
-    const p = path || '$';
-    if (!expanded.has(p)) return;
-    if (kind === 'array') {
-      (value as JsonValue[]).forEach((child, i) => visit(child, i, depth + 1, `${p}[${i}]`));
-    } else {
-      for (const [k, v] of Object.entries(value as Record<string, JsonValue>)) {
-        visit(v, k, depth + 1, `${p}.${k}`);
-      }
-    }
+    const path = rawPath || '$';
+    const childrenCount = childCount(kind, value);
+    const hasChildren = childrenCount > 0;
+    rows.push({ depth, key, kind, value, childrenCount, hasChildren, path });
+    // Descend only into containers the user has expanded.
+    if (!hasChildren || !expanded.has(path)) return;
+    eachChild(value, kind, path, (child, k, childPath) =>
+      visit(child, k, depth + 1, childPath),
+    );
   };
   visit(root, null, 0, '');
   return rows;
@@ -132,15 +137,11 @@ export function TreeView({ root }: Props): JSX.Element {
   const expandAll = (): void => {
     if (!root) return;
     const all = new Set<string>();
-    const walk = (v: JsonValue, path: string): void => {
+    const walk = (v: JsonValue, rawPath: string): void => {
       const kind = typeOf(v);
-      const p = path || '$';
-      if (kind === 'object' || kind === 'array') all.add(p);
-      if (kind === 'array') {
-        (v as JsonValue[]).forEach((c, i) => walk(c, `${p}[${i}]`));
-      } else if (kind === 'object') {
-        for (const [k, val] of Object.entries(v as Record<string, JsonValue>)) walk(val, `${p}.${k}`);
-      }
+      const path = rawPath || '$';
+      if (kind === 'object' || kind === 'array') all.add(path);
+      eachChild(v, kind, path, (child, _k, childPath) => walk(child, childPath));
     };
     walk(root, '');
     setExpanded(all);
@@ -149,11 +150,7 @@ export function TreeView({ root }: Props): JSX.Element {
   const collapseAll = (): void => setExpanded(new Set(['$']));
 
   if (!root) {
-    return (
-      <div className="flex h-full items-center justify-center px-6 text-center text-sm text-subtle">
-        Enter valid JSON to explore the tree.
-      </div>
-    );
+    return <EmptyPane>Enter valid JSON to explore the tree.</EmptyPane>;
   }
 
   return (
@@ -191,7 +188,7 @@ export function TreeView({ root }: Props): JSX.Element {
             if (!row) return null;
             return (
               <TreeRow
-                key={row.id}
+                key={row.path}
                 row={row}
                 style={{
                   position: 'absolute',

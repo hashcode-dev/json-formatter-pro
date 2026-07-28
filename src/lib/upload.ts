@@ -1,3 +1,5 @@
+import { formatBytes } from './format-bytes';
+
 export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 export const SOFT_WARN_BYTES = 5 * 1024 * 1024;
 const ALLOWED_MIME = new Set(['application/json', 'text/plain', 'text/json', '']);
@@ -21,7 +23,7 @@ export async function readTextFile(file: File): Promise<UploadResult | UploadFai
     return {
       ok: false,
       reason: 'too-large',
-      message: `File exceeds the 50 MB limit (${(file.size / 1_000_000).toFixed(1)} MB).`,
+      message: `File exceeds the 50 MB limit (${formatBytes(file.size)}).`,
     };
   }
   const typeOk = ALLOWED_MIME.has(file.type) || ALLOWED_EXT.test(file.name);

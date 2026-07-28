@@ -1,5 +1,6 @@
 ---
 import faqData from "@/content/faq.json";
+import { SITE_URL } from "@lib/site";
 
 interface Props {
   includeFaq?: boolean;
@@ -9,8 +10,7 @@ interface Props {
 }
 const { includeFaq = false, customFaq, path = "/", pageTitle } = Astro.props;
 
-const siteUrl =
-  import.meta.env.PUBLIC_SITE_URL ?? "https://www.formatjson.in";
+const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? SITE_URL;
 
 const webApp = {
   "@context": "https://schema.org",
@@ -58,7 +58,6 @@ const faq = effectiveFaqData
     }
   : null;
 
-// BreadcrumbList JSON-LD — build from the current page path
 const segments = path.replace(/^\/|\/$/g, "").split("/").filter(Boolean);
 const breadcrumbItems = [
   { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },

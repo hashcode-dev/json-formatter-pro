@@ -3,9 +3,14 @@
 
 interface ImportMetaEnv {
   readonly PUBLIC_SITE_URL: string;
-  readonly PUBLIC_ANALYTICS?: string;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+interface Window {
+  /** Set by BaseLayout's Consent Mode initializer; queues into window.dataLayer. */
+  gtag?: (...args: unknown[]) => void;
+  dataLayer?: unknown[];
 }

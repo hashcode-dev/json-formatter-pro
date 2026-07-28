@@ -4,9 +4,10 @@ import { useJsonWorker } from '@hooks/useWorker';
 import { useDebouncedEffect } from '@hooks/useDebouncedEffect';
 import { useHotkeys } from '@hooks/useHotkeys';
 import { useThemeSync } from '@hooks/useTheme';
-import { copyToClipboard } from '@lib/clipboard';
+import { useCopyWithToast } from '@hooks/useCopyWithToast';
 import { downloadText } from '@lib/download';
 import { readTextFile, SOFT_WARN_BYTES } from '@lib/upload';
+import { formatBytes } from '@lib/format-bytes';
 import type { WorkerRequest, WorkerResponse } from '@workers/protocol';
 import { Toolbar } from './Toolbar';
 import { EditorPane } from './EditorPane';
@@ -17,7 +18,7 @@ import { StatsPanel } from './StatsPanel';
 import { StatusBar } from './StatusBar';
 import { Toaster } from './Toaster';
 import { CommandPalette, HelpSheet, type PaletteCommand } from './CommandPalette';
-import { ConvertersPane } from '@components/tools/ConvertersPane';
+import { ConvertersPane, isConverterMode } from '@components/tools/ConvertersPane';
 import { JwtInspector } from '@components/tools/JwtInspector';
 
 const SAMPLE = `{
@@ -35,6 +36,18 @@ const SAMPLE = `{
   }
 }`;
 
+/** Text the Copy and Download actions operate on. */
+function readOutputText(): string {
+  const { formatted, input } = useStore.getState();
+  return formatted || input;
+}
+
+/** Raw input, or null when there is nothing worth acting on. */
+function readInput(): string | null {
+  const raw = useStore.getState().input;
+  return raw.trim().length === 0 ? null : raw;
+}
+
 interface FormatterAppProps {
   initialMode?: OutputMode;
 }
@@ -50,6 +63,8 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
     pushToast, clear,
   } = useStore();
 
+  const copyWithToast = useCopyWithToast();
+
   useEffect(() => {
     if (initialMode) {
       initMode(initialMode);
@@ -58,6 +73,13 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
 
   const nextId = useRef(1);
   const lastRequestId = useRef(0);
+
+  /** Claim the next request id and mark it as the only one worth rendering. */
+  const nextRequestId = useCallback((): number => {
+    const id = ++nextId.current;
+    lastRequestId.current = id;
+    return id;
+  }, []);
 
   const onWorkerMessage = useCallback((msg: WorkerResponse) => {
     if (msg.id !== lastRequestId.current) return;
@@ -91,8 +113,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   const worker = useJsonWorker(onWorkerMessage);
 
   const sendProcess = useCallback(() => {
-    const id = ++nextId.current;
-    lastRequestId.current = id;
+    const id = nextRequestId();
     const raw = useStore.getState().input;
     const opts = useStore.getState().options;
     if (raw.trim().length === 0) {
@@ -106,20 +127,17 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
     setStatus('parsing');
     const req: WorkerRequest = { id, kind: 'process', raw, options: opts };
     worker.send(req);
-  }, [worker, setFormatted, setValue, setStats, setError, setStatus]);
+  }, [worker, nextRequestId, setFormatted, setValue, setStats, setError, setStatus]);
 
-  // Auto-parse on input / option changes (debounced).
   useDebouncedEffect(sendProcess, [input, options], 160);
 
-  // Seed sample on very first load
   useEffect(() => {
-    const state = useStore.getState();
-    if (state.input === '') {
+    if (useStore.getState().input === '') {
       setInput(SAMPLE);
     }
   }, [setInput]);
 
-  // Listen for tool select events from Header Tools Dropdown
+  // Listen for tool select events from the Header's Tools dropdown.
   useEffect(() => {
     const handleToolSelect = (e: Event) => {
       const customEvent = e as CustomEvent<{ mode: OutputMode }>;
@@ -132,33 +150,29 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   }, [setMode]);
 
   const doFormat = useCallback(() => {
-    const raw = useStore.getState().input;
-    if (raw.trim().length === 0) return;
+    if (readInput() === null) return;
     sendProcess();
     setMode('formatted');
   }, [sendProcess, setMode]);
 
   const doMinify = useCallback(() => {
-    const raw = useStore.getState().input;
-    if (raw.trim().length === 0) return;
-    const id = ++nextId.current;
-    lastRequestId.current = id;
-    worker.send({ id, kind: 'minify', raw });
+    const raw = readInput();
+    if (raw === null) return;
+    worker.send({ id: nextRequestId(), kind: 'minify', raw });
     setMode('formatted');
-  }, [worker, setMode]);
+  }, [worker, nextRequestId, setMode]);
 
   const doCopy = useCallback(async () => {
-    const text = useStore.getState().formatted || useStore.getState().input;
+    const text = readOutputText();
     if (!text) return;
-    const ok = await copyToClipboard(text);
-    pushToast({
-      kind: ok ? 'success' : 'error',
-      message: ok ? 'Copied to clipboard.' : 'Copy failed.',
+    await copyWithToast(text, {
+      success: 'Copied to clipboard.',
+      error: 'Copy failed.',
     });
-  }, [pushToast]);
+  }, [copyWithToast]);
 
   const doDownload = useCallback(() => {
-    const text = useStore.getState().formatted || useStore.getState().input;
+    const text = readOutputText();
     if (!text) return;
     downloadText('formatted.json', text);
     pushToast({ kind: 'success', message: 'Download started.' });
@@ -167,7 +181,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   const doUpload = useCallback(async (file: File) => {
     if (file.size > SOFT_WARN_BYTES) {
       const proceed = window.confirm(
-        `This file is ${(file.size / 1_000_000).toFixed(1)} MB. Large files may briefly freeze the UI. Continue?`,
+        `This file is ${formatBytes(file.size)}. Large files may briefly freeze the UI. Continue?`,
       );
       if (!proceed) return;
     }
@@ -192,7 +206,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
     () => [
       { id: 'format', label: 'Format / Beautify', run: doFormat, hint: 'Pretty-print the JSON' },
       { id: 'minify', label: 'Minify', run: doMinify },
-      { id: 'copy', label: 'Copy output', run: doCopy },
+      { id: 'copy', label: 'Copy output', run: () => void doCopy() },
       { id: 'download', label: 'Download JSON', run: doDownload },
       { id: 'clear', label: 'Clear editor', run: doClear },
       { id: 'tab-formatted', label: 'Show Formatted view', run: () => setMode('formatted') },
@@ -215,20 +229,28 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
     [doFormat, doMinify, doCopy, doDownload, doClear, setMode, setOptions, options.sortKeys, options.stripNull, options.stripEmpty, toggleHelp],
   );
 
-  useHotkeys((id) => {
-    switch (id) {
-      case 'format': return doFormat();
-      case 'minify': return doMinify();
-      case 'copy': return void doCopy();
-      case 'download': return doDownload();
-      case 'clear': return doClear();
-      case 'palette': return togglePalette(true);
-      case 'help': return toggleHelp(true);
-      case 'tab-formatted': return setMode('formatted');
-      case 'tab-tree': return setMode('tree');
-      case 'tab-stats': return setMode('stats');
-    }
-  });
+  /**
+   * Hotkeys reuse the palette's actions by id. `palette` is handled separately
+   * because it is deliberately not a palette entry — listing it would show a
+   * "Command palette" row inside the palette itself.
+   */
+  const runById = useMemo(
+    () => new Map(commands.map((c) => [c.id, c.run])),
+    [commands],
+  );
+
+  useHotkeys(
+    useCallback(
+      (id) => {
+        if (id === 'palette') {
+          togglePalette(true);
+          return;
+        }
+        runById.get(id)?.();
+      },
+      [runById, togglePalette],
+    ),
+  );
 
   const canAct = input.trim().length > 0;
 
@@ -288,9 +310,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
             )}
             {mode === 'tree' && <TreeView root={value} />}
             {mode === 'stats' && <StatsPanel stats={stats} />}
-            {(mode === 'yaml' || mode === 'xml' || mode === 'csv' || mode === 'typescript' || mode === 'schema') && (
-              <ConvertersPane type={mode} />
-            )}
+            {isConverterMode(mode) && <ConvertersPane type={mode} />}
             {mode === 'jwt' && <JwtInspector />}
           </OutputPanel>
         </section>

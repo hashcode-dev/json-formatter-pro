@@ -1,6 +1,5 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { FormatterApp } from "@components/formatter/FormatterApp";
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
 
 const title = "Online JSON Formatter & Beautifier Pro - Free & Private";
 const description =
@@ -28,21 +27,17 @@ const faqs = [
 ];
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} path="/json-formatter" customFaq={faqs}>
-  <section class="mx-auto max-w-[1400px] px-4 pt-6">
-    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Formatter & Beautifier</p>
-    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Online JSON Formatter & Beautifier Pro</h1>
-    <p class="mt-1 max-w-2xl text-sm text-subtle">Pretty print, format, and validate JSON payloads with 100% client-side privacy, custom indents, and instant AST diagnostics.</p>
-  </section>
-
-  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
-    <div class="card h-full overflow-hidden shadow-pop">
-      <FormatterApp client:only="react" initialMode="formatted" />
-    </div>
-  </section>
-
-  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
-    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-formatter"
+  eyebrow="Formatter & Beautifier"
+  heading="Online JSON Formatter & Beautifier Pro"
+  subtitle="Pretty print, format, and validate JSON payloads with 100% client-side privacy, custom indents, and instant AST diagnostics."
+  mode="formatted"
+  faqs={faqs}
+>
       <h2 class="text-xl font-bold text-fg">Comprehensive Guide to Online JSON Formatting & Beautification</h2>
       <p>
         JSON (JavaScript Object Notation) is the standard data interchange format powering modern web APIs, microservices, database storage (MongoDB, PostgreSQL JSONB), and application configuration files. However, raw JSON stringified from network responses is often compressed into single unreadable lines. 
@@ -78,21 +73,5 @@ const faqs = [
           <p class="text-xs">Explore deep objects with high-speed depth-first virtualized tree rendering, key frequency metrics, and payload size measurements.</p>
         </div>
       </div>
-    </article>
-
-    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
-      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
-      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
-        {faqs.map((item) => (
-          <details class="group">
-            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
-              <span>{item.q}</span>
-              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
-            </summary>
-            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
-          </details>
-        ))}
-      </div>
-    </section>
-  </section>
-</BaseLayout>
+    
+</ToolPageLayout>

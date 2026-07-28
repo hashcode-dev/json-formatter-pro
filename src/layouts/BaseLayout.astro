@@ -5,6 +5,8 @@ import StructuredData from "@components/seo/StructuredData.astro";
 import Header from "@components/site/Header.astro";
 import Footer from "@components/site/Footer.astro";
 import { CookieConsent } from "@components/site/CookieConsent";
+import { COOKIE_CONSENT_KEY } from "@lib/site";
+import { STORE_KEY } from "@store/index";
 
 interface Props {
   title: string;
@@ -12,19 +14,13 @@ interface Props {
   path?: string;
   includeFaq?: boolean;
   customFaq?: Array<{ q: string; a: string }>;
-  fullHeight?: boolean;
   keywords?: string;
 }
 
-const {
-  title,
-  description,
-  path,
-  includeFaq = false,
-  customFaq,
-  fullHeight = false,
-  keywords,
-} = Astro.props;
+const { title, description, path, includeFaq = false, customFaq, keywords } =
+  Astro.props;
+
+const GA_ID = "G-TKJSHMQD3E";
 ---
 
 <!doctype html>
@@ -35,37 +31,32 @@ const {
       data-cfasync="false"
       async></script>
     <script>
-      (function (s) {
-        ((s.dataset.zone = "11420357"),
-          (s.src = "https://n6wxm.com/vignette.min.js"));
-      })(
-        [document.documentElement, document.body]
+      const AD_ZONES = [
+        { zone: "11420357", src: "https://n6wxm.com/vignette.min.js" },
+        { zone: "11420378", src: "https://nap5k.com/tag.min.js" },
+      ];
+      for (const { zone, src } of AD_ZONES) {
+        const host = [document.documentElement, document.body]
           .filter(Boolean)
-          .pop()!
-          .appendChild(document.createElement("script")),
-      );
+          .pop()!;
+        const el = host.appendChild(document.createElement("script"));
+        el.dataset.zone = zone;
+        el.src = src;
+      }
     </script>
-    <script>
-      (function (s) {
-        ((s.dataset.zone = "11420378"),
-          (s.src = "https://nap5k.com/tag.min.js"));
-      })(
-        [document.documentElement, document.body]
-          .filter(Boolean)
-          .pop()!
-          .appendChild(document.createElement("script")),
-      );
-    </script>
-    <script is:inline>
+    <script is:inline define:vars={{ consentKey: COOKIE_CONSENT_KEY, gaId: GA_ID }}>
       // Google Consent Mode v2 Initializer
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
+      // Assigned onto window explicitly: `define:vars` wraps this script in an
+      // IIFE, so a bare function declaration would not become global, and
+      // CookieConsent calls window.gtag to push the consent update.
+      window.gtag = function gtag() {
         dataLayer.push(arguments);
-      }
+      };
 
       var savedConsent =
         typeof localStorage !== "undefined"
-          ? localStorage.getItem("cookie-consent")
+          ? localStorage.getItem(consentKey)
           : null;
       var isGranted = savedConsent === "granted" || savedConsent === "accepted";
 
@@ -76,6 +67,9 @@ const {
         analytics_storage: isGranted ? "granted" : "denied",
         wait_for_update: 500,
       });
+
+      gtag("js", new Date());
+      gtag("config", gaId);
     </script>
     <meta charset="UTF-8" />
     <Meta
@@ -90,18 +84,14 @@ const {
       path={path}
       pageTitle={title}
     />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TKJSHMQD3E"
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
     ></script>
-    <script is:inline>
+    <script is:inline define:vars={{ storeKey: STORE_KEY }}>
       // Set theme early to avoid FOUC.
       (function () {
         try {
-          var stored = JSON.parse(
-            localStorage.getItem("json-formatter-pro") || "{}",
-          );
+          var stored = JSON.parse(localStorage.getItem(storeKey) || "{}");
           var pref = stored.state && stored.state.theme;
-          // Validate theme is one of the valid values
           if (pref !== "light" && pref !== "dark" && pref !== "auto") {
             pref = undefined;
           }
@@ -120,29 +110,16 @@ const {
             : "light";
         }
       })();
-
-      // Google Analytics
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-TKJSHMQD3E");
     </script>
   </head>
   <body class="min-h-screen bg-bg text-fg antialiased">
     <a class="skip-link" href="#main">Skip to editor</a>
-    <div
-      class:list={[
-        "flex min-h-screen flex-col",
-        fullHeight && "h-screen overflow-hidden",
-      ]}
-    >
+    <div class="flex min-h-screen flex-col">
       <Header />
-      <main id="main" class:list={["flex-1", fullHeight && "min-h-0"]}>
+      <main id="main" class="flex-1">
         <slot />
       </main>
-      {!fullHeight && <Footer />}
+      <Footer />
     </div>
     <CookieConsent client:load />
   </body>

@@ -1,31 +1,7 @@
 import type { JsonValue } from './types';
 
-function isPlainObject(v: unknown): v is Record<string, JsonValue> {
+export function isPlainObject(v: unknown): v is Record<string, JsonValue> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
-
-export function sortKeys(value: JsonValue): JsonValue {
-  if (Array.isArray(value)) return value.map(sortKeys);
-  if (isPlainObject(value)) {
-    const keys = Object.keys(value).sort((a, b) => a.localeCompare(b));
-    const out: Record<string, JsonValue> = {};
-    for (const k of keys) out[k] = sortKeys(value[k] as JsonValue);
-    return out;
-  }
-  return value;
-}
-
-export function stripNulls(value: JsonValue): JsonValue {
-  if (Array.isArray(value)) return value.filter((v) => v !== null).map(stripNulls);
-  if (isPlainObject(value)) {
-    const out: Record<string, JsonValue> = {};
-    for (const [k, v] of Object.entries(value)) {
-      if (v === null) continue;
-      out[k] = stripNulls(v);
-    }
-    return out;
-  }
-  return value;
 }
 
 function isEmpty(value: JsonValue): boolean {
@@ -36,18 +12,53 @@ function isEmpty(value: JsonValue): boolean {
   return false;
 }
 
-export function stripEmpty(value: JsonValue): JsonValue {
+interface TreeRules {
+  /** Reorder an object's own keys before it is rebuilt. */
+  orderKeys?: (keys: string[]) => string[];
+  /**
+   * Drop an array element or object entry. Applied *after* the value has been
+   * mapped, so the predicate sees the transformed value, not the original.
+   */
+  drop?: (mapped: JsonValue) => boolean;
+}
+
+/** Rebuild a JSON tree, optionally reordering object keys and dropping values. */
+function mapTree(value: JsonValue, rules: TreeRules): JsonValue {
+  const recurse = (v: JsonValue): JsonValue => mapTree(v, rules);
+
   if (Array.isArray(value)) {
-    return value.map(stripEmpty).filter((v) => !isEmpty(v));
+    const mapped = value.map(recurse);
+    return rules.drop ? mapped.filter((v) => !rules.drop!(v)) : mapped;
   }
+
   if (isPlainObject(value)) {
+    const keys = rules.orderKeys
+      ? rules.orderKeys(Object.keys(value))
+      : Object.keys(value);
     const out: Record<string, JsonValue> = {};
-    for (const [k, v] of Object.entries(value)) {
-      const next = stripEmpty(v);
-      if (isEmpty(next)) continue;
+    for (const k of keys) {
+      const next = recurse(value[k] as JsonValue);
+      if (rules.drop?.(next)) continue;
       out[k] = next;
     }
     return out;
   }
+
   return value;
+}
+
+export function sortKeys(value: JsonValue): JsonValue {
+  return mapTree(value, { orderKeys: (keys) => keys.sort((a, b) => a.localeCompare(b)) });
+}
+
+/**
+ * Dropping after recursion is equivalent to dropping before it here, because
+ * stripNulls returns null only when its input was already null.
+ */
+export function stripNulls(value: JsonValue): JsonValue {
+  return mapTree(value, { drop: (v) => v === null });
+}
+
+export function stripEmpty(value: JsonValue): JsonValue {
+  return mapTree(value, { drop: isEmpty });
 }

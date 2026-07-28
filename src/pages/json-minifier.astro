@@ -1,6 +1,5 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { FormatterApp } from "@components/formatter/FormatterApp";
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
 
 const title = "JSON Minifier & Payload Compressor - Free Online Tool";
 const description =
@@ -28,21 +27,17 @@ const faqs = [
 ];
 ---
 
-<BaseLayout title={title} description={description} keywords={keywords} path="/json-minifier" customFaq={faqs}>
-  <section class="mx-auto max-w-[1400px] px-4 pt-6">
-    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Minifier & Compressor</p>
-    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON Minifier & Payload Compressor Pro</h1>
-    <p class="mt-1 max-w-2xl text-sm text-subtle">Strip whitespace, tabs, and line breaks to compress JSON payload byte sizes for high-speed HTTP APIs and database storage.</p>
-  </section>
-
-  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
-    <div class="card h-full overflow-hidden shadow-pop">
-      <FormatterApp client:only="react" initialMode="formatted" />
-    </div>
-  </section>
-
-  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
-    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-minifier"
+  eyebrow="Minifier & Compressor"
+  heading="JSON Minifier & Payload Compressor Pro"
+  subtitle="Strip whitespace, tabs, and line breaks to compress JSON payload byte sizes for high-speed HTTP APIs and database storage."
+  mode="formatted"
+  faqs={faqs}
+>
       <h2 class="text-xl font-bold text-fg">Complete Guide to Online JSON Minification & Payload Compression</h2>
       <p>
         In modern web development, microservice architectures, and mobile application backend APIs, network performance is directly impacted by payload size. While human developers need formatted, indented JSON for readability, computer systems prefer compact, single-line JSON data transfers.
@@ -77,21 +72,5 @@ const faqs = [
           <p class="text-xs">Ensures your input is valid RFC 8259 JSON prior to minification, protecting your production pipelines from syntax errors.</p>
         </div>
       </div>
-    </article>
-
-    <section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
-      <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
-      <div class="divide-y divide-border rounded-lg border border-border bg-surface">
-        {faqs.map((item) => (
-          <details class="group">
-            <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
-              <span>{item.q}</span>
-              <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
-            </summary>
-            <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
-          </details>
-        ))}
-      </div>
-    </section>
-  </section>
-</BaseLayout>
+    
+</ToolPageLayout>

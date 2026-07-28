@@ -1,0 +1,52 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { FormatterApp } from "@components/formatter/FormatterApp";
+import FaqAccordion from "@components/site/FaqAccordion.astro";
+import type { OutputMode } from "@store/index";
+
+interface Props {
+  title: string;
+  description: string;
+  keywords: string;
+  path: string;
+  eyebrow: string;
+  heading: string;
+  subtitle: string;
+  mode: OutputMode;
+  faqs: Array<{ q: string; a: string }>;
+}
+
+const {
+  title,
+  description,
+  keywords,
+  path,
+  eyebrow,
+  heading,
+  subtitle,
+  mode,
+  faqs,
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} keywords={keywords} path={path} customFaq={faqs}>
+  <section class="mx-auto max-w-[1400px] px-4 pt-6">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">{eyebrow}</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">{heading}</h1>
+    <p class="mt-1 max-w-2xl text-sm text-subtle">{subtitle}</p>
+  </section>
+
+  <section class="mx-auto mt-4 h-[calc(100vh-14rem)] min-h-[520px] max-w-[1400px] px-2 sm:px-4">
+    <div class="card h-full overflow-hidden shadow-pop">
+      <FormatterApp client:only="react" initialMode={mode} />
+    </div>
+  </section>
+
+  <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <slot />
+    </article>
+
+    <FaqAccordion faqs={faqs} />
+  </section>
+</BaseLayout>

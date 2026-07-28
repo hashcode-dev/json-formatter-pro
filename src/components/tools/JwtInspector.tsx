@@ -1,22 +1,20 @@
 import React, { useMemo } from 'react';
 import { useStore } from '@store/index';
 import { parseJwt } from '@lib/json/jwt';
-import { copyToClipboard } from '@lib/clipboard';
+import { useCopyWithToast } from '@hooks/useCopyWithToast';
 
 export const JwtInspector: React.FC = () => {
   const input = useStore((s) => s.input);
-  const pushToast = useStore((s) => s.pushToast);
+  const copyWithToast = useCopyWithToast();
 
   const result = useMemo(() => parseJwt(input), [input]);
 
-  const handleCopySection = async (data: unknown, title: string) => {
-    const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-    const ok = await copyToClipboard(text);
-    pushToast({
-      kind: ok ? 'success' : 'error',
-      message: ok ? `Copied ${title} to clipboard` : 'Failed to copy',
+  /** `raw` is passed explicitly: a payload can itself decode to a bare string. */
+  const copySection = (raw: string, title: string) =>
+    void copyWithToast(raw, {
+      success: `Copied ${title} to clipboard`,
+      error: 'Failed to copy',
     });
-  };
 
   if (!result.ok) {
     return (
@@ -32,9 +30,12 @@ export const JwtInspector: React.FC = () => {
     );
   }
 
+  const headerJson = JSON.stringify(result.header, null, 2);
+  const payloadJson = JSON.stringify(result.payload, null, 2);
+  const signature = result.signature ?? '';
+
   return (
     <div className="flex h-full flex-col bg-surface overflow-auto p-4 space-y-4">
-      {/* Overview Status Card */}
       <div className="flex items-center justify-between rounded-lg border border-border bg-bg/50 p-3">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-subtle">Status</span>
@@ -56,53 +57,59 @@ export const JwtInspector: React.FC = () => {
         </div>
       </div>
 
-      {/* Header Section */}
-      <div className="rounded-lg border border-border bg-bg/30">
-        <div className="flex items-center justify-between border-b border-border px-3 py-2 text-xs font-medium text-purple-400">
-          <span>HEADER: ALGORITHM & TOKEN TYPE</span>
-          <button
-            onClick={() => handleCopySection(result.header, 'Header')}
-            className="btn-ghost py-0.5 px-2 text-xs"
-          >
-            Copy
-          </button>
-        </div>
+      <Section
+        title="HEADER: ALGORITHM & TOKEN TYPE"
+        titleClass="text-purple-400"
+        onCopy={() => copySection(headerJson, 'Header')}
+      >
         <pre className="p-3 font-mono text-xs text-fg leading-relaxed overflow-x-auto">
-          {JSON.stringify(result.header, null, 2)}
+          {headerJson}
         </pre>
-      </div>
+      </Section>
 
-      {/* Payload Section */}
-      <div className="rounded-lg border border-border bg-bg/30">
-        <div className="flex items-center justify-between border-b border-border px-3 py-2 text-xs font-medium text-blue-400">
-          <span>PAYLOAD: DATA CLAIMS</span>
-          <button
-            onClick={() => handleCopySection(result.payload, 'Payload')}
-            className="btn-ghost py-0.5 px-2 text-xs"
-          >
-            Copy
-          </button>
-        </div>
+      <Section
+        title="PAYLOAD: DATA CLAIMS"
+        titleClass="text-blue-400"
+        onCopy={() => copySection(payloadJson, 'Payload')}
+      >
         <pre className="p-3 font-mono text-xs text-fg leading-relaxed overflow-x-auto">
-          {JSON.stringify(result.payload, null, 2)}
+          {payloadJson}
         </pre>
-      </div>
+      </Section>
 
-      {/* Signature Section */}
-      <div className="rounded-lg border border-border bg-bg/30">
-        <div className="flex items-center justify-between border-b border-border px-3 py-2 text-xs font-medium text-emerald-400">
-          <span>VERIFY SIGNATURE</span>
-          <button
-            onClick={() => handleCopySection(result.signature, 'Signature')}
-            className="btn-ghost py-0.5 px-2 text-xs"
-          >
-            Copy
-          </button>
-        </div>
-        <div className="p-3 font-mono text-xs text-subtle break-all">
-          {result.signature}
-        </div>
-      </div>
+      <Section
+        title="VERIFY SIGNATURE"
+        titleClass="text-emerald-400"
+        onCopy={() => copySection(signature, 'Signature')}
+      >
+        <div className="p-3 font-mono text-xs text-subtle break-all">{signature}</div>
+      </Section>
     </div>
   );
 };
+
+function Section({
+  title,
+  titleClass,
+  onCopy,
+  children,
+}: {
+  title: string;
+  titleClass: string;
+  onCopy: () => void;
+  children: React.ReactNode;
+}): JSX.Element {
+  return (
+    <div className="rounded-lg border border-border bg-bg/30">
+      <div
+        className={`flex items-center justify-between border-b border-border px-3 py-2 text-xs font-medium ${titleClass}`}
+      >
+        <span>{title}</span>
+        <button onClick={onCopy} className="btn-ghost py-0.5 px-2 text-xs">
+          Copy
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}
