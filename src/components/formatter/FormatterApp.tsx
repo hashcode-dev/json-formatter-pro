@@ -321,6 +321,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
         error={error}
         stats={stats}
         indent={options.indent}
+        spec={options.spec}
       />
 
       <CommandPalette
