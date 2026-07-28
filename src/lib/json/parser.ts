@@ -99,5 +99,3 @@ export function parse(raw: string): ParseResult {
   }
   return { ok: true, value: nodeToValue(tree) };
 }
-
-export { offsetToLineColumn };

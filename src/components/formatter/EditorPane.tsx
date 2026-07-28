@@ -2,11 +2,17 @@ import { useEffect, useMemo, useRef } from 'react';
 import { EditorState, StateEffect, StateField } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, highlightActiveLine, Decoration } from '@codemirror/view';
 import type { DecorationSet } from '@codemirror/view';
-import { defaultKeymap, history, historyKeymap, indentWithTab, selectAll } from '@codemirror/commands';
+import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { json as jsonLang } from '@codemirror/lang-json';
 import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
 import type { JsonError } from '@lib/json/types';
+import {
+  selectAllKeymap,
+  selectionHighlightField,
+  useNativeCopySelection,
+  useSyncExternalValue,
+} from './codemirror-shared';
 
 interface Props {
   value: string;
@@ -38,37 +44,10 @@ const errorField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-const selectionHighlight = Decoration.mark({ class: 'cm-selection-highlight' });
-
-const selectionField = StateField.define<DecorationSet>({
-  create(state) {
-    const decorations: ReturnType<typeof Decoration.range>[] = [];
-    for (const range of state.selection.ranges) {
-      if (!range.empty) {
-        decorations.push(selectionHighlight.range(range.from, range.to));
-      }
-    }
-    return Decoration.set(decorations);
-  },
-  update(deco, tr) {
-    const decorations: ReturnType<typeof Decoration.range>[] = [];
-    for (const range of tr.state.selection.ranges) {
-      if (!range.empty) {
-        decorations.push(selectionHighlight.range(range.from, range.to));
-      }
-    }
-    return Decoration.set(decorations);
-  },
-  provide: (f) => EditorView.decorations.from(f),
-});
-
 const baseTheme = EditorView.theme({
-  '&': { height: '100%' },
-  '.cm-content': { caretColor: 'rgb(var(--fg))', padding: '10px 0' },
   '.cm-gutters': { fontSize: '12px' },
   '.cm-lineNumbers .cm-gutterElement': { padding: '0 12px 0 8px' },
   '.cm-placeholder': { color: 'rgb(var(--subtle))', fontStyle: 'italic' },
-  '.cm-selection-highlight': { backgroundColor: '#ADD8E6' },
 });
 
 export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.Element {
@@ -79,13 +58,8 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
   onChangeRef.current = onChange;
   valueRef.current = value;
 
-  const extensions = useMemo(() => {
-    const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
-    const selectAllKeymap = isMac
-      ? [{ key: 'Cmd-a', run: selectAll, preventDefault: true }]
-      : [{ key: 'Ctrl-a', run: selectAll, preventDefault: true }];
-
-    return [
+  const extensions = useMemo(
+    () => [
       lineNumbers(),
       history(),
       indentOnInput(),
@@ -95,7 +69,7 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       jsonLang(),
       errorField,
-      selectionField,
+      selectionHighlightField,
       baseTheme,
       keymap.of([...selectAllKeymap, ...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
       EditorView.updateListener.of((v) => {
@@ -112,8 +86,9 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
         autocapitalize: 'off',
         autocorrect: 'off',
       }),
-    ];
-  }, [ariaLabel]);
+    ],
+    [ariaLabel],
+  );
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -165,38 +140,13 @@ export function EditorPane({ value, onChange, error, ariaLabel }: Props): JSX.El
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Keep external value in sync without stomping user typing.
-  useEffect(() => {
-    const view = viewRef.current;
-    if (!view) return;
-    const current = view.state.doc.toString();
-    if (current === value) return;
-    view.dispatch({ changes: { from: 0, to: current.length, insert: value } });
-  }, [value]);
+  useSyncExternalValue(viewRef, value);
 
-  // Reflect error into a line decoration.
   useEffect(() => {
     viewRef.current?.dispatch({ effects: setErrorEffect.of(error) });
   }, [error]);
 
-  // Handle native copy for selected text
-  useEffect(() => {
-    const handleCopy = (e: ClipboardEvent) => {
-      const view = viewRef.current;
-      if (!view) return;
-      const selection = view.state.selection.main;
-      if (selection.empty) return;
-      const selectedText = view.state.doc.sliceString(selection.from, selection.to);
-      e.clipboardData?.setData('text/plain', selectedText);
-      e.preventDefault();
-    };
-
-    const hostElement = hostRef.current;
-    if (hostElement) {
-      hostElement.addEventListener('copy', handleCopy);
-      return () => hostElement.removeEventListener('copy', handleCopy);
-    }
-  }, []);
+  useNativeCopySelection(hostRef, viewRef);
 
   return (
     <div

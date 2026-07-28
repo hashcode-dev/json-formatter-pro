@@ -87,12 +87,6 @@ export const TreeIcon = (p: P) => (
     <path d="M16 4v16" />
   </Icon>
 );
-export const DiffIcon = (p: P) => (
-  <Icon {...p}>
-    <path d="M8 4v16M16 4v16" />
-    <path d="M8 8h.01M16 12h.01M8 16h.01" />
-  </Icon>
-);
 export const StatsIcon = (p: P) => (
   <Icon {...p}>
     <path d="M4 20V10M10 20V4M16 20v-8M22 20H2" />

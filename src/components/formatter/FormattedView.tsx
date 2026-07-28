@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { EditorState, StateField } from '@codemirror/state';
-import { EditorView, lineNumbers, keymap, Decoration } from '@codemirror/view';
-import type { DecorationSet } from '@codemirror/view';
+import { EditorState } from '@codemirror/state';
+import { EditorView, lineNumbers, keymap } from '@codemirror/view';
 import { json as jsonLang } from '@codemirror/lang-json';
 import { syntaxHighlighting, defaultHighlightStyle, bracketMatching } from '@codemirror/language';
-import { selectAll } from '@codemirror/commands';
+import {
+  selectAllKeymap,
+  selectionHighlightField,
+  useNativeCopySelection,
+  useSyncExternalValue,
+} from './codemirror-shared';
 
 interface Props {
   value: string;
@@ -12,64 +16,29 @@ interface Props {
   emptyLabel: string;
 }
 
-const selectionHighlight = Decoration.mark({ class: 'cm-selection-highlight' });
-
-const selectionField = StateField.define<DecorationSet>({
-  create(state) {
-    const decorations: ReturnType<typeof Decoration.range>[] = [];
-    for (const range of state.selection.ranges) {
-      if (!range.empty) {
-        decorations.push(selectionHighlight.range(range.from, range.to));
-      }
-    }
-    return Decoration.set(decorations);
-  },
-  update(deco, tr) {
-    const decorations: ReturnType<typeof Decoration.range>[] = [];
-    for (const range of tr.state.selection.ranges) {
-      if (!range.empty) {
-        decorations.push(selectionHighlight.range(range.from, range.to));
-      }
-    }
-    return Decoration.set(decorations);
-  },
-  provide: (f) => EditorView.decorations.from(f),
-});
-
-const theme = EditorView.theme({
-  '&': { height: '100%' },
-  '.cm-content': { padding: '10px 0' },
-  '.cm-selection-highlight': { backgroundColor: '#ADD8E6' },
-});
-
 export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Element {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
 
-  const extensions = useMemo(() => {
-    const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform);
-    const selectAllKeymap = isMac
-      ? [{ key: 'Cmd-a', run: selectAll, preventDefault: true }]
-      : [{ key: 'Ctrl-a', run: selectAll, preventDefault: true }];
-
-    return [
+  const extensions = useMemo(
+    () => [
       EditorState.readOnly.of(true),
       EditorView.editable.of(false),
       lineNumbers(),
       bracketMatching(),
       syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
       jsonLang(),
-      selectionField,
-      theme,
-      keymap.of(selectAllKeymap),
+      selectionHighlightField,
+      keymap.of([...selectAllKeymap]),
       EditorView.contentAttributes.of({
         'aria-label': ariaLabel,
         'aria-multiline': 'true',
         'aria-readonly': 'true',
         role: 'textbox',
       }),
-    ];
-  }, [ariaLabel]);
+    ],
+    [ariaLabel],
+  );
 
   useEffect(() => {
     if (!hostRef.current) return;
@@ -85,32 +54,8 @@ export function FormattedView({ value, ariaLabel, emptyLabel }: Props): JSX.Elem
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const view = viewRef.current;
-    if (!view) return;
-    const current = view.state.doc.toString();
-    if (current === value) return;
-    view.dispatch({ changes: { from: 0, to: current.length, insert: value } });
-  }, [value]);
-
-  // Handle native copy for selected text in read-only view
-  useEffect(() => {
-    const handleCopy = (e: ClipboardEvent) => {
-      const view = viewRef.current;
-      if (!view) return;
-      const selection = view.state.selection.main;
-      if (selection.empty) return;
-      const selectedText = view.state.doc.sliceString(selection.from, selection.to);
-      e.clipboardData?.setData('text/plain', selectedText);
-      e.preventDefault();
-    };
-
-    const hostElement = hostRef.current;
-    if (hostElement) {
-      hostElement.addEventListener('copy', handleCopy);
-      return () => hostElement.removeEventListener('copy', handleCopy);
-    }
-  }, []);
+  useSyncExternalValue(viewRef, value);
+  useNativeCopySelection(hostRef, viewRef);
 
   const isEmpty = value.length === 0;
 

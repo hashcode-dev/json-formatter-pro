@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { COOKIE_CONSENT_KEY } from '@lib/site';
 
 export function CookieConsent(): JSX.Element | null {
   const [showBanner, setShowBanner] = useState(false);
@@ -6,24 +7,17 @@ export function CookieConsent(): JSX.Element | null {
 
   useEffect(() => {
     setMounted(true);
-    const consent = localStorage.getItem('json-formatter-pro-cookie-consent');
-    // Show banner if no consent preference stored
-    if (!consent) {
-      setShowBanner(true);
-      // Block third-party scripts if no consent
-      blockThirdPartyScripts();
-    }
+    if (!localStorage.getItem(COOKIE_CONSENT_KEY)) setShowBanner(true);
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('json-formatter-pro-cookie-consent', 'accepted');
+    localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
     setShowBanner(false);
-    // Load third-party scripts after consent
-    loadThirdPartyScripts();
+    grantConsent();
   };
 
   const handleReject = () => {
-    localStorage.setItem('json-formatter-pro-cookie-consent', 'rejected');
+    localStorage.setItem(COOKIE_CONSENT_KEY, 'rejected');
     setShowBanner(false);
   };
 
@@ -39,11 +33,11 @@ export function CookieConsent(): JSX.Element | null {
           <p className="mt-1">
             We use Google Analytics and Google AdSense cookies to understand how you use our site and to show
             relevant ads. By clicking "Accept," you consent to these cookies. See our{' '}
-            <a href="/privacy" className="text-primary hover:underline">
+            <a href="/privacy" className="text-accent hover:underline">
               Privacy Policy
             </a>{' '}
             and{' '}
-            <a href="/cookies" className="text-primary hover:underline">
+            <a href="/cookies" className="text-accent hover:underline">
               Cookie Policy
             </a>{' '}
             for details.
@@ -75,28 +69,14 @@ export function CookieConsent(): JSX.Element | null {
   );
 }
 
-function blockThirdPartyScripts(): void {
-  // Google Analytics and AdSense scripts are initially blocked
-  // They will be loaded after user consent
-  const script = document.querySelector(
-    'script[src*="googletagmanager.com"]',
-  ) as HTMLScriptElement | null;
-  if (script) script.dataset.consent = 'false';
-}
-
-function loadThirdPartyScripts(): void {
-  // Load Google Analytics
-  const gaScript = document.querySelector(
-    'script[src*="googletagmanager.com"]',
-  ) as HTMLScriptElement | null;
-  if (gaScript) {
-    gaScript.dataset.consent = 'true';
-    // Re-execute Google Analytics if needed
-    if ((window as any).gtag) {
-      (window as any).gtag('consent', 'update', {
-        analytics_storage: 'granted',
-        ad_storage: 'granted',
-      });
-    }
-  }
+/**
+ * Lift Consent Mode's denied-by-default flags once the user accepts. The
+ * analytics and ad tags are already loaded by BaseLayout, so consent is
+ * communicated through gtag rather than by gating script insertion.
+ */
+function grantConsent(): void {
+  window.gtag?.('consent', 'update', {
+    analytics_storage: 'granted',
+    ad_storage: 'granted',
+  });
 }

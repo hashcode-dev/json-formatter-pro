@@ -78,9 +78,6 @@
   .card {
     @apply bg-surface border border-border rounded-lg;
   }
-  .divider {
-    @apply h-px w-full bg-border;
-  }
   .skip-link {
     @apply sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3
            focus:z-50 focus:btn focus:btn-primary;
@@ -136,9 +133,6 @@
   color: rgb(var(--fg)) !important;
 }
 .cm-selection-highlight {
-  background-color: #ADD8E6 !important;
-}
-.cm-editor.cm-focused .cm-selection-highlight {
   background-color: #ADD8E6 !important;
 }
 .cm-line-error {

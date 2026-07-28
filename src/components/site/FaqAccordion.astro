@@ -1,0 +1,22 @@
+---
+interface Props {
+  faqs: Array<{ q: string; a: string }>;
+}
+
+const { faqs } = Astro.props;
+---
+
+<section aria-labelledby="faq-heading" class="card p-6 md:p-8 space-y-4">
+  <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
+  <div class="divide-y divide-border rounded-lg border border-border bg-surface">
+    {faqs.map((item) => (
+      <details class="group">
+        <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+          <span>{item.q}</span>
+          <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
+        </summary>
+        <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>
+      </details>
+    ))}
+  </div>
+</section>
