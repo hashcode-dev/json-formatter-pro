@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { clsx } from 'clsx';
-import type { FormatOptions, IndentOption } from '@lib/json/types';
+import type { FormatOptions, IndentOption, JsonSpec } from '@lib/json/types';
+import { JSON_SPEC_LABELS } from '@lib/json/types';
 import {
   CopyIcon, DownloadIcon, MinifyIcon, SettingsIcon, TrashIcon, UploadIcon,
   WandIcon, KeyboardIcon, CommandIcon,
@@ -58,6 +59,11 @@ export function Toolbar(p: Props): JSX.Element {
       <IndentSelect
         value={p.options.indent}
         onChange={(indent) => p.onOptionsChange({ indent })}
+      />
+
+      <JsonSpecSelect
+        value={p.options.spec}
+        onChange={(spec) => p.onOptionsChange({ spec })}
       />
 
       <TransformMenu options={p.options} onChange={p.onOptionsChange} />
@@ -119,15 +125,43 @@ function IndentSelect({
         value={String(value)}
         onChange={(e) => {
           const raw = e.target.value;
-          const next: IndentOption = raw === 'tab' ? '\t' : (Number(raw) as 2 | 4);
+          const next: IndentOption = raw === 'tab' ? '\t' : (Number(raw) as 2 | 3 | 4);
           onChange(next);
         }}
         className="h-8 rounded-md border border-border bg-surface px-2 pr-6 text-sm text-fg"
         aria-label="Indent size"
       >
         <option value="2">2 spaces</option>
+        <option value="3">3 spaces</option>
         <option value="4">4 spaces</option>
         <option value="tab">Tab</option>
+      </select>
+    </label>
+  );
+}
+
+function JsonSpecSelect({
+  value,
+  onChange,
+}: {
+  value: JsonSpec;
+  onChange: (v: JsonSpec) => void;
+}): JSX.Element {
+  return (
+    <label className="inline-flex items-center gap-1.5 text-xs text-subtle">
+      <span className="sr-only">JSON specification</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as JsonSpec)}
+        className="h-8 rounded-md border border-border bg-surface px-2 pr-6 text-sm text-fg"
+        aria-label="JSON specification"
+        title="JSON specification to validate against"
+      >
+        <option value="RFC8259">{JSON_SPEC_LABELS.RFC8259}</option>
+        <option value="RFC7159">{JSON_SPEC_LABELS.RFC7159}</option>
+        <option value="RFC4627">{JSON_SPEC_LABELS.RFC4627}</option>
+        <option value="ECMA404">{JSON_SPEC_LABELS.ECMA404}</option>
+        <option value="SKIP">{JSON_SPEC_LABELS.SKIP}</option>
       </select>
     </label>
   );

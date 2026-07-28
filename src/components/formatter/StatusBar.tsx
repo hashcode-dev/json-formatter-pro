@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { clsx } from 'clsx';
-import type { IndentOption, JsonError, JsonStats } from '@lib/json/types';
+import type { IndentOption, JsonError, JsonSpec, JsonStats } from '@lib/json/types';
+import { JSON_SPEC_LABELS } from '@lib/json/types';
 import type { Status } from '@store/index';
 import { formatBytes, formatCount } from '@lib/format-bytes';
 import { AlertIcon, CheckIcon, InfoIcon } from './icons';
@@ -10,6 +11,7 @@ interface Props {
   error: JsonError | null;
   stats: JsonStats | null;
   indent: IndentOption;
+  spec: JsonSpec;
 }
 
 interface PillDef {
@@ -35,7 +37,12 @@ const PILLS: Record<Status, PillDef> = {
 
 const IDLE_PILL = PILLS.idle;
 
-export function StatusBar({ status, error, stats, indent }: Props): JSX.Element {
+export function StatusBar({ status, error, stats, indent, spec }: Props): JSX.Element {
+  // Append the selected spec to the "Valid JSON" pill so users can see which
+  // rule set the parse passed. "Skip Validation" isn't a spec, so we keep the
+  // pill plain in that case.
+  const validLabel =
+    spec === 'SKIP' ? 'Valid JSON' : `Valid JSON (${JSON_SPEC_LABELS[spec]})`;
   return (
     <div
       role="status"
@@ -43,7 +50,7 @@ export function StatusBar({ status, error, stats, indent }: Props): JSX.Element 
       className="flex h-9 shrink-0 items-center justify-between gap-3 border-t border-border bg-surface px-3 text-xs"
     >
       <div className="flex items-center gap-2 min-w-0">
-        <StatusPill status={status} />
+        <StatusPill status={status} validLabel={validLabel} />
         {status === 'invalid' && error && (
           <div className="flex min-w-0 items-center gap-2 truncate text-danger">
             <span className="font-mono">
@@ -71,15 +78,23 @@ export function StatusBar({ status, error, stats, indent }: Props): JSX.Element 
           Indent: {indent === '\t' ? 'Tab' : `${indent} spaces`}
         </span>
         <span className="hidden md:inline">UTF-8</span>
-        <span className="hidden md:inline">RFC 8259</span>
+        <span className="hidden md:inline">{JSON_SPEC_LABELS[spec]}</span>
       </div>
     </div>
   );
 }
 
-function StatusPill({ status }: { status: Status }): JSX.Element {
+function StatusPill({
+  status,
+  validLabel,
+}: {
+  status: Status;
+  validLabel: string;
+}): JSX.Element {
   // Falls back to the idle pill so an unexpected status renders rather than throws.
-  const { label, icon: Icon, className } = PILLS[status] ?? IDLE_PILL;
+  const pill = PILLS[status] ?? IDLE_PILL;
+  const { icon: Icon, className } = pill;
+  const label = status === 'valid' ? validLabel : pill.label;
   return (
     <span className={clsx('chip', className)}>
       <Icon className="h-3.5 w-3.5" /> {label}
