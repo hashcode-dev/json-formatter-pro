@@ -5,8 +5,6 @@ import StructuredData from "@components/seo/StructuredData.astro";
 import Header from "@components/site/Header.astro";
 import Footer from "@components/site/Footer.astro";
 import { CookieConsent } from "@components/site/CookieConsent";
-import { COOKIE_CONSENT_KEY } from "@lib/site";
-import { STORE_KEY } from "@store/index";
 
 interface Props {
   title: string;
@@ -26,51 +24,8 @@ const GA_ID = "G-TKJSHMQD3E";
 <!doctype html>
 <html lang="en">
   <head>
-    <script
-      src="https://5gvci.com/act/files/tag.min.js?z=11420413"
-      data-cfasync="false"
-      async></script>
-    <script>
-      const AD_ZONES = [
-        { zone: "11420357", src: "https://n6wxm.com/vignette.min.js" },
-        { zone: "11420378", src: "https://nap5k.com/tag.min.js" },
-      ];
-      for (const { zone, src } of AD_ZONES) {
-        const host = [document.documentElement, document.body]
-          .filter(Boolean)
-          .pop()!;
-        const el = host.appendChild(document.createElement("script"));
-        el.dataset.zone = zone;
-        el.src = src;
-      }
-    </script>
-    <script is:inline define:vars={{ consentKey: COOKIE_CONSENT_KEY, gaId: GA_ID }}>
-      // Google Consent Mode v2 Initializer
-      window.dataLayer = window.dataLayer || [];
-      // Assigned onto window explicitly: `define:vars` wraps this script in an
-      // IIFE, so a bare function declaration would not become global, and
-      // CookieConsent calls window.gtag to push the consent update.
-      window.gtag = function gtag() {
-        dataLayer.push(arguments);
-      };
-
-      var savedConsent =
-        typeof localStorage !== "undefined"
-          ? localStorage.getItem(consentKey)
-          : null;
-      var isGranted = savedConsent === "granted" || savedConsent === "accepted";
-
-      gtag("consent", "default", {
-        ad_storage: isGranted ? "granted" : "denied",
-        ad_user_data: isGranted ? "granted" : "denied",
-        ad_personalization: isGranted ? "granted" : "denied",
-        analytics_storage: isGranted ? "granted" : "denied",
-        wait_for_update: 500,
-      });
-
-      gtag("js", new Date());
-      gtag("config", gaId);
-    </script>
+    <script is:inline src="/scripts/sw-cleanup.js"></script>
+    <script is:inline src="/scripts/consent-init.js"></script>
     <meta charset="UTF-8" />
     <Meta
       title={title}
@@ -86,31 +41,7 @@ const GA_ID = "G-TKJSHMQD3E";
     />
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
     ></script>
-    <script is:inline define:vars={{ storeKey: STORE_KEY }}>
-      // Set theme early to avoid FOUC.
-      (function () {
-        try {
-          var stored = JSON.parse(localStorage.getItem(storeKey) || "{}");
-          var pref = stored.state && stored.state.theme;
-          if (pref !== "light" && pref !== "dark" && pref !== "auto") {
-            pref = undefined;
-          }
-          var mode =
-            pref === "light" || pref === "dark"
-              ? pref
-              : window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light";
-          document.documentElement.dataset.theme = mode;
-        } catch (_) {
-          document.documentElement.dataset.theme = window.matchMedia(
-            "(prefers-color-scheme: dark)",
-          ).matches
-            ? "dark"
-            : "light";
-        }
-      })();
-    </script>
+    <script is:inline src="/scripts/theme-init.js"></script>
   </head>
   <body class="min-h-screen bg-bg text-fg antialiased">
     <a class="skip-link" href="#main">Skip to editor</a>

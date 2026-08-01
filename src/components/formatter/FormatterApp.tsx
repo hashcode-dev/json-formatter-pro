@@ -36,6 +36,18 @@ const SAMPLE = `{
   }
 }`;
 
+/**
+ * Demo token for the JWT Inspector's first-load state. Based on the
+ * well-known jwt.io example (header/`sub`/`name`/`iat` are the canonical
+ * placeholder values), with an added `exp` claim (2100-01-01) so the
+ * "check token expiration" feature has something to demonstrate too. The
+ * signature is not real and is never verified — `parseJwt` (src/lib/json/jwt.ts)
+ * only decodes and displays the header/payload, it does not check the
+ * signature — so this is safe to embed and does not represent a real
+ * credential.
+ */
+const SAMPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjQxMDI0NDQ4MDB9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
 /** Text the Copy and Download actions operate on. */
 function readOutputText(): string {
   const { formatted, input } = useStore.getState();
@@ -131,11 +143,20 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
 
   useDebouncedEffect(sendProcess, [input, options], 160);
 
+  // Seeds the editor with mode-appropriate sample content on first load only.
+  // `initialMode` is a prop fixed per page (each route mounts its own
+  // FormatterApp instance via `client:only`), so it never changes after mount
+  // and this effect never re-fires just because the dependency array lists
+  // it — it's listed for correctness, not to make the effect reactive.
+  // Deliberately NOT reactive to later `mode` changes (e.g. picking "Inspect
+  // JWT Token" from the Tools dropdown): re-seeding on every mode switch
+  // would risk clobbering input a user typed and then cleared, or surprise
+  // them with unrequested content appearing under their cursor.
   useEffect(() => {
     if (useStore.getState().input === '') {
-      setInput(SAMPLE);
+      setInput(initialMode === 'jwt' ? SAMPLE_JWT : SAMPLE);
     }
-  }, [setInput]);
+  }, [initialMode, setInput]);
 
   // Listen for tool select events from the Header's Tools dropdown.
   useEffect(() => {

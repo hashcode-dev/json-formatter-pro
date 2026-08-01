@@ -19,35 +19,35 @@ const CATEGORIES: Category[] = [
     title: 'Format & Validate',
     icon: '🛠️',
     items: [
-      { name: 'JSON Formatter', desc: 'Beautify with 2/4 spaces or tabs', href: '/json-formatter', mode: 'formatted', icon: '✨' },
-      { name: 'JSON Minifier', desc: 'Strip whitespace to minimal payload', href: '/json-minifier', mode: 'formatted', icon: '⚡' },
-      { name: 'JSON Validator', desc: 'Tolerant AST parser with auto-fix hints', href: '/json-validator', mode: 'formatted', icon: '✅' },
+      { name: 'JSON Formatter', desc: 'Beautify with 2/4 spaces or tabs', href: '/json-formatter/', mode: 'formatted', icon: '✨' },
+      { name: 'JSON Minifier', desc: 'Strip whitespace to minimal payload', href: '/json-minifier/', mode: 'formatted', icon: '⚡' },
+      { name: 'JSON Validator', desc: 'Tolerant AST parser with auto-fix hints', href: '/json-validator/', mode: 'formatted', icon: '✅' },
     ],
   },
   {
     title: 'Converters',
     icon: '🔄',
     items: [
-      { name: 'JSON to YAML', desc: 'Clean YAML document conversion', href: '/json-to-yaml', mode: 'yaml', icon: '📝' },
-      { name: 'JSON to XML', desc: 'Structured XML with custom roots', href: '/json-to-xml', mode: 'xml', icon: '📄' },
-      { name: 'JSON to CSV', desc: 'Tabular CSV / TSV spreadsheet format', href: '/json-to-csv', mode: 'csv', icon: '📊' },
-      { name: 'JSON to TypeScript', desc: 'Generate typed TS interfaces', href: '/json-to-typescript', mode: 'typescript', icon: '🔷' },
-      { name: 'JSON to Schema', desc: 'Draft-07 JSON Schema inference', href: '/json-to-json-schema', mode: 'schema', icon: '📐' },
+      { name: 'JSON to YAML', desc: 'Clean YAML document conversion', href: '/json-to-yaml/', mode: 'yaml', icon: '📝' },
+      { name: 'JSON to XML', desc: 'Structured XML with custom roots', href: '/json-to-xml/', mode: 'xml', icon: '📄' },
+      { name: 'JSON to CSV', desc: 'Tabular CSV / TSV spreadsheet format', href: '/json-to-csv/', mode: 'csv', icon: '📊' },
+      { name: 'JSON to TypeScript', desc: 'Generate typed TS interfaces', href: '/json-to-typescript/', mode: 'typescript', icon: '🔷' },
+      { name: 'JSON to Schema', desc: 'Draft-07 JSON Schema inference', href: '/json-to-json-schema/', mode: 'schema', icon: '📐' },
     ],
   },
   {
     title: 'Query & Compare',
     icon: '🔍',
     items: [
-      { name: 'Virtualized Tree', desc: 'High-speed O(1) node explorer', href: '/json-formatter', mode: 'tree', icon: '🌲' },
-      { name: 'Structure & Metrics', desc: 'Depth, key count, and memory stats', href: '/json-formatter', mode: 'stats', icon: '📈' },
+      { name: 'Virtualized Tree', desc: 'High-speed O(1) node explorer', href: '/json-formatter/', mode: 'tree', icon: '🌲' },
+      { name: 'Structure & Metrics', desc: 'Depth, key count, and memory stats', href: '/json-formatter/', mode: 'stats', icon: '📈' },
     ],
   },
   {
     title: 'Security & Utilities',
     icon: '🔒',
     items: [
-      { name: 'JWT Inspector', desc: 'Decode header, payload & claim validity', href: '/jwt-decoder', mode: 'jwt', icon: '🔑' },
+      { name: 'JWT Inspector', desc: 'Decode header, payload & claim validity', href: '/jwt-decoder/', mode: 'jwt', icon: '🔑' },
     ],
   },
 ];

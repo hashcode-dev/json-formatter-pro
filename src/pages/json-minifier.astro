@@ -72,5 +72,16 @@ const faqs = [
           <p class="text-xs">Ensures your input is valid RFC 8259 JSON prior to minification, protecting your production pipelines from syntax errors.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">Where This Minifier Behaves Differently Under the Hood</h3>
+      <p>
+        Not every "JSON minifier" you'll find online actually parses your JSON before compressing it — many simply run a whitespace-stripping pass over the raw text. If your input already has a trailing comma, an unescaped quote, or a missing bracket, that kind of tool will still hand back a "minified" result. It's just as broken as the input was, except now the syntax error is compressed onto one line and far harder to spot before it ships to production. This tool parses your input into an AST first; if it doesn't validate as proper JSON, minification stops instead of quietly baking the error into your payload.
+      </p>
+      <p>
+        Large inputs get the same treatment as everywhere else on this site: minification runs on a dedicated Web Worker thread, so pasting in a multi-megabyte API dump or export doesn't freeze the tab while whitespace is stripped out.
+      </p>
+      <p>
+        There's also no account, API key, or usage tier standing between you and repeated use. Some hosted minification APIs ask you to sign up and authenticate once you're past a handful of requests a day; nothing here is metered, because nothing you paste ever leaves your browser to meter in the first place. And since the code itself is <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">open source on GitHub</a>, the AST validation, the worker handling, and the lack of tracking are things you can verify rather than take on faith.
+      </p>
+
 </ToolPageLayout>

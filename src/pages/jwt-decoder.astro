@@ -72,8 +72,28 @@ const faqs = [
         </div>
         <div class="rounded-lg border border-border bg-surface p-4">
           <h4 class="font-semibold text-fg mb-1">🔒 100% Local Browser Processing</h4>
-          <p class="text-xs">Zero network requests, zero telemetry, zero token leaks. Your bearer keys remain 100% private to your session.</p>
+          <p class="text-xs">Decoding makes zero network requests and zero token leaks — your bearer keys remain 100% private to your session.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">Before You Paste That Bearer Token Anywhere, Read This</h3>
+      <p>
+        A JWT pulled from a real login session or `Authorization` header is not a throwaway string — it's often a live credential that grants access to a user's account until it expires. Pasting it into a random online decoder is a well-known security anti-pattern for a simple reason: once you hit submit, you have no way of knowing whether that site quietly logged the request, sent your token to an analytics or logging backend, or stored it somewhere. Many free "paste your JWT" tools online make no verifiable claim about this at all — you're just trusting them.
+      </p>
+      <p>
+        This tool never has that problem, and you don't have to take our word for it. The decoding logic runs in your browser, and the entire codebase is open-source — so instead of trusting a privacy policy, you can go read the actual source that parses your token and confirm for yourself that nothing is transmitted anywhere. That's a materially different guarantee than "we promise we don't look," and it's the reason this page leads with it more directly than any other tool on this site: the stakes of leaking a session or bearer token are simply higher than leaking a formatting preference.
+      </p>
+      <div class="rounded-lg border border-border bg-surface p-4">
+        <p class="text-sm">
+          Inspect the exact decoding code yourself on GitHub —
+          <a
+            href="https://github.com/hashcode-dev/json-formatter-pro"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline underline-offset-2"
+          >github.com/hashcode-dev/json-formatter-pro</a>
+          — no signup, no account, and no token ever leaves your machine to check.
+        </p>
+      </div>
+
 </ToolPageLayout>

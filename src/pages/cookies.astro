@@ -53,6 +53,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </thead>
       <tbody>
         <tr class="border-b border-border">
+          <td class="border-r border-border px-3 py-2">Google Analytics (GA4)</td>
+          <td class="border-r border-border px-3 py-2">Aggregate usage analytics; only set after you click "Accept"</td>
+          <td class="px-3 py-2">13 months</td>
+        </tr>
+        <tr class="border-b border-border">
           <td class="border-r border-border px-3 py-2">Cloudflare Web Analytics</td>
           <td class="border-r border-border px-3 py-2">Aggregate page view counts (cookieless)</td>
           <td class="px-3 py-2">Not applicable</td>
@@ -60,37 +65,14 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </tbody>
     </table>
 
-    <h3 class="mt-6 text-base font-semibold text-fg">3. Advertising Cookies</h3>
-    <p class="mt-2">
-      <strong>Purpose:</strong> Display relevant advertisements and measure advertising effectiveness.
+    <p class="mt-2 text-xs italic">
+      JSON Formatter Pro does not display advertisements or use any advertising cookies.
     </p>
-    <table class="mt-3 w-full border-collapse text-xs">
-      <thead>
-        <tr class="border-b border-border">
-          <th class="border-r border-border px-3 py-2 text-left">Provider</th>
-          <th class="border-r border-border px-3 py-2 text-left">Purpose</th>
-          <th class="px-3 py-2 text-left">Duration</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="border-b border-border">
-          <td class="border-r border-border px-3 py-2">Google AdSense</td>
-          <td class="border-r border-border px-3 py-2">Serve personalized ads, measure campaign performance</td>
-          <td class="px-3 py-2">13 months</td>
-        </tr>
-        <tr class="border-b border-border">
-          <td class="border-r border-border px-3 py-2">Google Analytics</td>
-          <td class="border-r border-border px-3 py-2">Track user behavior for advertising insights</td>
-          <td class="px-3 py-2">13 months</td>
-        </tr>
-      </tbody>
-    </table>
 
     <h2 class="mt-8 text-lg font-semibold text-fg">How We Use Cookie Information</h2>
     <ul class="mt-3 list-disc space-y-2 pl-6">
       <li><strong>Functionality:</strong> Remember your preferences and settings</li>
       <li><strong>Analytics:</strong> Understand visitor behavior and improve the website</li>
-      <li><strong>Advertising:</strong> Display relevant ads and measure their performance</li>
       <li><strong>Security:</strong> Detect and prevent fraud and abuse</li>
     </ul>
 
@@ -107,16 +89,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       <li><a href="https://support.microsoft.com/en-us/help/4468242/microsoft-edge-browsing-data-and-privacy-microsoft-privacy" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Microsoft Edge</a></li>
     </ul>
 
-    <h3 class="mt-6 text-base font-semibold text-fg">Opt-Out of Advertising Cookies</h3>
-    <p class="mt-2">
-      You can opt out of personalized advertising by:
-    </p>
-    <ul class="mt-3 list-disc space-y-1 pl-6">
-      <li>Visiting <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Google Ads Settings</a></li>
-      <li>Enabling "Do Not Track" in your browser</li>
-      <li>Using an ad blocker or privacy extension</li>
-    </ul>
-
     <h3 class="mt-6 text-base font-semibold text-fg">Clear Cookies</h3>
     <p class="mt-2">
       You can clear cookies stored by JSON Formatter Pro:
@@ -129,7 +101,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
     <h2 class="mt-8 text-lg font-semibold text-fg">Third-Party Cookies</h2>
     <p class="mt-2">
-      Google AdSense and Google Analytics set cookies on your device when you visit JSON Formatter Pro. These are "third-party" cookies because they are set by domains other than json-formatter-pro.com.
+      Google Analytics sets a cookie on your device once you accept the cookie banner. This is a
+      "third-party" cookie because it's set by a domain other than json-formatter-pro.com. Cloudflare
+      Web Analytics does not set a cookie at all.
     </p>
     <p class="mt-3">
       <strong>Third-party cookie providers:</strong>
@@ -151,7 +125,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
     <h2 class="mt-8 text-lg font-semibold text-fg">Questions?</h2>
     <p class="mt-2">
-      If you have questions about our use of cookies, please <a href="/contact" class="text-accent hover:underline">contact us</a> or email hashcode.dev@gmail.com.
+      If you have questions about our use of cookies, please <a href="/contact/" class="text-accent hover:underline">contact us</a> or email hashcode.dev@gmail.com.
     </p>
   </article>
 </BaseLayout>

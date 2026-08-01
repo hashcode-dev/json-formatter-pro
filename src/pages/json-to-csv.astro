@@ -72,5 +72,16 @@ const faqs = [
           <p class="text-xs">Conversion happens exclusively in your browser memory. Your business metrics and user data remain completely private.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">What Sets This Converter Apart</h3>
+      <p>
+        Plenty of free JSON-to-CSV converters throttle you after a handful of rows, or ask you to sign up before you can download anything beyond a small preview. This tool has no row-count cap and no account wall — paste a JSON array with 50,000 records and export the full CSV just as easily as one with five, because the conversion runs in a background Web Worker in your own browser rather than a metered backend endpoint.
+      </p>
+      <p>
+        Real-world API responses are rarely uniform: some records have optional fields, others are missing properties entirely. The schema-union header extraction described above isn't just a feature checkbox — it's what keeps a naive converter from silently truncating your header row (or misaligning columns) the moment it hits a record shaped differently from the first one it saw.
+      </p>
+      <p>
+        And because business data piped through a converter like this is often sensitive — customer exports, internal reporting, pricing sheets — nothing here is ever transmitted anywhere to produce the CSV. The code is also open-source, so instead of taking that claim on faith you can read exactly how the conversion and escaping logic works in the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>.
+      </p>
+
 </ToolPageLayout>

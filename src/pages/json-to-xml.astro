@@ -69,8 +69,16 @@ const faqs = [
         </div>
         <div class="rounded-lg border border-border bg-surface p-4">
           <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side Privacy</h4>
-          <p class="text-xs">Your data is processed strictly in your local browser memory. Zero network requests, zero telemetry logs.</p>
+          <p class="text-xs">Your data is processed strictly in your local browser memory — the conversion itself makes zero network requests.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">A Note on Trust for Legacy and SOAP Payloads</h3>
+      <p>
+        JSON-to-XML conversion tends to show up at the boundary with older, higher-stakes systems: SOAP endpoints, banking middleware, internal enterprise schemas, and Android/config exports. That's exactly the kind of payload you shouldn't have to hand to a third-party server just to reshape it. Because the transformation runs in a Web Worker in your own browser tab, the JSON you paste in — and any production sample data it happens to contain — never leaves your machine.
+      </p>
+      <p>
+        Unlike many free online converters, there's no account to create, no email to hand over, and no artificial file-size ceiling designed to nudge you toward a paid plan — the conversion is bounded only by what your browser can hold in memory. And because this isn't a black box, you don't have to take our word for any of it: the full source for how the XML is generated is publicly viewable on <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub</a>, so you can confirm exactly what happens to your data before you paste anything sensitive into it.
+      </p>
+
 </ToolPageLayout>
