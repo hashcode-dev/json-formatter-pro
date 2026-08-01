@@ -1,0 +1,215 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "XML to JSON Converter - Free Online Developer Tool";
+const description =
+  "Convert XML to JSON online: SOAP responses, RSS feeds, and config files. Documented attribute, text node, and repeated element mapping. 100% client-side.";
+const keywords =
+  "xml to json, xml to json converter, convert xml to json online, xml2json, soap response to json, rss to json converter, parse xml online, client side xml to json";
+
+const faqs = [
+  {
+    q: "How are XML attributes represented in the JSON output?",
+    a: "Every attribute becomes a key on the element's object, prefixed with `@`. So `<book id=\"bk101\" available=\"true\">` produces `\"@id\": \"bk101\"` and `\"@available\": \"true\"` alongside the element's child keys. The prefix exists because XML lets an attribute and a child element share the same name — `@` keeps them from colliding. Attribute values are always strings, exactly as XML defines them."
+  },
+  {
+    q: "How are repeated sibling elements converted into JSON arrays?",
+    a: "When two or more child elements of the same parent share a tag name, they collapse into a single JSON array under that tag. Two `<book>` siblings become `\"book\": [ { … }, { … } ]`. Important caveat: a tag that appears only once stays a single object, not a one-element array, because XML itself gives no way to tell \"a list that happens to have one item\" from \"a single item\". If you consume the output programmatically, normalize with something like `[].concat(node.book ?? [])`."
+  },
+  {
+    q: "Are numbers and booleans in XML converted to JSON numbers and booleans?",
+    a: "No — deliberately. XML text is character data with no type information, so `<year>1999</year>` becomes the string `\"1999\"` and `available=\"true\"` becomes the string `\"true\"`. Guessing types would silently corrupt real data: leading-zero account numbers, phone numbers, ISO 20022 amounts, and long identifiers all lose meaning the moment they are coerced to numbers. Cast explicitly on your side, where you know the schema."
+  },
+  {
+    q: "Can I convert a SOAP envelope or an RSS feed to JSON?",
+    a: "Yes. Both are ordinary XML documents. Namespace prefixes are preserved verbatim, so a SOAP response keeps keys like `soap:Envelope`, `soap:Body`, and `@xmlns:soap`, and you can walk straight to the payload element inside the body. For RSS or Atom, the repeated `<item>` or `<entry>` elements become a JSON array, which is usually the exact shape a front end wants."
+  },
+  {
+    q: "What happens to comments, CDATA sections, and mixed content?",
+    a: "Comments, processing instructions (including the `<?xml … ?>` declaration), and whitespace-only text nodes are dropped. CDATA is read as ordinary text. If an element carries text alongside attributes or child elements, that text is stored under a `#text` key. One structural limit worth knowing: if the same tag repeats non-adjacently among differently-named siblings, the repeats merge into one array, which loses their original interleaved order — an unavoidable trade-off for object-shaped output."
+  },
+  {
+    q: "Is my XML uploaded to a server?",
+    a: "No. The document is parsed by your own browser's built-in XML parser inside the page, and the JSON is produced there too. Nothing is transmitted, logged, or stored server-side, there is no account to create, and the project is open source so you can verify the conversion code yourself."
+  }
+];
+
+// Kept as template literals rather than inline markup: braces inside an .astro
+// template would be parsed as expressions, and this way the sample is the exact
+// text the converter produces.
+const xmlSample = `<?xml version="1.0" encoding="UTF-8"?>
+<catalog updated="2026-04-18">
+  <book id="bk101" available="true">
+    <title>The Pragmatic Programmer</title>
+    <price currency="USD">39.95</price>
+  </book>
+  <book id="bk102" available="false">
+    <title>Refactoring</title>
+    <price currency="USD">54.99</price>
+  </book>
+  <notes/>
+</catalog>`;
+
+const jsonSample = `{
+  "catalog": {
+    "@updated": "2026-04-18",
+    "book": [
+      {
+        "@id": "bk101",
+        "@available": "true",
+        "title": "The Pragmatic Programmer",
+        "price": {
+          "@currency": "USD",
+          "#text": "39.95"
+        }
+      },
+      {
+        "@id": "bk102",
+        "@available": "false",
+        "title": "Refactoring",
+        "price": {
+          "@currency": "USD",
+          "#text": "54.99"
+        }
+      }
+    ],
+    "notes": null
+  }
+}`;
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/xml-to-json/"
+  eyebrow="Converter"
+  heading="XML to JSON Converter Pro"
+  subtitle="Convert SOAP responses, RSS feeds, and legacy config XML into clean JSON — with attribute, text node, and repeated element mapping documented in full."
+  mode="xmlToJson"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Converting XML to JSON Online</h2>
+      <p>
+        <strong>XML</strong> did not go away — it retreated into the systems that are hardest to replace. SOAP web services, RSS and Atom feeds, Android manifests and layout resources, Maven POMs, Spring and log4j configuration, ISO 20022 and XBRL financial messages, and a large share of government open-data feeds all still arrive as XML. The clients consuming them — React front ends, mobile apps, serverless functions, analytics warehouses — all expect <strong>JSON</strong>. Converting XML to JSON is the seam between those two worlds, and it is usually where an integration project actually begins.
+      </p>
+      <p>
+        <strong>XML to JSON Converter Pro</strong> parses your document with the browser's own XML parser and emits JSON using a mapping that is written out in full on this page. Paste a SOAP envelope, an RSS channel, an `AndroidManifest.xml`, or a regulatory data feed and read the JSON immediately, with no upload and no signup.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert XML to JSON Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste or Upload XML:</strong> Paste your document into the left editor, or drop an `.xml` file onto it. The status bar reports <em>Valid XML</em>, or <em>Invalid XML</em> with the parser's own reason for rejecting it.</li>
+        <li><strong>Read the JSON:</strong> The output panel re-converts as you type and renders the result as syntax-highlighted JSON.</li>
+        <li><strong>Pick Your Indentation:</strong> The toolbar's indent control (2, 3, or 4 spaces, or tabs) applies to the emitted JSON.</li>
+        <li><strong>Copy or Download:</strong> Click <em>Copy</em> for the clipboard, or <em>Download</em> to save the result as `converted.json`.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">How This Converter Maps XML to JSON</h3>
+      <p>
+        XML and JSON are not isomorphic, so every XML-to-JSON tool has to invent a convention — and the conventions differ between tools. These are the exact rules this converter applies:
+      </p>
+      <table class="mt-3 w-full border-collapse text-xs">
+        <thead>
+          <tr class="border-b border-border">
+            <th class="border-r border-border px-3 py-2 text-left">XML construct</th>
+            <th class="border-r border-border px-3 py-2 text-left">JSON result</th>
+            <th class="px-3 py-2 text-left">Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Root element</td>
+            <td class="border-r border-border px-3 py-2">Single top-level key wrapping the document</td>
+            <td class="px-3 py-2">`&lt;catalog&gt;…` → `&#123; "catalog": … &#125;`</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Attribute</td>
+            <td class="border-r border-border px-3 py-2">Key prefixed with `@`, value always a string</td>
+            <td class="px-3 py-2">`id="bk101"` → `"@id": "bk101"`</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Text-only element</td>
+            <td class="border-r border-border px-3 py-2">Plain JSON string (trimmed)</td>
+            <td class="px-3 py-2">`&lt;title&gt;Refactoring&lt;/title&gt;` → `"title": "Refactoring"`</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Text plus attributes or children</td>
+            <td class="border-r border-border px-3 py-2">Text moves under a `#text` key</td>
+            <td class="px-3 py-2">`&lt;price currency="USD"&gt;39.95&lt;/price&gt;` → `&#123; "@currency": "USD", "#text": "39.95" &#125;`</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Empty element, no attributes</td>
+            <td class="border-r border-border px-3 py-2">`null`</td>
+            <td class="px-3 py-2">`&lt;notes/&gt;` → `"notes": null`</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Repeated sibling tags</td>
+            <td class="border-r border-border px-3 py-2">Array under that tag name</td>
+            <td class="px-3 py-2">two `&lt;book&gt;` → `"book": [ … , … ]`</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="border-r border-border px-3 py-2">Namespace prefix</td>
+            <td class="border-r border-border px-3 py-2">Kept verbatim in the key</td>
+            <td class="px-3 py-2">`&lt;soap:Body&gt;` → `"soap:Body"`, `"@xmlns:soap"`</td>
+          </tr>
+          <tr>
+            <td class="border-r border-border px-3 py-2">Comment, processing instruction, CDATA</td>
+            <td class="border-r border-border px-3 py-2">Comments and PIs dropped; CDATA read as text</td>
+            <td class="px-3 py-2">`&lt;![CDATA[&lt;b&gt;hi&lt;/b&gt;]]&gt;` → `"&lt;b&gt;hi&lt;/b&gt;"`</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        When an XML document is converted to JSON, the converter has to settle four things the two formats disagree about. XML attributes have no JSON equivalent, so each attribute becomes a key prefixed with `@`: `&lt;book id="bk101"&gt;` yields `"@id": "bk101"`. XML has no array type, so repeated sibling elements sharing a tag name collapse into a JSON array, while a tag appearing once stays a single object. XML text can sit alongside attributes and child elements, so an element carrying both puts its text under a `#text` key, while an element holding nothing but text becomes a plain JSON string. Finally, XML is untyped: `&lt;year&gt;1999&lt;/year&gt;` is character data, not a number, so every value arrives in JSON as a string. Learn those four rules and you can predict the exact output for any well-formed document, without trial and error.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Worked Example: An Attribute, Repeated Siblings, and an Empty Tag</h3>
+      <p>Input XML:</p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-4 font-mono text-xs leading-relaxed text-fg"><code>{xmlSample}</code></pre>
+      <p>Produced JSON:</p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-4 font-mono text-xs leading-relaxed text-fg"><code>{jsonSample}</code></pre>
+      <p>
+        Five conventions are visible at once here. The root tag became the single top-level key. The `updated` attribute became `@updated`. The two `&lt;book&gt;` siblings became an array, while `&lt;title&gt;` — which appears once inside each book — stayed a plain string. `&lt;price&gt;` carried both an attribute and text, so its text moved to `#text`. The self-closing `&lt;notes/&gt;` became `null`, and the XML declaration was dropped as a processing instruction.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Technical Capabilities</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🏷️ Attributes Preserved, Not Discarded</h4>
+          <p class="text-xs">Every attribute survives the conversion as an `@`-prefixed key, so `id`, `currency`, `xmlns`, and SOAP metadata are never silently dropped.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔁 Repeated Elements Become Arrays</h4>
+          <p class="text-xs">RSS `&lt;item&gt;` lists, Atom `&lt;entry&gt;` lists, and repeated record tags collapse into real JSON arrays your client can map over.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧭 Namespace-Aware Keys</h4>
+          <p class="text-xs">Prefixes stay verbatim (`soap:Envelope`, `@xmlns:xsi`), so namespaced enterprise payloads keep the structure their schema describes.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 Parsed Entirely in Your Browser</h4>
+          <p class="text-xs">Your browser's built-in XML parser does the work in-page — no upload, no account, no file-size tier, no ads.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">The Mapping Rules Are Documented, Not Guesswork</h3>
+      <p>
+        The single most important thing to know about an XML-to-JSON converter is its convention, because there is no standard one. Does an attribute become `@id`, `_id`, or a nested `attributes` object? Does a lone `&lt;item&gt;` come back as an array or an object? Does `&lt;count&gt;7&lt;/count&gt;` become `7` or `"7"`? Many free online converters simply show you a result and let you reverse-engineer the answers from whatever sample you happened to paste — which is how integrations end up with a bug that only appears once a feed drops from two items to one. The table and worked example above exist so you never have to guess, and the exact conversion source is public.
+      </p>
+      <p>
+        The privacy story is equally concrete. XML shows up in the highest-stakes corners of an enterprise — payment messages, patient records, internal SOAP contracts, signed configuration — and those are exactly the documents you should not be posting to an unknown backend just to reshape them. Here the document is parsed by your own browser inside the page — the same parse your browser performs on any XML resource — so it never crosses the network to be converted, and the wider app's JSON work (formatting, validation, statistics) is offloaded to a Web Worker rather than a backend. Rather than asking you to trust that, the whole project is open source — read the converter yourself in the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>, or self-host it.
+      </p>
+      <p>
+        Two honest limitations are worth repeating, because a converter that hides them is worse than one that states them. First, values are never type-inferred: everything is a string, which is safe for account numbers and identifiers but means you cast on your side. Second, single-occurrence elements are objects rather than one-element arrays — a consequence of XML's own ambiguity, not a bug you can configure away, so defensive code should normalize before iterating.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">What to Do With the JSON Next</h3>
+      <p>
+        Once the feed is JSON, the rest of the toolchain opens up. Feed a converted payload into the <a href="/json-to-typescript/" class="text-accent hover:underline">JSON to TypeScript generator</a> to get interfaces for the client that consumes it, or into the <a href="/json-to-json-schema/" class="text-accent hover:underline">JSON Schema generator</a> to write a contract test against the feed's shape before it changes under you. If you need to inspect or reformat a large converted document, the <a href="/json-formatter/" class="text-accent hover:underline">JSON formatter and tree viewer</a> handles it. And when you have to send data back the other way — replying to a SOAP endpoint or regenerating a config file — the <a href="/json-to-xml/" class="text-accent hover:underline">JSON to XML converter</a> is the inverse direction of this page.
+      </p>
+      <p>
+        Legacy integrations rarely arrive in one format, either. The same input pane also accepts other sources: use the <a href="/yaml-to-json/" class="text-accent hover:underline">YAML to JSON converter</a> for pipeline and Kubernetes configuration, or the <a href="/csv-to-json/" class="text-accent hover:underline">CSV to JSON converter</a> for the flat exports that so often accompany an XML feed.
+      </p>
+
+</ToolPageLayout>

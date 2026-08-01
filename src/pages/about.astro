@@ -70,13 +70,34 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       even on multi-megabyte payloads.
     </p>
 
+    <h2 class="mt-8 text-lg font-semibold text-fg">Recently shipped</h2>
+    <ul class="mt-2 space-y-1 text-sm text-subtle">
+      <li>
+        Two-way <a href="/yaml-to-json/" class="text-accent hover:underline">YAML</a>,
+        <a href="/csv-to-json/" class="text-accent hover:underline">CSV</a>, and
+        <a href="/xml-to-json/" class="text-accent hover:underline">XML</a> conversion —
+        both to and from JSON
+      </li>
+      <li>
+        Type generation for
+        <a href="/json-to-typescript/" class="text-accent hover:underline">TypeScript</a>,
+        <a href="/json-to-python/" class="text-accent hover:underline">Python</a>,
+        <a href="/json-to-java/" class="text-accent hover:underline">Java</a>, and
+        <a href="/json-to-go/" class="text-accent hover:underline">Go</a>
+      </li>
+      <li>
+        A dedicated <a href="/json-viewer/" class="text-accent hover:underline">JSON viewer</a>
+        built on the virtualized tree explorer
+      </li>
+      <li>Draft-07 JSON Schema inference from a sample payload</li>
+    </ul>
+
     <h2 class="mt-8 text-lg font-semibold text-fg">Roadmap</h2>
     <ul class="mt-2 space-y-1 text-sm text-subtle">
-      <li>YAML ↔ JSON and CSV ↔ JSON converters</li>
       <li>JSONPath / JMESPath query playground</li>
       <li>Structural diff with semantic hunks</li>
-      <li>JSON Schema draft-2020-12 validator and generator</li>
-      <li>PWA install and Service Worker for full offline caching</li>
+      <li>JSON Schema draft-2020-12 <em>validation</em> (today we generate Draft-07, but do not validate against a schema)</li>
+      <li>PWA install and offline caching</li>
     </ul>
   </article>
 </BaseLayout>

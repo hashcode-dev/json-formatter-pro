@@ -25,21 +25,39 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: 'Converters',
+    title: 'Convert from JSON',
     icon: '🔄',
     items: [
       { name: 'JSON to YAML', desc: 'Clean YAML document conversion', href: '/json-to-yaml/', mode: 'yaml', icon: '📝' },
       { name: 'JSON to XML', desc: 'Structured XML with custom roots', href: '/json-to-xml/', mode: 'xml', icon: '📄' },
       { name: 'JSON to CSV', desc: 'Tabular CSV / TSV spreadsheet format', href: '/json-to-csv/', mode: 'csv', icon: '📊' },
-      { name: 'JSON to TypeScript', desc: 'Generate typed TS interfaces', href: '/json-to-typescript/', mode: 'typescript', icon: '🔷' },
       { name: 'JSON to Schema', desc: 'Draft-07 JSON Schema inference', href: '/json-to-json-schema/', mode: 'schema', icon: '📐' },
+    ],
+  },
+  {
+    title: 'Convert to JSON',
+    icon: '📥',
+    items: [
+      { name: 'CSV to JSON', desc: 'Spreadsheet rows to JSON objects', href: '/csv-to-json/', mode: 'csvToJson', icon: '📊' },
+      { name: 'YAML to JSON', desc: 'K8s, Compose & CI configs to JSON', href: '/yaml-to-json/', mode: 'yamlToJson', icon: '📝' },
+      { name: 'XML to JSON', desc: 'SOAP, RSS & legacy XML to JSON', href: '/xml-to-json/', mode: 'xmlToJson', icon: '📄' },
+    ],
+  },
+  {
+    title: 'Generate Code',
+    icon: '⌨️',
+    items: [
+      { name: 'JSON to TypeScript', desc: 'Generate typed TS interfaces', href: '/json-to-typescript/', mode: 'typescript', icon: '🔷' },
+      { name: 'JSON to Python', desc: 'Typed dataclasses from JSON', href: '/json-to-python/', mode: 'python', icon: '🐍' },
+      { name: 'JSON to Java', desc: 'POJO classes with typed fields', href: '/json-to-java/', mode: 'java', icon: '☕' },
+      { name: 'JSON to Go', desc: 'Structs with json struct tags', href: '/json-to-go/', mode: 'go', icon: '🐹' },
     ],
   },
   {
     title: 'Query & Compare',
     icon: '🔍',
     items: [
-      { name: 'Virtualized Tree', desc: 'High-speed O(1) node explorer', href: '/json-formatter/', mode: 'tree', icon: '🌲' },
+      { name: 'JSON Viewer', desc: 'Virtualized collapsible tree explorer', href: '/json-viewer/', mode: 'tree', icon: '🌲' },
       { name: 'Structure & Metrics', desc: 'Depth, key count, and memory stats', href: '/json-formatter/', mode: 'stats', icon: '📈' },
     ],
   },

@@ -1,0 +1,172 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "JSON to Go Struct Generator - Convert JSON to Golang Pro";
+const description =
+  "Convert JSON to Go structs with json tags generated on every field. Infers int64 vs float64, pointers for nullable keys, and named types for nested objects.";
+const keywords =
+  "json to go, json to go struct, json to golang, convert json to go struct, golang struct generator, json struct tags, encoding/json, go type generator";
+
+// Real generator output, kept in frontmatter so the braces are not parsed as
+// Astro expressions (and so the Go struct tags can keep their backticks).
+const sampleJson = `{
+  "request_id": "req_8f21",
+  "next_page": null,
+  "results": [
+    {
+      "id": 4021,
+      "user_name": "ada",
+      "is_active": true,
+      "balance": 74.25,
+      "team": { "id": 7, "name": "Platform" }
+    },
+    {
+      "id": 4022,
+      "user_name": "linus",
+      "is_active": false,
+      "balance": 12.5,
+      "team": { "id": 7, "name": "Platform" },
+      "avatar_url": "https://cdn.example.com/l.png"
+    }
+  ]
+}`;
+
+const sampleGo = `type Root struct {
+	RequestID string   \`json:"request_id"\`
+	NextPage  any      \`json:"next_page,omitempty"\`
+	Results   []Result \`json:"results"\`
+}
+
+type Result struct {
+	ID        int64   \`json:"id"\`
+	UserName  string  \`json:"user_name"\`
+	IsActive  bool    \`json:"is_active"\`
+	Balance   float64 \`json:"balance"\`
+	Team      Team    \`json:"team"\`
+	AvatarURL *string \`json:"avatar_url,omitempty"\`
+}
+
+type Team struct {
+	ID   int64  \`json:"id"\`
+	Name string \`json:"name"\`
+}`;
+
+const faqs = [
+  {
+    q: "How do I convert JSON to a Go struct?",
+    a: "Paste a sample API response into the left editor. The Go Structs output tab immediately renders `type ... struct` declarations for the root object and every nested object inside it, with a `json:\"...\"` tag on each field, then click Copy or Download to drop the code into a `.go` file. Nothing is submitted or uploaded — generation happens as you type."
+  },
+  {
+    q: "Does the generator add json struct tags automatically?",
+    a: "Yes, on every field without exception — even when the Go field name already matches the JSON key. That matters because `encoding/json` only sees exported (capitalised) fields, so a key like `user_name` must become `UserName`, and without the tag it would silently unmarshal to an empty string instead of erroring. Keys are copied verbatim from your payload, so the wire contract survives any later rename of the Go field."
+  },
+  {
+    q: "Why are integers generated as int64 instead of int?",
+    a: "JSON does not specify an integer width, while Go's `int` is platform-sized (32-bit on some targets). Emitting `int64` means the same struct decodes an ID beyond 2 billion identically everywhere it compiles. Numbers with a fractional part become `float64`."
+  },
+  {
+    q: "How are null and optional fields represented in the generated Go structs?",
+    a: "As pointers with `,omitempty`. A key that was `null` in your sample, or that was absent from some elements of an array of objects, becomes `*string`, `*int64`, `*Team` and so on, so a `nil` marshals back out as a missing key rather than as `\"\"` or `0`. Slices and `any` are already nil-able, so they get `,omitempty` without the pointer."
+  },
+  {
+    q: "What happens when records in a JSON array have different keys?",
+    a: "The array is merged into a single struct type covering the union of the keys seen across all elements. Any key that only some elements carried becomes a pointer with `,omitempty` — which is exactly the shape of the common \"this field is omitted on some rows\" API payload. Identical shapes are deduplicated, so a thousand-record array still produces one struct."
+  },
+  {
+    q: "Can the generator tell a float apart from a whole number?",
+    a: "Only when the sample shows a fractional part. JavaScript's `JSON.parse` cannot distinguish `1.0` from `1`, so a price or rate that happens to be integral in your sample is inferred as `int64` — widen it to `float64` by hand. This is a limitation of the JSON parser in every browser, not of the inference itself."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-to-go/"
+  eyebrow="Code Generator"
+  heading="JSON to Go Struct Generator Pro"
+  subtitle="Generate gofmt-aligned Golang structs with json tags on every field, straight from a real API response."
+  mode="go"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Generating Go Structs from JSON</h2>
+      <p>
+        In Go there is no useful escape hatch when you consume an HTTP API. <strong>`encoding/json`</strong> unmarshals into a concrete type, which means every endpoint your service talks to needs a `struct`, and nearly every field on that struct needs a `json:"..."` tag — Go only marshals exported (capitalised) fields, and almost no API returns capitalised keys. Writing that out by hand for a response with thirty fields across three levels of nesting is tedious work, and it is the kind of tedious work that fails quietly.
+      </p>
+      <p>
+        The failure mode is worth naming precisely. If you misspell a tag, omit one on a field whose Go name no longer matches the wire key, or leave a field unexported, <code>json.Unmarshal</code> returns no error at all. It simply leaves that field at its zero value — `""`, `0`, `false`, `nil` — and the rest of your code carries on with data it never actually received. Generating the structs from a real response removes that entire class of bug, because the tag is copied out of the payload instead of retyped from memory.
+      </p>
+      <p>
+        <strong>JSON to Go Struct Generator Pro</strong> turns a sample response into ready-to-paste Golang type declarations in milliseconds, with the field columns padded the way gofmt would pad them so the code does not reformat the moment you save it.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert JSON to Go Structs Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste Your JSON:</strong> Drop a real API response into the left editor, or upload a `.json` file.</li>
+        <li><strong>Read the Generated Go:</strong> The <em>Go Structs</em> tab renders a `type` declaration for the root object plus one for every nested object it contains, in declaration order.</li>
+        <li><strong>Copy Into Your Package:</strong> Click <em>Copy</em>, or <em>Download</em> to save a `.go` file, then rename the types to match your domain vocabulary — the `json` tags keep working regardless of what you call them.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">A Worked Example: Paginated API Response</h3>
+      <p>
+        Given this trimmed list endpoint, where <code>avatar_url</code> is present on only one of the two records:
+      </p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-surface p-4 font-mono text-xs leading-relaxed text-fg [tab-size:2]"><code>{sampleJson}</code></pre>
+      <p>the generator produces:</p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-surface p-4 font-mono text-xs leading-relaxed text-fg [tab-size:2]"><code>{sampleGo}</code></pre>
+      <p>
+        Three details are doing real work here. The two records were merged into one <code>Result</code> type rather than two, so an array of a thousand rows still yields a single struct. Because <code>avatar_url</code> was missing from the first record it came out as <code>*string</code> with `,omitempty`, which distinguishes "the API omitted this" from "the API sent an empty string". And <code>request_id</code> became the field <code>RequestID</code>, not <code>RequestId</code>, because Go's initialism convention is applied to the field name while the original key stays safely in the tag.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How JSON Types Map onto Go Types</h3>
+      <p>
+        Every field the generator emits carries a `json:"..."` struct tag containing the original key exactly as it appeared in your payload, so renaming a Go field can never break unmarshalling. JSON strings become `string` and booleans become `bool`, while numbers split in two: a value with no fractional part becomes `int64`, anything else becomes `float64`. `int64` is used rather than `int` because JSON does not specify an integer width and Go's `int` is platform-sized. Nullability is expressed with pointers — a key that was `null` in your sample, or that was missing from some elements of an array of objects, becomes a pointer type such as `*string` or `*Team` and gains `,omitempty`, so a `nil` marshals back out as an absent key instead of a zero value. Slices and `any` are already nil-able, so they take `,omitempty` without a pointer. Nested objects become their own named struct types, and an array of objects is merged into one struct covering the union of the keys observed.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Capabilities & Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🏷️ A json Tag on Every Field</h4>
+          <p class="text-xs">Tags are emitted unconditionally, so an exported Go name never drifts away from the wire key it decodes.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔢 Distinct `int64` and `float64`</h4>
+          <p class="text-xs">Numbers are not collapsed into one numeric type; whole values become `int64`, fractional values `float64`.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧬 Ragged Arrays Merged Into One Struct</h4>
+          <p class="text-xs">An array of records yields a single type covering every key seen, with the sometimes-missing ones as `,omitempty` pointers.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧩 Named Types for Nested Objects</h4>
+          <p class="text-xs">Nested objects become their own types, identical shapes are deduplicated, and a genuine name clash gets a numeric suffix rather than two structs with one name.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📐 gofmt-Aligned, Initialism-Aware</h4>
+          <p class="text-xs">Field columns are padded like gofmt, and segments such as `id`, `url`, `api` and `http` fold to `ID`, `URL`, `API`, `HTTP` so golint stays quiet.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side Generation</h4>
+          <p class="text-xs">Parsing runs in a Web Worker and code generation runs in the page — your response never crosses the network to be converted.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">Generated Code Ends Up in Your Binary — So Read the Generator</h3>
+      <p>
+        A struct generator differs from a formatter in one way that deserves a moment's thought: its output does not stay in the browser tab. It gets pasted into your source tree, reviewed, committed, and compiled into a binary you ship. That raises two questions most online generators simply don't answer — where did the payload go, and what exactly produced the code you're about to commit?
+      </p>
+      <p>
+        The first answer here is straightforward. Parsing happens in a Web Worker inside your own browser and the struct generation happens on the same page; the JSON is never sent anywhere to be converted. There is no signup, no account, no API key, and no ad-network script on the page. That matters more than usual for this particular conversion, because the payload you paste into a Go struct generator is rarely a public example — it's typically an internal service response whose field names <em>are</em> your data model.
+      </p>
+      <p>
+        The second answer is that you don't have to take the first one on faith. The whole project is open source, and the code generator is a single readable TypeScript file you can inspect, fork, or self-host: <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">github.com/hashcode-dev/json-formatter-pro</a>. If your team's policy is that generated code has to come from something auditable, that's a box this checks and a hosted black box cannot.
+      </p>
+      <p>
+        Two honest limitations are worth knowing before the output reaches a code review. A float that happens to be integral in your sample — a `price` of `20` rather than `20.5` — is inferred as `int64`, because browsers' `JSON.parse` genuinely cannot tell `1.0` from `1`; widen those fields by hand. And an array that mixes objects with scalars degrades to `[]any`, since there is no single struct that describes it. Both are visible at a glance in the output, which is rather the point of generating readable code instead of a runtime decoder.
+      </p>
+      <p>
+        Working across a polyglot stack? The same payload can be run through the <a href="/json-to-typescript/" class="text-accent hover:underline">JSON to TypeScript interface generator</a> to keep a frontend in sync with these structs, or the <a href="/json-to-python/" class="text-accent hover:underline">JSON to Python dataclass generator</a> for a service on the other side of the queue — all three read the same inferred shape, so the field names and optionality line up. If a response won't parse in the first place, the <a href="/json-validator/" class="text-accent hover:underline">JSON validator</a> will point at the offending line before you try to generate anything from it.
+      </p>
+
+</ToolPageLayout>

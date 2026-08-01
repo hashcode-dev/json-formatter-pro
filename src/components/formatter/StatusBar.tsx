@@ -5,7 +5,7 @@ import type { IndentOption, JsonError, JsonSpec, JsonStats } from '@lib/json/typ
 import { JSON_SPEC_LABELS } from '@lib/json/types';
 import type { OutputMode, Status } from '@store/index';
 import { formatBytes, formatCount } from '@lib/format-bytes';
-import { parseJwt } from '@lib/json/jwt';
+import { inputFormatFor } from './input-formats';
 import { AlertIcon, CheckIcon, InfoIcon } from './icons';
 
 interface Props {
@@ -48,20 +48,22 @@ export function StatusBar({ status, error, stats, indent, spec, mode, input }: P
   const validLabel =
     spec === 'SKIP' ? 'Valid JSON' : `Valid JSON (${JSON_SPEC_LABELS[spec]})`;
 
-  // A JWT is never valid JSON on its own, so the generic JSON worker's
-  // status/error (computed unconditionally in FormatterApp, mode-agnostic)
-  // would permanently show a misleading "Invalid" pill in JWT mode even for
-  // a perfectly well-formed token. In JWT mode this bar validates the
-  // token's own three-part structure instead; the JwtInspector panel still
-  // owns expiry/claim details, this bar only reports structural validity.
-  const jwtResult = useMemo(
-    () => (mode === 'jwt' ? parseJwt(input) : null),
-    [mode, input],
+  // A JWT — or a CSV/YAML/XML paste on a reverse-converter page — is never
+  // valid JSON on its own, so the generic JSON worker's status/error (computed
+  // unconditionally in FormatterApp, mode-agnostic) would permanently show a
+  // misleading "Invalid" pill even for perfectly well-formed input. For those
+  // modes the input-format registry supplies the right validator and this bar
+  // reports against it instead; the tool's own panel still owns the details
+  // (JWT expiry, converter output), this bar only reports validity.
+  const format = inputFormatFor(mode);
+  const result = useMemo(
+    () => (format.validate ? format.validate(input) : null),
+    [format, input],
   );
-  const effectiveStatus: Status = jwtResult
+  const effectiveStatus: Status = result
     ? input.trim() === ''
       ? 'idle'
-      : jwtResult.ok
+      : result.ok
         ? 'valid'
         : 'invalid'
     : status;
@@ -75,14 +77,14 @@ export function StatusBar({ status, error, stats, indent, spec, mode, input }: P
       <div className="flex items-center gap-2 min-w-0">
         <StatusPill
           status={effectiveStatus}
-          validLabel={jwtResult ? 'Valid JWT' : validLabel}
-          invalidLabel={jwtResult ? 'Invalid JWT' : undefined}
+          validLabel={result ? `Valid ${format.label}` : validLabel}
+          invalidLabel={result ? `Invalid ${format.label}` : undefined}
         />
-        {jwtResult
-          ? !jwtResult.ok &&
+        {result
+          ? !result.ok &&
             input.trim() !== '' && (
               <div className="flex min-w-0 items-center gap-2 truncate text-danger">
-                <span className="truncate">{jwtResult.error}</span>
+                <span className="truncate">{result.error}</span>
               </div>
             )
           : (

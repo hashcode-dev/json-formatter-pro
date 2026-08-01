@@ -1,0 +1,182 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "YAML to JSON Converter Pro - Convert YAML Online, Free & Private";
+const description =
+  "Convert YAML to JSON online — Kubernetes manifests, Docker Compose, GitHub Actions and OpenAPI specs. Runs 100% in your browser: no upload, no signup.";
+const keywords =
+  "yaml to json, yaml to json converter, convert yaml to json online, yaml2json, yaml parser online, kubernetes yaml to json, docker compose to json, github actions yaml to json";
+
+/** Worked example — the exact input/output pair produced by the converter. */
+const yamlSample = `# deploy pipeline
+name: deploy
+on:
+  push:
+    branches: [main, release/*]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      REGISTRY: ghcr.io
+      DRY_RUN: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: |
+          docker build -t $REGISTRY/app:$SHA .
+          docker push $REGISTRY/app:$SHA`;
+
+const jsonSample = `{
+  "name": "deploy",
+  "on": {
+    "push": {
+      "branches": [
+        "main",
+        "release/*"
+      ]
+    }
+  },
+  "jobs": {
+    "build": {
+      "runs-on": "ubuntu-latest",
+      "timeout-minutes": 15,
+      "env": {
+        "REGISTRY": "ghcr.io",
+        "DRY_RUN": false
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "name": "Build image",
+          "run": "docker build -t $REGISTRY/app:$SHA .\\ndocker push $REGISTRY/app:$SHA\\n"
+        }
+      ]
+    }
+  }
+}`;
+
+const faqs = [
+  {
+    q: "Which YAML features are supported?",
+    a: "This is a deliberate, pragmatic subset of YAML rather than a full YAML 1.2 implementation. Supported: nested mappings by indentation, block sequences (including `- key: value` and sequences of maps), single- and double-quoted scalars, plain scalars, comments, a leading `---` document marker, single-line flow collections like `[a, b]` and `{a: 1}`, and `|` / `>` block scalars with `-`, `+` or explicit-indent modifiers. Not supported, and rejected with an explicit error rather than silently mangled: anchors and aliases (`&base`, `*base`), merge keys (`<<:`), tags (`!!str`), multi-document streams, explicit `? key` syntax, tab indentation, multi-line plain scalars, and flow collections spread over several lines."
+  },
+  {
+    q: "Why did my Kubernetes or Docker Compose file fail with an anchor error?",
+    a: "Because anchors, aliases and merge keys (`&defaults`, `*defaults`, `<<:`) are a YAML feature with no JSON equivalent — resolving them requires a full YAML implementation, and guessing at them would silently change your data. The converter stops and tells you the exact line instead. The fix is to inline the anchored block by hand, or run `helm template` / `docker compose config` first, which expands anchors and emits a flat, fully-resolved document that converts cleanly."
+  },
+  {
+    q: "Do `yes`, `no`, `on` and `off` become booleans?",
+    a: "No — they stay strings. Scalar resolution follows the YAML 1.2 core schema, where only `true` / `false` (and their `True` / `TRUE` spellings) are booleans. This avoids the classic Norway problem, where a country code of `NO` in YAML 1.1 parsers silently becomes `false`. Numbers are equally conservative: a plain scalar becomes a JSON number only when it round-trips exactly, so version strings, zero-padded codes and long IDs are not quietly reformatted."
+  },
+  {
+    q: "Is it safe to convert a Kubernetes Secret or a CI config here?",
+    a: "Yes. Parsing and JSON serialization happen inside your own browser tab — there is no upload step, no API call and no server that could log your document. That matters more for this conversion than most, because manifests, `.env`-style Compose blocks and CI workflow files routinely hold registry credentials, database URLs and API tokens. The project is also open source, so you can read the parser yourself instead of trusting a privacy policy."
+  },
+  {
+    q: "Can I convert several YAML documents separated by `---` at once?",
+    a: "Not in a single pass. Multi-document streams — the common shape of a bundled `kubectl apply` manifest — are rejected with a message naming the line where the second document starts, because JSON has no equivalent of a document stream and the alternatives (returning only the first document, or silently wrapping them in an array) both misrepresent the input. Split the file on `---` and convert one document at a time. A single leading `---` marker is fine and is simply skipped."
+  },
+  {
+    q: "How do I convert JSON back into YAML?",
+    a: "Use the JSON to YAML converter on this site, which runs the same conversion in the opposite direction. Round-tripping YAML → JSON → YAML preserves the data but not the presentation: comments, blank lines, quoting style and key ordering choices are properties of the YAML text, not of the data model, so they do not survive the trip through JSON."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/yaml-to-json/"
+  eyebrow="Converter"
+  heading="YAML to JSON Converter Pro"
+  subtitle="Convert Kubernetes manifests, Docker Compose files, GitHub Actions workflows, and OpenAPI specs from YAML into clean, formatted JSON."
+  mode="yamlToJson"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Converting YAML Configuration Files to JSON</h2>
+      <p>
+        Almost every configuration file in a modern deployment pipeline is written in <strong>YAML</strong>: Kubernetes manifests, Helm values, `docker-compose.yml`, GitHub Actions and GitLab CI workflows, Ansible playbooks, and increasingly OpenAPI specifications. YAML won that territory because humans have to read and review these files in pull requests, and indentation is kinder to the eye than nested braces.
+      </p>
+      <p>
+        Machines, however, mostly still want JSON. A `kubectl` admission webhook, a JSON Schema validator, an OPA/Rego policy, a Postman or Swagger import, a jq query, a test fixture, or the request body of the API you are about to POST to — all of them expect JSON. That mismatch is why "convert YAML to JSON" is one of the most-run conversions in a DevOps workflow, and it is usually needed in a hurry, in the middle of debugging something.
+      </p>
+      <p>
+        <strong>YAML to JSON Converter Pro</strong> handles that conversion instantly, in the browser, with no upload step — which matters because the files involved are frequently the ones holding your credentials.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert YAML to JSON Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste or Drop Your YAML:</strong> Paste a YAML document into the left editor, or use <em>Upload</em> to drop a `.yaml` or `.yml` file straight in.</li>
+        <li><strong>Watch the Status Pill:</strong> The status bar reports <em>Valid YAML</em> or <em>Invalid YAML</em> as you type, and an invalid document shows the parser's own reason — for example <code>Tab indentation on line 4. YAML requires spaces for indentation.</code></li>
+        <li><strong>Read the JSON Output:</strong> The <em>YAML → JSON</em> panel renders syntax-highlighted JSON as soon as the document parses. The indent selector (2, 3, 4 spaces or tabs) controls how that JSON is formatted.</li>
+        <li><strong>Copy or Download:</strong> <em>Copy</em> puts the JSON on your clipboard; <em>Download</em> saves it as `converted.json`.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">Worked Example: A GitHub Actions Workflow as JSON</h3>
+      <p>
+        This is a real pass through the converter — a trimmed workflow file on the left, the exact JSON it produces on the right, at the default two-space indent. Note what happens to the parts people usually get wrong: the comment is dropped (JSON has no comments), the flow sequence `[main, release/*]` becomes a JSON array, `timeout-minutes: 15` becomes a number while `ubuntu-latest` stays a string, the sequence of maps under `steps` becomes an array of objects, and the `|` block scalar collapses into one string whose line breaks are `\n` escapes.
+      </p>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 pt-2">
+        <div>
+          <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-subtle">Input — deploy.yml</p>
+          <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-3 font-mono text-xs leading-relaxed text-fg">{yamlSample}</pre>
+        </div>
+        <div>
+          <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-subtle">Output — converted.json</p>
+          <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-3 font-mono text-xs leading-relaxed text-fg">{jsonSample}</pre>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">Key Technical Capabilities</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">☸️ Real Manifest Shapes</h4>
+          <p class="text-xs">Nested mappings by indentation, block sequences, sequences of maps (`- name: api`), and `|` / `>` block scalars — the exact constructs a Deployment, Compose service or workflow file is built from.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧭 YAML 1.2 Core Scalar Rules</h4>
+          <p class="text-xs">`NO`, `on` and `off` stay strings, so country codes and feature flags survive intact. Numbers convert only when they round-trip exactly — `007` and `1.10` remain strings rather than becoming corrupted IDs.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🩺 Errors That Name the Line</h4>
+          <p class="text-xs">Unsupported or malformed YAML fails loudly with the offending line number and a plain-English reason, instead of producing plausible-looking JSON that quietly disagrees with your source file.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 No Upload, No Signup, No Ads</h4>
+          <p class="text-xs">Conversion runs entirely inside your browser tab. Nothing is transmitted, nothing is stored server-side, and there is no account wall or ad network anywhere on the page.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📄 `.yaml` and `.yml` File Uploads</h4>
+          <p class="text-xs">Load a manifest straight off disk with the toolbar's <em>Upload</em> action instead of pasting it — the file is read locally by the browser, never posted anywhere.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⌨️ Re-parses As You Edit</h4>
+          <p class="text-xs">The JSON output updates on every keystroke, so fixing an indentation mistake and seeing the corrected structure is a single edit rather than a re-submit.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">What YAML to JSON Conversion Actually Does</h3>
+      <p>
+        YAML to JSON conversion re-encodes a YAML document into the JSON data model without changing the data itself. Both formats describe the same three things — mappings, sequences and scalars — so a YAML mapping becomes a JSON object, a YAML block sequence becomes a JSON array, and plain scalars resolve to strings, numbers, booleans or null. The differences are surface syntax and features: YAML uses significant indentation, allows comments, and supports anchors, aliases, tags and multi-document streams, none of which exist in JSON. Conversion in this direction is therefore lossy in exactly one respect — comments and anchors have no JSON equivalent and are dropped — while the values themselves survive unchanged. Developers need the conversion because Kubernetes manifests, Docker Compose files, GitHub Actions workflows, Ansible playbooks and OpenAPI specifications are authored in YAML, but the APIs, JSON Schema validators, policy engines and test fixtures that consume them expect JSON.
+      </p>
+
+      <p>
+        A few resolution rules are worth knowing before you trust the output. An empty value, `~`, `null`, `Null` or `NULL` all become JSON <code>null</code>; `0o755` and `0xFF` are read as octal and hexadecimal integers and emitted as their decimal values; a duplicate key resolves last-wins, exactly as <code>JSON.parse</code> treats a repeated JSON key; and anything quoted stays a string regardless of what it looks like, so `version: "1.0"` never collapses to the number 1. Keys are emitted verbatim — `runs-on` and `timeout-minutes` are not camel-cased or otherwise normalised — so the JSON stays a faithful, diffable representation of the file you pasted.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">A Parser That Tells You Where It Stops</h3>
+      <p>
+        Most online converters present themselves as complete YAML implementations and stay quiet about the edges. This one is a deliberate subset, and says so up front: indentation-based maps, block sequences, quoted and plain scalars, comments, single-line flow collections and block scalars are supported; anchors, aliases, merge keys, tags, multi-document streams, explicit `? key` syntax and multi-line plain scalars are not. Every one of those unsupported constructs produces an explicit error naming the line — never a silent reinterpretation of your config. That trade is intentional: for infrastructure files, JSON that looks right but isn't is far more expensive than a conversion that refuses to run.
+      </p>
+      <p>
+        The privacy side of the trade is just as concrete. The files people convert on a page like this are Kubernetes <code>Secret</code> objects, Compose blocks with a database URL in <code>environment:</code>, and CI workflows that reference registry tokens. Pasting those into a server-side converter means handing a live credential to a third party whose logs you cannot inspect. Here the parse happens in your own tab — no upload, no request, no account — and because the whole project is open source you can read the parser rather than trust a claim about it: <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">view the source on GitHub</a>.
+      </p>
+      <p>
+        Once your YAML is JSON, the rest of the toolkit picks up where this page leaves off. Go the other way with the <a href="/json-to-yaml/" class="text-accent hover:underline">JSON to YAML converter</a>, re-indent or inspect the result in the <a href="/json-formatter/" class="text-accent hover:underline">JSON formatter and tree viewer</a>, check a hand-edited document with the <a href="/json-validator/" class="text-accent hover:underline">JSON validator</a>, or turn a converted OpenAPI fragment into a contract with the <a href="/json-to-json-schema/" class="text-accent hover:underline">JSON Schema generator</a>. Every one of them runs client-side, on the same terms as this one.
+      </p>
+
+</ToolPageLayout>

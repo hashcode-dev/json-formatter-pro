@@ -1,0 +1,174 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "JSON to Java POJO Generator - Convert JSON to Java Classes";
+const description =
+  "Generate Java POJO classes from a JSON API response. Nested static classes, JavaBean accessors, Jackson @JsonProperty key mapping, and int/long/double inference.";
+const keywords =
+  "json to java, json to pojo, json to java class, json to java object, convert json to java, java pojo generator, jackson dto generator, spring boot dto from json";
+
+// Verbatim output of `jsonToJava` (src/lib/json/codegen.ts) for the input below.
+// Kept in frontmatter so the braces and generics are not parsed as template syntax.
+const jsonSample = `{
+  "id": 4815162342,
+  "content-type": "application/json",
+  "verified": true,
+  "orders": [
+    { "sku": "A-100", "total": 24.99, "quantity": 2 },
+    { "sku": "B-220", "total": 10.5 }
+  ]
+}`;
+
+const javaSample = `import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
+public class Root {
+    private long id;
+    @JsonProperty("content-type")
+    private String contentType;
+    private boolean verified;
+    private List<Order> orders;
+
+    public long getId() { return id; }
+    public void setId(long value) { this.id = value; }
+
+    public String getContentType() { return contentType; }
+    public void setContentType(String value) { this.contentType = value; }
+
+    public boolean isVerified() { return verified; }
+    public void setVerified(boolean value) { this.verified = value; }
+
+    public List<Order> getOrders() { return orders; }
+    public void setOrders(List<Order> value) { this.orders = value; }
+
+    public static class Order {
+        private String sku;
+        private double total;
+        private Integer quantity;
+
+        public String getSku() { return sku; }
+        public void setSku(String value) { this.sku = value; }
+
+        public double getTotal() { return total; }
+        public void setTotal(double value) { this.total = value; }
+
+        public Integer getQuantity() { return quantity; }
+        public void setQuantity(Integer value) { this.quantity = value; }
+    }
+}`;
+
+const faqs = [
+  {
+    q: "What is the difference between 'JSON to Java' and 'JSON to POJO'?",
+    a: "Nothing — they are two names for the same job. A POJO (Plain Old Java Object) is just an ordinary class with private fields and public getters and setters, carrying no framework base class or interface. That is exactly what this generator emits, which is what Jackson's ObjectMapper, Gson, Spring's RestTemplate and WebClient all bind JSON into. So if you searched for a JSON to POJO converter, a JSON to Java class generator, or a JSON to Java object converter, this is the tool you want."
+  },
+  {
+    q: "Are nested JSON objects generated as separate .java files?",
+    a: "No. Every nested object becomes a `public static class` declared inside the root class, so the entire model is one file you can save as Root.java and compile immediately. Nested static classes keep the simple names resolvable without imports and avoid the package boilerplate you would need if each type were its own file. If you prefer separate files, cut each `public static class` block out, drop the `static` keyword, and give it its own file."
+  },
+  {
+    q: "How are JSON keys that are not valid Java identifiers handled?",
+    a: "The key is rewritten to lowerCamelCase and the original is preserved with a Jackson `@JsonProperty` annotation, which is emitted only when the Java field name ends up differing from the key. So `content-type` becomes a field named contentType annotated `@JsonProperty(\"content-type\")`, and `user name` becomes userName. A key that collides with a Java keyword gets a trailing underscore — `class` becomes class_ — and a key starting with a digit is prefixed. Nothing is dropped: the wire name always survives in the annotation."
+  },
+  {
+    q: "Does the generated Java code require Jackson as a dependency?",
+    a: "Only if at least one key needed remapping. When every JSON key is already a valid lowerCamelCase Java name, no annotations are produced and the Jackson import is omitted entirely, leaving a dependency-free POJO that Gson, Jackson, Moshi or a hand-written mapper can all bind. If you use Gson rather than Jackson, replace each `@JsonProperty(\"key\")` with `@SerializedName(\"key\")` — the field names and types are unchanged."
+  },
+  {
+    q: "Why did a decimal field come out as int instead of double?",
+    a: "Because JSON itself does not distinguish them. A value written as `1.0` is parsed by the browser as the number 1, and no JavaScript-based generator can recover the difference between `1.0` and `1` after parsing. If a field is a currency amount or a ratio that merely happened to be whole in your sample, widen it to double by hand, or paste a sample where that field carries a fractional value. Similarly, integers beyond 2^53 have already lost precision before the generator sees them."
+  },
+  {
+    q: "Is my JSON payload uploaded to a server to generate the classes?",
+    a: "No. Parsing runs in a Web Worker and the class generation runs in your browser tab — no request carries your payload anywhere, and there is no account, no API key and no upload step. The project is open source, so you can read the generator itself at github.com/hashcode-dev/json-formatter-pro rather than relying on a privacy policy."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-to-java/"
+  eyebrow="Code Generator"
+  heading="JSON to Java POJO Class Generator Pro"
+  subtitle="Turn a sample JSON API response into compilable Java POJOs with JavaBean accessors, nested static classes, and Jackson key mapping."
+  mode="java"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Generating Java Classes from a JSON Response</h2>
+      <p>
+        Sooner or later every <strong>Spring Boot</strong> service has to consume somebody else's JSON — a partner REST API, an internal microservice, a webhook body, a Kafka message. Before Jackson or Gson can bind any of it, a human has to write the DTO by hand: one class per nested object, one field per key, a getter and a setter for each, and the correct primitive or boxed type for every value. On a forty-field payload nested three levels deep that is an hour of mechanical typing, and a mistyped field name does not fail the build — it produces a silently `null` property at runtime, usually found in an integration test.
+      </p>
+      <p>
+        <strong>JSON to Java POJO Generator Pro</strong> reads a real sample response and emits the whole model in one pass: the root class, every nested type, JavaBean accessors, and the annotations required to keep the original wire names intact. If you searched for a <strong>JSON to POJO</strong> converter, a JSON to Java class generator, or a JSON to Java object converter, this page is the same tool — POJO is simply the conventional name for the plain field-and-accessor class that Jackson binds into.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert JSON to a Java POJO Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste Your JSON:</strong> Drop a real API response into the left editor, or upload a `.json` file.</li>
+        <li><strong>Read the Generated Classes:</strong> The <em>Java</em> tab on the right regenerates as you type, showing the root class and every nested type.</li>
+        <li><strong>Check the Inferred Types:</strong> Scan the boxed versus primitive fields — those are the generator telling you which keys were absent or null somewhere in your sample.</li>
+        <li><strong>Copy or Download:</strong> Click <em>Copy</em> for the clipboard, or <em>Download</em> to save a `.java` file — rename it to match the public class (`Root.java` by default) and drop it into `src/main/java`.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">A Worked Example: Response In, POJO Out</h3>
+      <p>
+        Take a trimmed order-lookup response, the sort of thing you would copy out of the DevTools Network tab:
+      </p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-4 font-mono text-xs leading-relaxed text-fg"><code>{jsonSample}</code></pre>
+      <p>
+        Pasting that into the editor produces this, verbatim:
+      </p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-4 font-mono text-xs leading-relaxed text-fg"><code>{javaSample}</code></pre>
+      <p>
+        Six decisions are visible there. `4815162342` sits outside the signed 32-bit range, so `id` is a `long`, not an `int`. `content-type` cannot be a Java field name, so it became `contentType` with the wire name moved into `@JsonProperty`. The two array elements were merged into a single `Order` class rather than two near-duplicate types. `quantity` appears in only one of them, so it is a boxed `Integer` — a primitive `int` could not represent its absence. Both totals carry a fractional part, so `total` is a `double`. And `verified` gets an `isVerified()` reader, per the JavaBean convention for primitive booleans.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How JSON Values Map to Java Types</h3>
+      <p>
+        The JSON to Java generator maps JSON strings to `String`, booleans to `boolean`, and objects to their own generated class. Numbers are split three ways: a value with a fractional part becomes `double`, a whole number becomes `int`, and a whole number outside the signed 32-bit range becomes `long`. Arrays become `java.util.List` with a boxed element type, because Java generics cannot hold primitives. Nullability changes the type itself rather than decorating it — a field that was `null` in the sample, or that was missing from some elements of an array of objects, is boxed to `Integer`, `Long`, `Double` or `Boolean` so that it can actually hold null. A key whose values were only ever null, an empty array, or an array mixing incompatible kinds falls back to `Object`. Every nested object becomes a `public static class` inside the root class, so the result is a single compilable file whose only imports are `java.util.List` and, when a key needs remapping, Jackson's `@JsonProperty`.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Capabilities</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">☕ One Compilable File</h4>
+          <p class="text-xs">Nested objects become `public static class` members of the root class, so the output pastes into a single `.java` file and compiles as-is.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧬 Ragged Arrays Merged Into One Class</h4>
+          <p class="text-xs">An array of records generates one class from the union of all keys — a key missing from some elements simply comes back boxed rather than dropped.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🏷️ Wire Names Preserved</h4>
+          <p class="text-xs">Keys that cannot be Java identifiers keep their exact spelling in a Jackson `@JsonProperty`, emitted only on the fields that actually need it.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side Generation</h4>
+          <p class="text-xs">Parsing runs in a Web Worker and the classes are generated in your own tab — no upload, no account, no rate limit.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">Keys That Aren't Legal Java Identifiers</h3>
+      <p>
+        Real payloads are full of keys Java will not accept. Hyphenated headers (`content-type`), snake_case database columns, keys with spaces, keys starting with a digit and keys colliding with reserved words are all folded to lowerCamelCase, with the original spelling carried in `@JsonProperty` so round-tripping still produces the same document. A reserved word gets a trailing underscore — `class` becomes a field named `class_` with a `getClass_()` reader, deliberately keeping the underscore, because `getClass()` is already inherited from `java.lang.Object` and would not compile. Two keys that sanitize to the same name (`a-b` and `a_b`) get a numeric suffix on the second. A key with no ASCII word characters has no name to derive, so the field falls back to `value` — the annotation still carries the real key, but that one is worth renaming by hand.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">POJOs, Not Records or Lombok</h3>
+      <p>
+        The output is deliberately conservative: private fields plus one-line JavaBean accessors, no `record`, no `@Data`, no builder, no `equals`/`hashCode`. That is the shape with the widest compatibility — it binds under Jackson and Gson without extra modules, it works on older JDKs and in codebases with no annotation processor configured, and a mutable bean is what most Spring Boot DTO layers already look like. Collapsing each class into a `record` afterwards is a mechanical IDE step; the field list was the tedious part, and it is the part that is now correct.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Why Pasting a Production Response Into a Codegen Site Is a Compliance Problem</h3>
+      <p>
+        The JSON you paste into a POJO generator is rarely a toy. It is a real response from a staging or production endpoint, carrying your internal field names, your ID formats, and often live customer values that happened to be in the record you grabbed. With many free online generators the work happens on their backend, so generating a DTO means transmitting that payload to a third party — an awkward conversation with a security reviewer, and in regulated environments a genuine incident.
+      </p>
+      <p>
+        This generator has no backend to send it to. Parsing runs in a Web Worker and the Java emission runs in the same browser tab, so nothing crosses the network to produce the classes. There is no signup, no API key, no ads and no upload dialog. And because the project is open source you need not take that on trust: the exact inference and emission code is readable in the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>, and you can fork or self-host it behind your own firewall if your review process requires it.
+      </p>
+      <p>
+        The Java, Python and Go targets are three renderers over one shared inference pass, so a polyglot stack stays consistent: a field boxed to `Integer` here comes out as `Optional[int]` in the <a href="/json-to-python/" class="text-accent hover:underline">JSON to Python dataclass generator</a> rather than as a second, separate guess. The older <a href="/json-to-typescript/" class="text-accent hover:underline">JSON to TypeScript interface generator</a> infers structurally on its own, which is all TypeScript needs — `number` covers every numeric case there and any JSON key is already a legal property name. And if you would rather pin the contract than model it, the <a href="/json-to-json-schema/" class="text-accent hover:underline">JSON Schema generator</a> turns the same sample into a validation document.
+      </p>
+
+</ToolPageLayout>

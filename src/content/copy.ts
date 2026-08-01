@@ -18,8 +18,12 @@ export const FEATURES: Array<{ title: string; body: string }> = [
     body: 'Virtualized JSON tree viewer with expand/collapse, path breadcrumbs, and fast key/value search. Navigate and explore complex JSON structures.',
   },
   {
-    title: 'JSON Diff Viewer',
-    body: 'Side-by-side comparison and diff view of your original and formatted JSON output for effortless review.',
+    title: 'Two-Way Format Converters',
+    body: 'Convert JSON to YAML, XML, and CSV — and back again. Paste a Kubernetes manifest, a spreadsheet export, or a SOAP response and get clean JSON out.',
+  },
+  {
+    title: 'Typed Code Generation',
+    body: 'Generate TypeScript interfaces, Python dataclasses, Java POJOs, and Go structs (with json tags) straight from a sample API response.',
   },
   {
     title: 'Detailed JSON Statistics',

@@ -9,6 +9,7 @@ import {
   jsonToTypeScript,
   jsonToJsonSchema,
 } from '@lib/json/converters';
+import { jsonToPython, jsonToJava, jsonToGo } from '@lib/json/codegen';
 import { downloadText } from '@lib/download';
 import { useCopyWithToast } from '@hooks/useCopyWithToast';
 
@@ -29,6 +30,24 @@ const CONVERTERS = {
     ext: 'ts',
     mime: 'text/typescript',
     label: 'TypeScript Interfaces',
+  },
+  python: {
+    run: jsonToPython,
+    ext: 'py',
+    mime: 'text/x-python',
+    label: 'Python Dataclasses',
+  },
+  java: {
+    run: jsonToJava,
+    ext: 'java',
+    mime: 'text/x-java',
+    label: 'Java POJO Classes',
+  },
+  go: {
+    run: jsonToGo,
+    ext: 'go',
+    mime: 'text/x-go',
+    label: 'Go Structs',
   },
   schema: {
     run: jsonToJsonSchema,

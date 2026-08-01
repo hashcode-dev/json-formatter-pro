@@ -19,40 +19,31 @@ import { StatusBar } from './StatusBar';
 import { Toaster } from './Toaster';
 import { CommandPalette, HelpSheet, type PaletteCommand } from './CommandPalette';
 import { ConvertersPane, isConverterMode } from '@components/tools/ConvertersPane';
+import {
+  ReverseConvertPane,
+  isReverseConverterMode,
+  reverseConvert,
+} from '@components/tools/ReverseConvertPane';
 import { JwtInspector } from '@components/tools/JwtInspector';
-import { parseJwt } from '@lib/json/jwt';
-
-const SAMPLE = `{
-  "app": "JSON Formatter Pro",
-  "version": "1.0.0",
-  "features": ["format", "validate", "minify", "tree", "stats", "converters", "jwt"],
-  "author": {
-    "name": "You",
-    "email": "you@example.com"
-  },
-  "flags": {
-    "private": true,
-    "offline": true,
-    "telemetry": false
-  }
-}`;
+import { inputFormatFor, inputIsJson } from './input-formats';
 
 /**
- * Demo token for the JWT Inspector's first-load state. Based on the
- * well-known jwt.io example (header/`sub`/`name`/`iat` are the canonical
- * placeholder values), with an added `exp` claim (2100-01-01) so the
- * "check token expiration" feature has something to demonstrate too. The
- * signature is not real and is never verified — `parseJwt` (src/lib/json/jwt.ts)
- * only decodes and displays the header/payload, it does not check the
- * signature — so this is safe to embed and does not represent a real
- * credential.
+ * What the Copy and Download actions operate on. In a reverse-converter mode
+ * the editor holds CSV/YAML/XML and the JSON lives in the output pane, so those
+ * actions follow the output rather than handing back the source text under a
+ * `.json` filename.
  */
-const SAMPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjQxMDI0NDQ4MDB9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-
-/** Text the Copy and Download actions operate on. */
-function readOutputText(): string {
-  const { formatted, input } = useStore.getState();
-  return formatted || input;
+function readOutputArtifact(): { text: string; filename: string; mime: string } {
+  const { formatted, input, mode, options } = useStore.getState();
+  if (isReverseConverterMode(mode)) {
+    const result = reverseConvert(mode, input, options.indent);
+    return {
+      text: result.ok ? result.json : '',
+      filename: 'converted.json',
+      mime: 'application/json',
+    };
+  }
+  return { text: formatted || input, filename: 'formatted.json', mime: 'application/json' };
 }
 
 /** Raw input, or null when there is nothing worth acting on. */
@@ -159,23 +150,20 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   // survives a reload or a return visit. That means "is input empty?" isn't
   // enough to decide whether to seed here: visiting /jwt-decoder/ right
   // after another tool page leaves that other page's content sitting in the
-  // store, which isn't empty, so the old blank-check silently skipped
+  // store, which isn't empty, so a blank-check alone silently skipped
   // seeding and a JWT-decoder first visit showed leftover JSON instead of
-  // the demo token. Fix: also reseed when what's persisted doesn't actually
-  // match this page's content type — a real JWT the user is inspecting is
-  // always preserved (parseJwt only succeeds on genuine 3-part tokens), and
-  // a real JSON document is never JWT-shaped, so neither direction ever
-  // clobbers a user's actual work; only stray content left behind by a
-  // *different* tool page gets replaced.
+  // the demo token. Same hazard, now across five content types: arriving at
+  // /csv-to-json/ with JSON (or a JWT, or YAML) in the buffer must show the
+  // CSV sample. So we also reseed when the persisted buffer doesn't belong to
+  // this page's input format — `claims` in the input-format registry decides,
+  // on *shape* rather than validity, so a user's genuine (even half-broken)
+  // document of the right type is always preserved and only another tool's
+  // leftovers get replaced.
   useEffect(() => {
+    const format = inputFormatFor(initialMode ?? 'formatted');
     const current = useStore.getState().input;
-    const isJwtShaped = current.trim() !== '' && parseJwt(current).ok;
-    if (initialMode === 'jwt') {
-      if (current === '' || !isJwtShaped) {
-        setInput(SAMPLE_JWT);
-      }
-    } else if (current === '' || isJwtShaped) {
-      setInput(SAMPLE);
+    if (current === '' || !format.claims(current)) {
+      setInput(format.sample);
     }
   }, [initialMode, setInput]);
 
@@ -191,21 +179,28 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
     return () => window.removeEventListener('json-tool-select', handleToolSelect);
   }, [setMode]);
 
+  // Format and Minify rewrite the *input* as JSON, so they only apply while the
+  // editor actually holds JSON. On a reverse-converter or JWT page they are
+  // disabled in the toolbar, and guarded here too because the palette and the
+  // keyboard shortcuts reach the same actions.
+  const jsonInput = inputIsJson(mode);
+
   const doFormat = useCallback(() => {
-    if (readInput() === null) return;
+    if (!jsonInput || readInput() === null) return;
     sendProcess();
     setMode('formatted');
-  }, [sendProcess, setMode]);
+  }, [jsonInput, sendProcess, setMode]);
 
   const doMinify = useCallback(() => {
+    if (!jsonInput) return;
     const raw = readInput();
     if (raw === null) return;
     worker.send({ id: nextRequestId(), kind: 'minify', raw });
     setMode('formatted');
-  }, [worker, nextRequestId, setMode]);
+  }, [jsonInput, worker, nextRequestId, setMode]);
 
   const doCopy = useCallback(async () => {
-    const text = readOutputText();
+    const { text } = readOutputArtifact();
     if (!text) return;
     await copyWithToast(text, {
       success: 'Copied to clipboard.',
@@ -214,9 +209,9 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   }, [copyWithToast]);
 
   const doDownload = useCallback(() => {
-    const text = readOutputText();
+    const { text, filename, mime } = readOutputArtifact();
     if (!text) return;
-    downloadText('formatted.json', text);
+    downloadText(filename, text, mime);
     pushToast({ kind: 'success', message: 'Download started.' });
   }, [pushToast]);
 
@@ -258,8 +253,14 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
       { id: 'tool-xml', label: 'Convert to XML', run: () => setMode('xml') },
       { id: 'tool-csv', label: 'Convert to CSV', run: () => setMode('csv') },
       { id: 'tool-ts', label: 'Convert to TypeScript Types', run: () => setMode('typescript') },
+      { id: 'tool-python', label: 'Generate Python Dataclasses', run: () => setMode('python') },
+      { id: 'tool-java', label: 'Generate Java POJO Classes', run: () => setMode('java') },
+      { id: 'tool-go', label: 'Generate Go Structs', run: () => setMode('go') },
       { id: 'tool-schema', label: 'Generate JSON Schema', run: () => setMode('schema') },
       { id: 'tool-jwt', label: 'Inspect JWT Token', run: () => setMode('jwt') },
+      { id: 'tool-csv-to-json', label: 'Convert CSV to JSON', run: () => setMode('csvToJson') },
+      { id: 'tool-yaml-to-json', label: 'Convert YAML to JSON', run: () => setMode('yamlToJson') },
+      { id: 'tool-xml-to-json', label: 'Convert XML to JSON', run: () => setMode('xmlToJson') },
       { id: 'sort', label: 'Toggle: Sort keys', run: () => setOptions({ sortKeys: !options.sortKeys }) },
       { id: 'strip-null', label: 'Toggle: Remove nulls', run: () => setOptions({ stripNull: !options.stripNull }) },
       { id: 'strip-empty', label: 'Toggle: Remove empty', run: () => setOptions({ stripEmpty: !options.stripEmpty }) },
@@ -295,6 +296,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   );
 
   const canAct = input.trim().length > 0;
+  const inputFormat = inputFormatFor(mode);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -310,6 +312,9 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
         onOpenPalette={() => togglePalette(true)}
         onOpenHelp={() => toggleHelp(true)}
         canAct={canAct}
+        canFormat={canAct && jsonInput}
+        inputFormatLabel={inputFormat.label}
+        uploadAccept={inputFormat.uploadAccept}
       />
 
       <div
@@ -321,17 +326,22 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
           if (file) void doUpload(file);
         }}
       >
-        <section aria-label="JSON input" className="flex min-h-[45vh] flex-col bg-surface lg:min-h-0">
+        <section
+          aria-label={`${inputFormat.label} input`}
+          className="flex min-h-[45vh] flex-col bg-surface lg:min-h-0"
+        >
           <header className="flex h-9 shrink-0 items-center justify-between border-b border-border px-3 text-xs uppercase tracking-wide text-subtle">
             <span>Input</span>
-            <span className="normal-case text-[11px] text-subtle">Paste, type, or drop a file</span>
+            <span className="normal-case text-[11px] text-subtle">{inputFormat.hint}</span>
           </header>
           <div className="min-h-0 flex-1">
             <EditorPane
               value={input}
               onChange={setInput}
-              error={error}
-              ariaLabel="JSON input editor"
+              // The worker's error is a JSON error; highlighting its line in a
+              // CSV/YAML/XML/JWT buffer would point at nothing meaningful.
+              error={jsonInput ? error : null}
+              ariaLabel={`${inputFormat.label} input editor`}
             />
           </div>
         </section>
@@ -353,6 +363,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
             {mode === 'tree' && <TreeView root={value} />}
             {mode === 'stats' && <StatsPanel stats={stats} />}
             {isConverterMode(mode) && <ConvertersPane type={mode} />}
+            {isReverseConverterMode(mode) && <ReverseConvertPane type={mode} />}
             {mode === 'jwt' && <JwtInspector />}
           </OutputPanel>
         </section>
