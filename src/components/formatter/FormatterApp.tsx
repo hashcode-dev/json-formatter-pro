@@ -20,6 +20,7 @@ import { Toaster } from './Toaster';
 import { CommandPalette, HelpSheet, type PaletteCommand } from './CommandPalette';
 import { ConvertersPane, isConverterMode } from '@components/tools/ConvertersPane';
 import { JwtInspector } from '@components/tools/JwtInspector';
+import { parseJwt } from '@lib/json/jwt';
 
 const SAMPLE = `{
   "app": "JSON Formatter Pro",
@@ -152,9 +153,29 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   // JWT Token" from the Tools dropdown): re-seeding on every mode switch
   // would risk clobbering input a user typed and then cleared, or surprise
   // them with unrequested content appearing under their cursor.
+  //
+  // `input` is persisted to localStorage under one shared key across every
+  // page (see src/store/index.ts), by design, so a user's last input
+  // survives a reload or a return visit. That means "is input empty?" isn't
+  // enough to decide whether to seed here: visiting /jwt-decoder/ right
+  // after another tool page leaves that other page's content sitting in the
+  // store, which isn't empty, so the old blank-check silently skipped
+  // seeding and a JWT-decoder first visit showed leftover JSON instead of
+  // the demo token. Fix: also reseed when what's persisted doesn't actually
+  // match this page's content type — a real JWT the user is inspecting is
+  // always preserved (parseJwt only succeeds on genuine 3-part tokens), and
+  // a real JSON document is never JWT-shaped, so neither direction ever
+  // clobbers a user's actual work; only stray content left behind by a
+  // *different* tool page gets replaced.
   useEffect(() => {
-    if (useStore.getState().input === '') {
-      setInput(initialMode === 'jwt' ? SAMPLE_JWT : SAMPLE);
+    const current = useStore.getState().input;
+    const isJwtShaped = current.trim() !== '' && parseJwt(current).ok;
+    if (initialMode === 'jwt') {
+      if (current === '' || !isJwtShaped) {
+        setInput(SAMPLE_JWT);
+      }
+    } else if (current === '' || isJwtShaped) {
+      setInput(SAMPLE);
     }
   }, [initialMode, setInput]);
 
@@ -343,6 +364,8 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
         stats={stats}
         indent={options.indent}
         spec={options.spec}
+        mode={mode}
+        input={input}
       />
 
       <CommandPalette
