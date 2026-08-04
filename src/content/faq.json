@@ -13,7 +13,7 @@
   },
   {
     "q": "Can I use this offline?",
-    "a": "Yes. Once the page has loaded, all functionality — including the editor, worker, and views — runs entirely offline. No third-party scripts or fonts are loaded."
+    "a": "Yes. Once the page has loaded, all core functionality — including the editor, worker, and views — runs entirely offline and makes no network requests with your content."
   },
   {
     "q": "What's the difference between Minify and Format?",
@@ -53,7 +53,7 @@
   },
   {
     "q": "Is there a free JSON formatter with no registration needed?",
-    "a": "Yes! Our JSON formatter is completely free with no sign-up, registration, or login required. It's also free from ads and tracking."
+    "a": "Yes! Our JSON formatter is completely free with no sign-up, registration, or login required. It's also free from ads — we only use anonymous, aggregate analytics to understand site usage."
   },
   {
     "q": "Can I view JSON in tree format?",

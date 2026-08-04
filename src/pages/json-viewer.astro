@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "Online JSON Viewer & Tree Explorer Pro - Free & Private";
+const description =
+  "View and explore JSON online in a collapsible, virtualized tree. Search keys and values, open one branch at a time, and inspect huge payloads 100% in your browser.";
+const keywords =
+  "json viewer, json viewer online, online json viewer, json tree viewer, view json online, json visualizer, json explorer, collapsible json viewer";
+
+// Braces are expression syntax in an Astro template, so the worked example
+// lives here as plain strings and is rendered through `{}` below.
+const sampleJson = `{
+  "orderId": "A-10482",
+  "customer": { "id": 91, "name": "Dana Whitfield", "vip": true },
+  "items": [
+    { "sku": "KB-01", "qty": 2, "price": 79.5 },
+    { "sku": "MS-14", "qty": 1, "price": 24 }
+  ],
+  "coupon": null
+}`;
+
+const treeOnLoad = `▾ {4}
+    "orderId": "A-10482"
+  ▸ "customer": {3}
+  ▸ "items": [2]
+    "coupon": null`;
+
+const treeExpanded = `▾ {4}
+    "orderId": "A-10482"
+  ▾ "customer": {3}
+      "id": 91
+      "name": "Dana Whitfield"
+      "vip": true
+  ▾ "items": [2]
+    ▾ [0]: {3}
+        "sku": "KB-01"
+        "qty": 2
+        "price": 79.5
+    ▸ [1]: {3}
+    "coupon": null`;
+
+const faqs = [
+  {
+    q: "What is the difference between a JSON viewer and a JSON formatter?",
+    a: "A formatter re-prints the whole document with indentation so you can read it top to bottom. A viewer renders it as a collapsible tree so you can skip most of it: the root opens showing each top-level key and how many children it holds, and you expand only the branch you care about. Use the tree view to find your way around an unfamiliar or very large payload, and the Formatted view when you need the actual indented text to copy, diff, or paste into a file."
+  },
+  {
+    q: "Can this JSON viewer open very large files?",
+    a: "Yes. Parsing runs in a background Web Worker so the page never blocks, and the tree renders with TanStack Virtual, which mounts only the rows currently visible in the scroll container instead of the entire document. Files up to 50 MB can be uploaded or dragged onto the editor; anything over 5 MB shows a confirmation first because a file that size can briefly pause the browser while it is read."
+  },
+  {
+    q: "How do I search for a key or a value inside a big JSON document?",
+    a: "Type into the \"Search keys and values\" box above the tree. It matches object keys, string values, numbers, and booleans, case-insensitively, and filters the tree down to the matching rows. One important detail: the search only looks at rows that are currently expanded, so click Expand all first if you want to search the whole document rather than just the branches you have opened."
+  },
+  {
+    q: "Can I view JSON that has comments or trailing commas?",
+    a: "Yes. Open the JSON specification selector in the toolbar and choose \"Skip Validation\". The parser then runs in lenient mode, accepting // and /* */ comments and trailing commas, so JSONC-style config files such as tsconfig.json load into the tree instead of failing validation. Switch back to RFC 8259 whenever you want strict checking again."
+  },
+  {
+    q: "Does the tree show a copyable JSON path for each node?",
+    a: "Not today. The viewer tracks an internal path for every node so expand and collapse state survives, but that path is not displayed or copyable in the interface yet. What each row does show is the key (or array index), the value, the value's type by colour, and the child count for objects and arrays, with the full text of any truncated value available on hover."
+  },
+  {
+    q: "Is my JSON uploaded anywhere when I view it?",
+    a: "No. Parsing, transforming, and rendering all happen inside your own browser tab via a Web Worker, so the document never crosses the network. There is no account, no signup, and no advertising or ad-network scripts on the page; the site's single analytics tag is consent-gated and never receives your JSON. The project is open source, so you can read the parsing and rendering code yourself rather than taking the claim on trust."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-viewer/"
+  eyebrow="Viewer & Explorer"
+  heading="Online JSON Viewer & Tree Explorer Pro"
+  subtitle="Explore large or unfamiliar JSON payloads in a collapsible, virtualized tree — search keys and values and open one branch at a time, entirely in your browser."
+  mode="tree"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Explore JSON Online Instead of Scrolling Through It</h2>
+      <p>
+        The hardest JSON to work with isn't malformed JSON — it's JSON somebody else wrote. A CloudTrail event, a Stripe webhook body, an Elasticsearch response, a <code>package-lock.json</code>. Pretty-printing a payload like that helps, but it only turns one unreadable line into four thousand readable ones: you still scroll past everything you don't need to reach the field you came for.
+      </p>
+      <p>
+        <strong>JSON Viewer Pro</strong> opens directly into the tree explorer instead. The root node is expanded and everything below it is collapsed, so the first thing on screen is the document's <em>shape</em> — its top-level keys and how many children each one holds — rather than page one of forty. From there you open exactly the branch you want and leave the rest folded away.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to View JSON Online in the Tree Explorer</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Load the document:</strong> Paste JSON into the left editor, drag a `.json` file anywhere onto the workspace, or use <em>Upload</em>. Files up to 50 MB are accepted, with a confirmation prompt above 5 MB.</li>
+        <li><strong>Read the top level first:</strong> The tree renders as soon as the document parses. Each object shows its key count and each array its length, so you can size up the payload before opening anything.</li>
+        <li><strong>Drill into one branch:</strong> Click the chevron beside any object or array to expand it, or use <em>Expand all</em> / <em>Collapse all</em> to flip the whole document at once.</li>
+        <li><strong>Search for what you need:</strong> Type into the search box above the tree to filter rows by key or value. Expand all first if you want the search to cover the entire document.</li>
+        <li><strong>Switch views when the job changes:</strong> The <em>Formatted</em> and <em>Stats</em> tabs sit beside the tree — or press <kbd>1</kbd>, <kbd>2</kbd>, and <kbd>4</kbd> while the caret is outside the editor.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">What Is a JSON Tree Viewer?</h3>
+      <p>
+        A JSON tree viewer renders a JSON document as an expandable hierarchy instead of as text. Every object and array becomes a collapsible node labelled with its key and the number of children it holds, and every primitive becomes a single row showing its key, its value, and its type. That structure lets you read a 10,000-line payload the way you read a file system: start at the root, see the half-dozen top-level keys, and open only the branch you care about. A good tree viewer pairs this with virtualized rendering, which mounts only the rows currently visible in the scroll container rather than the whole document, so scrolling stays smooth no matter how many nodes exist. The practical difference from a formatter is intent: a formatter makes JSON pleasant to read top to bottom, while a tree viewer makes a large or unfamiliar document navigable without reading all of it.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Tree View or Formatted View — Which One Do You Want?</h3>
+      <p>
+        These two views answer different questions, and picking the wrong one is why JSON inspection feels tedious. Reach for the <strong>tree view</strong> when the question is structural: <em>where does this field live</em>, <em>how many results came back</em>, <em>does this record have the key I expect</em>. Reach for the <strong>formatted view</strong> when you need the text itself — copying an indented payload into a fixture file, diffing two responses, pasting a snippet into a pull request. That's a different job, and the <a href="/json-formatter/" class="text-accent hover:underline">JSON formatter and beautifier</a> is built for it, with indentation options and a downloadable result.
+      </p>
+      <p>
+        If the tree shows nothing but <em>"Enter valid JSON to explore the tree"</em>, the document didn't parse — the <a href="/json-validator/" class="text-accent hover:underline">JSON validator</a> reports the exact line and column with a suggested fix. And once the tree has shown you the shape, the same buffer feeds the <a href="/json-to-typescript/" class="text-accent hover:underline">TypeScript interface generator</a> and the <a href="/json-to-json-schema/" class="text-accent hover:underline">JSON Schema generator</a>, so exploring a payload and codifying it are one step rather than two tools and a clipboard.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">What the Tree Explorer Actually Gives You</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🌲 Collapsible Nodes with Child Counts</h4>
+          <p class="text-xs">Every object and array shows how many children it contains before you open it, so you can judge a branch's size without expanding it.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">⚡ Virtualized Rendering (TanStack Virtual)</h4>
+          <p class="text-xs">Only the rows inside the scroll viewport are mounted. Expanding a 50,000-node document doesn't put 50,000 elements in the DOM.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔍 Search Across Keys and Values</h4>
+          <p class="text-xs">Case-insensitive matching on object keys, string values, numbers, and booleans, filtering the tree to the rows that match.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🎨 Types Readable at a Glance</h4>
+          <p class="text-xs">Strings, numbers, booleans, and nulls are colour-coded, array indices are distinguished from object keys, and long values truncate with the full text on hover.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧹 Transforms That Reach the Tree</h4>
+          <p class="text-xs">Sort keys, remove nulls, and remove empty values apply before the tree is built, so a noisy payload can be cleaned up for reading, not just for output.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 Nothing Leaves Your Browser</h4>
+          <p class="text-xs">Parsing runs in a Web Worker inside your own tab. No upload, no account, and no ads or ad-network scripts anywhere on the page.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">A Worked Example: Four Keys, Two Clicks Deep</h3>
+      <p>
+        Here's a small order payload and what the tree does with it. On load only the root is open — four rows, and you already know there's a customer object, a two-item array, and an unused coupon:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">Input JSON</h4>
+          <pre class="mt-2 overflow-x-auto rounded-md bg-muted p-3 font-mono text-[11.5px] leading-relaxed text-fg"><code>{sampleJson}</code></pre>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">Tree View on Load</h4>
+          <pre class="mt-2 overflow-x-auto rounded-md bg-muted p-3 font-mono text-[11.5px] leading-relaxed text-fg"><code>{treeOnLoad}</code></pre>
+        </div>
+      </div>
+      <p>
+        Expanding <code>customer</code>, <code>items</code>, and the first item gives you that detail and nothing else — the second item stays folded at one line:
+      </p>
+      <div class="rounded-lg border border-border bg-surface p-4">
+        <h4 class="font-semibold text-fg mb-1">After Expanding Two Branches</h4>
+        <pre class="mt-2 overflow-x-auto rounded-md bg-muted p-3 font-mono text-[11.5px] leading-relaxed text-fg"><code>{treeExpanded}</code></pre>
+      </div>
+      <p>
+        One thing worth knowing: the tree returns to this collapsed baseline every time the document is re-parsed, editing in the left pane included. That's deliberate, since node identity changes with the document — but it means finishing your edits before you settle in to explore.
+      </p>
+
+      <h2 class="text-xl font-bold text-fg">Nobody Should Have to Upload a Production Payload Just to Look at It</h2>
+      <p>
+        Viewing is the most casual thing you do with JSON, which is exactly why it's the riskiest. Nobody thinks twice about pasting a response body into a viewer to find one field — but that body is often a real API response from a real environment, carrying customer email addresses, internal user IDs, session tokens, or an entire row from your production database. Formatting it feels like an edit; viewing feels like nothing at all. The data is identical either way.
+      </p>
+      <p>
+        This viewer is built so that "nothing at all" is literally true. Your document is parsed by a Web Worker in your own browser tab and rendered in that same tab; no backend endpoint receives the paste, because no backend is involved in viewing at all. There's no account to create and no advertising or ad-network scripts on the page; the one analytics tag the site loads is consent-gated and never receives what's in your editor. Rather than ask you to believe that, the whole thing is open source — the tree component, the parser, and the worker are all readable in the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>, and you can self-host it if you'd rather not depend on this site.
+      </p>
+      <p>
+        That architecture also removes the size ceilings viewers usually impose: no row cap, no "upgrade to view files over 1 MB" wall, and no server timeout, because the practical limit is your own device's memory. One honest caveat — buffers over 512 KB aren't kept in local storage between reloads, so a very large document has to be pasted again after a refresh. That's a deliberate trade to avoid filling your browser's storage with production data.
+      </p>
+
+</ToolPageLayout>

@@ -31,13 +31,14 @@ export function CookieConsent(): JSX.Element | null {
             Cookie Consent
           </p>
           <p className="mt-1">
-            We use Google Analytics and Google AdSense cookies to understand how you use our site and to show
-            relevant ads. By clicking "Accept," you consent to these cookies. See our{' '}
-            <a href="/privacy" className="text-accent hover:underline">
+            We use Google Analytics to understand how you use our site, in addition to Cloudflare's
+            cookieless Web Analytics. We don't run any advertising or ad-network scripts. By clicking
+            "Accept," you consent to the Google Analytics cookie. See our{' '}
+            <a href="/privacy/" className="text-accent hover:underline">
               Privacy Policy
             </a>{' '}
             and{' '}
-            <a href="/cookies" className="text-accent hover:underline">
+            <a href="/cookies/" className="text-accent hover:underline">
               Cookie Policy
             </a>{' '}
             for details.
@@ -70,13 +71,14 @@ export function CookieConsent(): JSX.Element | null {
 }
 
 /**
- * Lift Consent Mode's denied-by-default flags once the user accepts. The
- * analytics and ad tags are already loaded by BaseLayout, so consent is
- * communicated through gtag rather than by gating script insertion.
+ * Lift Consent Mode's denied-by-default analytics_storage flag once the user
+ * accepts. The GA4 tag is already loaded by BaseLayout, so consent is
+ * communicated through gtag rather than by gating script insertion. There's
+ * no ad_storage grant here: this site runs no advertising or ad-network
+ * scripts, so an ad-consent signal would have nothing to gate.
  */
 function grantConsent(): void {
   window.gtag?.('consent', 'update', {
     analytics_storage: 'granted',
-    ad_storage: 'granted',
   });
 }

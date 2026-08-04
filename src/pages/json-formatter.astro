@@ -73,5 +73,19 @@ const faqs = [
           <p class="text-xs">Explore deep objects with high-speed depth-first virtualized tree rendering, key frequency metrics, and payload size measurements.</p>
         </div>
       </div>
-    
+
+      <h2 class="text-xl font-bold text-fg">How This Formatter Handles the JSON Other Tools Choke On</h2>
+      <p>
+        Real API responses and database exports are rarely the tidy 20-line snippets used in most formatter demos. They're often multi-megabyte dumps with deeply nested arrays, thousands of repeated records, or a single line stretching for miles. That's the exact scenario where many free online JSON formatters fall apart: some silently truncate anything past a few hundred KB, others load the entire tree into the DOM at once and lock up the tab for several seconds per keystroke, and a few quietly send your pasted text to a server to do the parsing there, whether or not that's disclosed.
+      </p>
+      <p>
+        This formatter is built to keep the heavy lifting out of your way and out of anyone else's hands. Parsing and formatting run in a background Web Worker rather than on the main thread, and the tree view only renders the rows currently visible on screen (virtualized rendering) instead of the whole document at once. That combination is what lets a 50MB payload stay scrollable and responsive instead of freezing the tab &mdash; and because the worker runs inside your browser, none of that data ever leaves your machine to make it happen.
+      </p>
+      <p>
+        You don't have to take the "nothing is uploaded" claim on faith, either. Unlike closed-source formatter sites where you can't see what happens to your paste, this tool's source &mdash; including the worker that does the parsing &mdash; is public. Read it, audit it, or self-host it yourself on <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub</a>.
+      </p>
+      <p>
+        Formatting isn't always what you actually need. If the payload is unfamiliar or very large and you mainly want to <em>navigate</em> it &mdash; open one branch, check a value, collapse the rest &mdash; the <a href="/json-viewer/" class="text-accent hover:underline">JSON viewer</a> opens the same document straight into the collapsible tree explorer instead of the indented text.
+      </p>
+
 </ToolPageLayout>

@@ -31,6 +31,7 @@ export default defineConfig({
     build: {
       cssMinify: true,
       sourcemap: false,
+      manifest: true,
     },
   },
 });

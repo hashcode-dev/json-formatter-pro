@@ -72,5 +72,16 @@ const faqs = [
           <p class="text-xs">Your proprietary API data and data models remain completely private within your local browser runtime.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">What Sets This Generator Apart</h3>
+      <p>
+        Several "JSON to TypeScript" web apps require you to sign up for an account or generate an API key before they'll infer a single type — often because your sample payload is uploaded to their backend for processing. That's a real problem when the JSON you're pasting is an actual API response from your product: its field names and nesting effectively expose your internal data model to a third-party server. This tool skips that step entirely. There's no signup, no API key, and no upload — inference runs in a Web Worker in your own browser tab, so the shape of your API never leaves your machine.
+      </p>
+      <p>
+        It's also open source, so you're not trusting a black box to make that promise. You can read the actual inference logic yourself in the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>, fork it, or self-host it if you'd rather not depend on this site at all.
+      </p>
+      <p>
+        Because the work happens off the main thread, pasting a large, deeply-nested sample response — the kind you'd copy straight out of a browser DevTools Network tab from a real production endpoint — won't freeze the page while interfaces are generated, unlike tools that block the UI thread during parsing.
+      </p>
+
 </ToolPageLayout>

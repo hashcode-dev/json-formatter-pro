@@ -19,27 +19,31 @@ import { StatusBar } from './StatusBar';
 import { Toaster } from './Toaster';
 import { CommandPalette, HelpSheet, type PaletteCommand } from './CommandPalette';
 import { ConvertersPane, isConverterMode } from '@components/tools/ConvertersPane';
+import {
+  ReverseConvertPane,
+  isReverseConverterMode,
+  reverseConvert,
+} from '@components/tools/ReverseConvertPane';
 import { JwtInspector } from '@components/tools/JwtInspector';
+import { inputFormatFor, inputIsJson } from './input-formats';
 
-const SAMPLE = `{
-  "app": "JSON Formatter Pro",
-  "version": "1.0.0",
-  "features": ["format", "validate", "minify", "tree", "stats", "converters", "jwt"],
-  "author": {
-    "name": "You",
-    "email": "you@example.com"
-  },
-  "flags": {
-    "private": true,
-    "offline": true,
-    "telemetry": false
+/**
+ * What the Copy and Download actions operate on. In a reverse-converter mode
+ * the editor holds CSV/YAML/XML and the JSON lives in the output pane, so those
+ * actions follow the output rather than handing back the source text under a
+ * `.json` filename.
+ */
+function readOutputArtifact(): { text: string; filename: string; mime: string } {
+  const { formatted, input, mode, options } = useStore.getState();
+  if (isReverseConverterMode(mode)) {
+    const result = reverseConvert(mode, input, options.indent);
+    return {
+      text: result.ok ? result.json : '',
+      filename: 'converted.json',
+      mime: 'application/json',
+    };
   }
-}`;
-
-/** Text the Copy and Download actions operate on. */
-function readOutputText(): string {
-  const { formatted, input } = useStore.getState();
-  return formatted || input;
+  return { text: formatted || input, filename: 'formatted.json', mime: 'application/json' };
 }
 
 /** Raw input, or null when there is nothing worth acting on. */
@@ -131,11 +135,37 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
 
   useDebouncedEffect(sendProcess, [input, options], 160);
 
+  // Seeds the editor with mode-appropriate sample content on first load only.
+  // `initialMode` is a prop fixed per page (each route mounts its own
+  // FormatterApp instance via `client:only`), so it never changes after mount
+  // and this effect never re-fires just because the dependency array lists
+  // it — it's listed for correctness, not to make the effect reactive.
+  // Deliberately NOT reactive to later `mode` changes (e.g. picking "Inspect
+  // JWT Token" from the Tools dropdown): re-seeding on every mode switch
+  // would risk clobbering input a user typed and then cleared, or surprise
+  // them with unrequested content appearing under their cursor.
+  //
+  // `input` is persisted to localStorage under one shared key across every
+  // page (see src/store/index.ts), by design, so a user's last input
+  // survives a reload or a return visit. That means "is input empty?" isn't
+  // enough to decide whether to seed here: visiting /jwt-decoder/ right
+  // after another tool page leaves that other page's content sitting in the
+  // store, which isn't empty, so a blank-check alone silently skipped
+  // seeding and a JWT-decoder first visit showed leftover JSON instead of
+  // the demo token. Same hazard, now across five content types: arriving at
+  // /csv-to-json/ with JSON (or a JWT, or YAML) in the buffer must show the
+  // CSV sample. So we also reseed when the persisted buffer doesn't belong to
+  // this page's input format — `claims` in the input-format registry decides,
+  // on *shape* rather than validity, so a user's genuine (even half-broken)
+  // document of the right type is always preserved and only another tool's
+  // leftovers get replaced.
   useEffect(() => {
-    if (useStore.getState().input === '') {
-      setInput(SAMPLE);
+    const format = inputFormatFor(initialMode ?? 'formatted');
+    const current = useStore.getState().input;
+    if (current === '' || !format.claims(current)) {
+      setInput(format.sample);
     }
-  }, [setInput]);
+  }, [initialMode, setInput]);
 
   // Listen for tool select events from the Header's Tools dropdown.
   useEffect(() => {
@@ -149,21 +179,28 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
     return () => window.removeEventListener('json-tool-select', handleToolSelect);
   }, [setMode]);
 
+  // Format and Minify rewrite the *input* as JSON, so they only apply while the
+  // editor actually holds JSON. On a reverse-converter or JWT page they are
+  // disabled in the toolbar, and guarded here too because the palette and the
+  // keyboard shortcuts reach the same actions.
+  const jsonInput = inputIsJson(mode);
+
   const doFormat = useCallback(() => {
-    if (readInput() === null) return;
+    if (!jsonInput || readInput() === null) return;
     sendProcess();
     setMode('formatted');
-  }, [sendProcess, setMode]);
+  }, [jsonInput, sendProcess, setMode]);
 
   const doMinify = useCallback(() => {
+    if (!jsonInput) return;
     const raw = readInput();
     if (raw === null) return;
     worker.send({ id: nextRequestId(), kind: 'minify', raw });
     setMode('formatted');
-  }, [worker, nextRequestId, setMode]);
+  }, [jsonInput, worker, nextRequestId, setMode]);
 
   const doCopy = useCallback(async () => {
-    const text = readOutputText();
+    const { text } = readOutputArtifact();
     if (!text) return;
     await copyWithToast(text, {
       success: 'Copied to clipboard.',
@@ -172,9 +209,9 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   }, [copyWithToast]);
 
   const doDownload = useCallback(() => {
-    const text = readOutputText();
+    const { text, filename, mime } = readOutputArtifact();
     if (!text) return;
-    downloadText('formatted.json', text);
+    downloadText(filename, text, mime);
     pushToast({ kind: 'success', message: 'Download started.' });
   }, [pushToast]);
 
@@ -216,8 +253,14 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
       { id: 'tool-xml', label: 'Convert to XML', run: () => setMode('xml') },
       { id: 'tool-csv', label: 'Convert to CSV', run: () => setMode('csv') },
       { id: 'tool-ts', label: 'Convert to TypeScript Types', run: () => setMode('typescript') },
+      { id: 'tool-python', label: 'Generate Python Dataclasses', run: () => setMode('python') },
+      { id: 'tool-java', label: 'Generate Java POJO Classes', run: () => setMode('java') },
+      { id: 'tool-go', label: 'Generate Go Structs', run: () => setMode('go') },
       { id: 'tool-schema', label: 'Generate JSON Schema', run: () => setMode('schema') },
       { id: 'tool-jwt', label: 'Inspect JWT Token', run: () => setMode('jwt') },
+      { id: 'tool-csv-to-json', label: 'Convert CSV to JSON', run: () => setMode('csvToJson') },
+      { id: 'tool-yaml-to-json', label: 'Convert YAML to JSON', run: () => setMode('yamlToJson') },
+      { id: 'tool-xml-to-json', label: 'Convert XML to JSON', run: () => setMode('xmlToJson') },
       { id: 'sort', label: 'Toggle: Sort keys', run: () => setOptions({ sortKeys: !options.sortKeys }) },
       { id: 'strip-null', label: 'Toggle: Remove nulls', run: () => setOptions({ stripNull: !options.stripNull }) },
       { id: 'strip-empty', label: 'Toggle: Remove empty', run: () => setOptions({ stripEmpty: !options.stripEmpty }) },
@@ -253,6 +296,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
   );
 
   const canAct = input.trim().length > 0;
+  const inputFormat = inputFormatFor(mode);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -268,6 +312,9 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
         onOpenPalette={() => togglePalette(true)}
         onOpenHelp={() => toggleHelp(true)}
         canAct={canAct}
+        canFormat={canAct && jsonInput}
+        inputFormatLabel={inputFormat.label}
+        uploadAccept={inputFormat.uploadAccept}
       />
 
       <div
@@ -279,17 +326,22 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
           if (file) void doUpload(file);
         }}
       >
-        <section aria-label="JSON input" className="flex min-h-[45vh] flex-col bg-surface lg:min-h-0">
+        <section
+          aria-label={`${inputFormat.label} input`}
+          className="flex min-h-[45vh] flex-col bg-surface lg:min-h-0"
+        >
           <header className="flex h-9 shrink-0 items-center justify-between border-b border-border px-3 text-xs uppercase tracking-wide text-subtle">
             <span>Input</span>
-            <span className="normal-case text-[11px] text-subtle">Paste, type, or drop a file</span>
+            <span className="normal-case text-[11px] text-subtle">{inputFormat.hint}</span>
           </header>
           <div className="min-h-0 flex-1">
             <EditorPane
               value={input}
               onChange={setInput}
-              error={error}
-              ariaLabel="JSON input editor"
+              // The worker's error is a JSON error; highlighting its line in a
+              // CSV/YAML/XML/JWT buffer would point at nothing meaningful.
+              error={jsonInput ? error : null}
+              ariaLabel={`${inputFormat.label} input editor`}
             />
           </div>
         </section>
@@ -311,6 +363,7 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
             {mode === 'tree' && <TreeView root={value} />}
             {mode === 'stats' && <StatsPanel stats={stats} />}
             {isConverterMode(mode) && <ConvertersPane type={mode} />}
+            {isReverseConverterMode(mode) && <ReverseConvertPane type={mode} />}
             {mode === 'jwt' && <JwtInspector />}
           </OutputPanel>
         </section>
@@ -322,6 +375,8 @@ export function FormatterApp({ initialMode }: FormatterAppProps = {}): JSX.Eleme
         stats={stats}
         indent={options.indent}
         spec={options.spec}
+        mode={mode}
+        input={input}
       />
 
       <CommandPalette

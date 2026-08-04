@@ -3,12 +3,23 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { FormatterApp } from '@components/formatter/FormatterApp';
 import { FEATURES, HERO, WHY } from '@/content/copy';
 import faqData from '@/content/faq.json';
+
+// Short teaser for the homepage — the full FAQ list lives at /faq/, which is
+// also the sole source of the FAQPage JSON-LD schema (see StructuredData.astro).
+const faqTeaser = faqData.filter((item) =>
+  [
+    "Is my JSON sent to a server?",
+    "How do I fix 'Unexpected token' or similar errors?",
+    "Can I use this offline?",
+    "How do I pretty print JSON?",
+    "Is there a free JSON formatter with no registration needed?",
+  ].includes(item.q)
+);
 ---
 <BaseLayout
   title="JSON Formatter & Validator – Free Online Beautifier | formatjson.in"
-  description="Format, validate, beautify, and minify JSON online — free, private, no signup. Tree view, diff viewer, converters, and syntax checker. 100% client-side."
+  description="Format, validate, beautify, and minify JSON online — free, private, no signup. Tree viewer, two-way YAML/XML/CSV converters, and code generation. 100% client-side."
   path="/"
-  includeFaq
   keywords="JSON formatter, JSON beautifier, JSON validator, online JSON formatter, format JSON online, JSON beautify, format json, json formatter online, jsonlint, JSON checker, JSON cleaner, JSON minify, JSON minifier, JSON editor, JSON parser, JSON converter, validate JSON, pretty print JSON, JSON lint, JSON debugger, free JSON tools, online JSON tool, JSON syntax checker, JSON tree view, JSON to XML, JSON to CSV, JSON reader, API formatter, JSON online format, best JSON formatter"
 >
   <section class="mx-auto max-w-[1400px] px-4 pt-6">
@@ -50,7 +61,7 @@ import faqData from '@/content/faq.json';
   <section aria-labelledby="faq" class="mx-auto mt-12 max-w-[1400px] px-4 pb-16">
     <h2 id="faq" class="text-lg font-semibold text-fg">Frequently asked questions</h2>
     <div class="mt-6 divide-y divide-border rounded-lg border border-border bg-surface">
-      {faqData.map((item) => (
+      {faqTeaser.map((item) => (
         <details class="group">
           <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden">
             <span>{item.q}</span>
@@ -60,5 +71,6 @@ import faqData from '@/content/faq.json';
         </details>
       ))}
     </div>
+    <a href="/faq/" class="btn-ghost mt-4">View all FAQs →</a>
   </section>
 </BaseLayout>

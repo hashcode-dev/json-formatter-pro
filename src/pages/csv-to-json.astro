@@ -1,0 +1,162 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "CSV to JSON Converter Pro - Free, Ad-Free & Client-Side";
+const description =
+  "Convert CSV or TSV into a JSON array of objects online. RFC 4180 quoting, auto delimiter detection, precision-safe type inference — 100% in your browser.";
+const keywords =
+  "csv to json, csv to json converter, convert csv to json online, csv to json online, tsv to json, csv2json, csv to json array, spreadsheet to json";
+
+/**
+ * Worked example rendered under the "How to" steps. Deliberately exercises the
+ * awkward parts of RFC 4180 in four lines: a quoted field containing commas, a
+ * doubled quote, a line break inside a quoted field, and empty cells.
+ */
+const sampleCsv = `id,product,description,price,in_stock
+1,Widget,"Small, blue, 3-pack",9.99,true
+2,Gadget,"Ships with a 12"" cable
+Adapter sold separately",24.5,false
+3,Doohickey,,,true`;
+
+const sampleJson = `[
+  {
+    "id": 1,
+    "product": "Widget",
+    "description": "Small, blue, 3-pack",
+    "price": 9.99,
+    "in_stock": true
+  },
+  {
+    "id": 2,
+    "product": "Gadget",
+    "description": "Ships with a 12\\" cable\\nAdapter sold separately",
+    "price": 24.5,
+    "in_stock": false
+  },
+  {
+    "id": 3,
+    "product": "Doohickey",
+    "description": null,
+    "price": null,
+    "in_stock": true
+  }
+]`;
+
+const faqs = [
+  {
+    q: "How does the converter decide whether a CSV value becomes a JSON number, boolean, or string?",
+    a: "By one predictable rule. A field the CSV author wrapped in double quotes is always emitted as a JSON string, because RFC 4180 quoting is an explicit signal that the value is text. An unquoted field is trimmed, then becomes `null` if it is empty or the word `null`, a boolean for `true`/`false` (any capitalization), and a number only if it matches JSON's number grammar and round-trips exactly. That round-trip check is why `007`, `+1`, `1.10` and a 20-digit account number stay strings instead of being silently rewritten or losing precision."
+  },
+  {
+    q: "Can it handle CSV fields containing commas, line breaks, or escaped double quotes?",
+    a: "Yes — the tokenizer implements RFC 4180. A quoted field may contain the delimiter, carriage returns and line feeds, and doubled quotes (`\"\"`) which are unescaped back to a single `\"`. Two deliberate leniencies match what real exports look like: a stray bare quote inside an unquoted field is kept as a literal character, and text appearing after a closing quote is appended to the field rather than rejected."
+  },
+  {
+    q: "Does it support TSV, semicolon, or pipe-delimited files?",
+    a: "Yes, with no extra configuration. The delimiter is sniffed automatically: whichever of comma, tab, semicolon or pipe occurs most often outside quoted fields wins. That means tab-separated exports, the semicolon-separated CSV that European locales of Excel produce, and pipe-delimited database dumps all convert correctly without you selecting anything."
+  },
+  {
+    q: "Can it produce nested JSON objects from dotted column headers?",
+    a: "No — and that is intentional rather than an oversight. The output is always a flat JSON array of objects, one object per data row, with each header used verbatim as a key. A column named `user.name` becomes the literal key `\"user.name\"`, not a nested `user` object, because inferring nesting from punctuation in headers guesses at structure the CSV never actually encoded. If you need nesting, convert first and then reshape the flat JSON."
+  },
+  {
+    q: "What happens if some rows have more or fewer columns than the header row?",
+    a: "Ragged rows are tolerated instead of rejected, because real exports are frequently ragged. Missing trailing columns become `null`, and surplus columns beyond the last header are named `field_N` by their 1-based position. Header names are normalized too: a blank header becomes `column_N` and a repeated header gets a numeric suffix (`status`, `status_2`), so every key in the resulting JSON is unique and non-empty."
+  },
+  {
+    q: "Is my CSV file uploaded to a server?",
+    a: "No. The CSV is parsed inside your own browser tab by JavaScript that is already loaded on the page — there is no upload step, no API call, and no request carrying your data at any point in the conversion. There is also no signup, no row limit, and no advertising or ad-network script on the site, and the whole project is open source so you can read the parser yourself."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/csv-to-json/"
+  eyebrow="Converter"
+  heading="CSV to JSON Converter Pro"
+  subtitle="Turn CSV, TSV, semicolon or pipe-delimited exports into a clean JSON array of objects, entirely inside your browser."
+  mode="csvToJson"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Converting CSV Spreadsheets into JSON</h2>
+      <p>
+        <strong>CSV</strong> is how data leaves things: an Excel or Google Sheets export, a Postgres <code>COPY … TO CSV</code>, an analytics report, a Stripe or Salesforce download. <strong>JSON</strong> is how data enters things: request bodies, fixture files, seed scripts, mock API responses, MongoDB imports, and every test suite that needs realistic records. Converting between the two is one of the most common five-minute chores in a developer's week, and it is exactly the kind of chore that goes wrong quietly.
+      </p>
+      <p>
+        It goes wrong because CSV is deceptively simple. Splitting on commas works right up until a product description contains one; a naive parser then shifts every subsequent column by one position and produces JSON that looks plausible and is completely wrong. <strong>CSV to JSON Converter Pro</strong> uses a real RFC 4180 tokenizer, detects the delimiter for you, and applies a type-inference rule conservative enough that it will not damage your identifiers.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert CSV to JSON Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste or Upload Your CSV:</strong> Paste the spreadsheet text into the left editor, or drop a `.csv`/`.tsv` file onto it. The first row is treated as the header row and supplies the JSON keys.</li>
+        <li><strong>Automatic Parsing:</strong> The delimiter is sniffed, quoted fields are unescaped, and the JSON array renders in the output panel as you type — no button to press.</li>
+        <li><strong>Choose Your Indentation:</strong> The toolbar's indent selector drives the emitted JSON — 2, 3, or 4 spaces, or tabs — so the output matches your project's style.</li>
+        <li><strong>Copy or Download:</strong> Click <em>Copy</em> to put the JSON on your clipboard, or <em>Download</em> to save it as a `converted.json` file.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">A Worked Example: What the Parser Actually Does</h3>
+      <p>
+        The four-line CSV below contains every feature that trips up a split-on-commas approach — a quoted field with commas inside it, a doubled quote used to escape a literal <code>"</code>, a line break inside a quoted field, and a row with empty cells:
+      </p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-4 text-xs leading-relaxed text-fg"><code>{sampleCsv}</code></pre>
+      <p>
+        That input produces this JSON array of objects. Note that <code>id</code> and <code>price</code> became numbers, <code>in_stock</code> became a real boolean, the two empty cells became <code>null</code>, and every character inside the quoted descriptions survived intact:
+      </p>
+      <pre class="overflow-x-auto rounded-lg border border-border bg-muted p-4 text-xs leading-relaxed text-fg"><code>{sampleJson}</code></pre>
+
+      <h3 class="text-lg font-semibold text-fg">Key Technical Capabilities</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📐 RFC 4180 Quoted-Field Tokenizer</h4>
+          <p class="text-xs">Quoted fields may hold commas, CR/LF line breaks and doubled quotes (`""` → `"`). Unterminated quotes report the exact line they opened on.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔍 Automatic Delimiter Detection</h4>
+          <p class="text-xs">Comma, tab, semicolon and pipe are counted outside quotes and the winner is used — so TSV and European semicolon exports just work.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧮 Precision-Safe Type Inference</h4>
+          <p class="text-xs">Numbers are only emitted when they round-trip exactly, keeping `007`, zip codes, phone numbers and long IDs as strings instead of corrupting them.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧹 Header & Ragged-Row Normalization</h4>
+          <p class="text-xs">Blank headers become `column_N`, duplicates get a `_2` suffix, short rows pad with `null`, and surplus cells land in `field_N`.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🩺 Real Parse Errors, Not "Invalid"</h4>
+          <p class="text-xs">The status bar reports the parser's own reason, such as an unterminated quoted field and the line number where it started.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 100% Client-Side, No Upload</h4>
+          <p class="text-xs">Parsing happens in your browser tab. Your spreadsheet is never transmitted, stored, or logged anywhere.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">How CSV to JSON Type Inference Works</h3>
+      <p>
+        CSV has no type system: every cell in a comma-separated file is just text, so any CSV to JSON converter has to guess which cells should become JSON numbers, booleans, or nulls. This converter resolves that ambiguity with one rule you can predict. A field that the CSV author wrapped in double quotes is always emitted as a JSON string, because RFC 4180 quoting is an explicit signal that the value is text. An unquoted field is trimmed and then becomes null when it is empty or the word null, true or false when it spells a boolean in any capitalization, and a number only when it matches JSON's own number grammar and round-trips exactly — that is, when converting it to a number and back produces the identical characters. That last condition is what protects identifiers: 007, +1, 1.10, and a twenty-digit account number all stay strings, because none of them survive the round trip unchanged.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Output Shape: A Flat Array of Objects, on Purpose</h3>
+      <p>
+        The result is always a JSON array with one object per data row, and each object's keys are the header names exactly as written. There is no dot-notation expansion: a column headed <code>user.name</code> becomes the literal key <code>"user.name"</code> rather than a nested <code>user</code> object. That is a deliberate limitation. A CSV file encodes a table and nothing more, so inferring hierarchy from punctuation in a header is a guess — and a guess that silently restructures your data is worse than no guess at all. Values are likewise always scalars: string, number, boolean or null, never a nested object or array.
+      </p>
+      <p>
+        In practice that flat array is what you want anyway, because it is the shape that database import tools, test fixtures and mock API endpoints expect. When you do need to reshape or inspect it afterwards, the converted JSON is a paste away from the rest of the toolkit — check it with the <a href="/json-validator/" class="text-accent hover:underline">JSON validator</a>, explore it in the <a href="/json-formatter/" class="text-accent hover:underline">JSON formatter and tree viewer</a>, or turn the row shape into typed models with the <a href="/json-to-typescript/" class="text-accent hover:underline">JSON to TypeScript generator</a>. Going the other direction — flattening a JSON array back into a spreadsheet — is handled by the inverse tool, <a href="/json-to-csv/" class="text-accent hover:underline">JSON to CSV</a>.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">The CSV You're About to Paste Is Probably Real Customer Data</h3>
+      <p>
+        Almost nobody converts a made-up spreadsheet. The file in your clipboard is usually a customer export, a payroll run, a list of email addresses, a set of order records, or a table pulled straight out of production — the sort of thing that appears by name in a data-processing agreement. It is worth being deliberate about where that text goes, because with many free online converters "paste your CSV" means uploading it to a backend you cannot inspect, on the strength of a privacy policy alone.
+      </p>
+      <p>
+        This converter never makes that request. The tokenizer, the delimiter sniffer and the type inference all run as ordinary JavaScript in the tab you already have open, so the conversion completes without a single byte of your spreadsheet crossing the network. You don't have to take that on faith either: the entire project is open source, and you can read the exact CSV parser that handles your file in the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a> — or fork it and run it yourself on a machine with no network at all.
+      </p>
+      <p>
+        The same architecture removes the friction that usually surrounds this task. There is no signup wall and no free-tier row cap, because there is no metered backend to protect: a 50-row sample and a 200,000-row export follow the identical code path, and the only real ceilings are your device's memory and a 50 MB limit on dropped files. There are no advertising or ad-network scripts anywhere on this site either, which is not merely a matter of taste — an ad network embedded on a page where you paste customer records is another party in the room you never agreed to.
+      </p>
+
+</ToolPageLayout>

@@ -1,0 +1,175 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "JSON to Python Converter Pro - Generate Dataclasses Online";
+const description =
+  "Convert JSON to typed Python dataclasses instantly. Infers nested classes, Optional fields, int vs float, and preserves original JSON keys. 100% client-side.";
+const keywords =
+  "json to python, json to python dataclass, json to python class, convert json to python, json to dict, python dataclass generator, python type hints from json";
+
+// The exact input/output pair produced by src/lib/json/codegen.ts, kept in
+// frontmatter so the template never has to escape the braces in `field(...)`.
+const sampleJson = `{
+  "id": 481,
+  "username": "ada",
+  "rating": 4.75,
+  "content-type": "application/json",
+  "profile": {
+    "city": "London",
+    "timezone": "Europe/London"
+  },
+  "posts": [
+    { "id": 7, "title": "Analytical Engine", "views": 3200 },
+    { "id": 9, "title": "Note G", "views": 118, "pinned": true }
+  ]
+}`;
+
+const generatedPython = `from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Optional
+
+
+@dataclass
+class Root:
+    id: int
+    username: str
+    rating: float
+    content_type: str = field(metadata={"json": "content-type"})
+    profile: Profile
+    posts: list[Post]
+
+
+@dataclass
+class Post:
+    id: int
+    title: str
+    views: int
+    pinned: Optional[bool]
+
+
+@dataclass
+class Profile:
+    city: str
+    timezone: str`;
+
+const faqs = [
+  {
+    q: "Does this generate dataclasses or TypedDict?",
+    a: "Dataclasses. Every JSON object becomes a class decorated with `@dataclass`, using PEP 585 annotations (`list[str]` rather than `List[str]`), so the output targets Python 3.9 and up. Dataclasses give you a real constructor, `__repr__`, `__eq__` and `dataclasses.asdict` — and unlike a `TypedDict`, a dataclass field can carry the original wire name for a key that is not a valid Python identifier."
+  },
+  {
+    q: "How are null and missing fields typed?",
+    a: "Both become `Optional[X]` in the annotation, and never a default value. Defaults would make field order significant and would quietly turn a required-but-null key into an optional one. A key that appears on only some elements of an array of objects is treated the same way as an explicit null, so a ragged API payload produces `Optional[...]` on exactly the fields that were not always there."
+  },
+  {
+    q: "Why was my 1.0 value typed as int instead of float?",
+    a: "The generator runs in your browser, and JavaScript's `JSON.parse` cannot distinguish `1.0` from `1` — both arrive as the same number, so an integral decimal is inferred as `int`. This is a property of JSON parsing rather than of the tool, and it is not recoverable after parsing. If a field is a price, a ratio or any other quantity that can be fractional, widen it to `float` yourself after generating."
+  },
+  {
+    q: "What happens to JSON keys that are not valid Python identifiers?",
+    a: "Keys that Python can use verbatim as attribute names are left exactly as they are. Anything else — `content-type`, `2fa`, a reserved word like `class` — is folded to snake_case and the original key is recorded in the field metadata, for example `field(metadata={\"json\": \"content-type\"})`, so your deserializer can still map it back. Non-ASCII keys have no ASCII word segments to work with, so the attribute falls back to `value` with the real key still preserved in the metadata."
+  },
+  {
+    q: "How is this different from just calling json.loads to get a dict?",
+    a: "`json.loads` gives you a `dict[str, Any]`: correct at runtime, but invisible to your tooling. No editor autocomplete on `payload[\"profile\"][\"timezone\"]`, no mypy or pyright error when a key is misspelled or removed upstream, and no safe rename. Generating dataclasses puts that same data behind named attributes a type checker can verify, which is what turns an upstream field rename from a production `KeyError` into an error you see while typing."
+  },
+  {
+    q: "Is my JSON payload uploaded anywhere?",
+    a: "No. Your JSON is parsed in a background Web Worker and the Python classes are generated from that parsed value inside the same browser tab. There is no backend endpoint involved in producing the output, no account to create, and no ad network in the page. The project is also open source, so the inference and emission code can be read directly."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-to-python/"
+  eyebrow="Code Generator"
+  heading="JSON to Python Dataclass Generator Pro"
+  subtitle="Turn a real API response into typed Python dataclasses — nested classes, Optional fields, and the original JSON keys preserved."
+  mode="python"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Complete Guide to Generating Python Dataclasses from JSON</h2>
+      <p>
+        Almost every Python program that talks to an HTTP API starts the same way: `response.json()` hands back a `dict`, and from that moment the shape of the data lives only in your head. Each `payload["profile"]["timezone"]` is a string key your editor cannot autocomplete, mypy and pyright cannot check, and no refactoring tool can rename safely. Typing the response once, at the boundary, is what makes the rest of the module something a type checker can genuinely reason about.
+      </p>
+      <p>
+        A JSON to Python dataclass generator reads one sample JSON document and emits the Python classes that describe its shape. Every JSON object becomes a class decorated with `@dataclass`; nested objects become their own classes, referenced by name; and each key becomes an annotated attribute — `str`, `int`, `float`, `bool`, `list[...]`, or `Optional[...]` where a null or a missing key was observed. What comes back is an instantiable record with a generated constructor, `__repr__`, `__eq__` and `dataclasses.asdict`, rather than the untyped dictionary `json.loads` returns. The practical difference is tooling: a dictionary offers an editor nothing to autocomplete and a type checker nothing to verify, so a field renamed upstream surfaces as a runtime `KeyError` instead of a static error. Generating the classes from a response you actually received, rather than writing them by hand from documentation, keeps the model honest about what the endpoint really sends.
+      </p>
+      <p>
+        <strong>JSON to Python Dataclass Generator Pro</strong> does exactly that, in your browser, with nothing to install and no signup.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Convert JSON to Python Dataclasses Online</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Paste a Real API Response:</strong> Paste your JSON into the left editor or upload a `.json` file. Malformed input is reported with its line and column before any class is generated.</li>
+        <li><strong>Read the Generated Classes:</strong> The output panel renders `@dataclass` definitions — the root class first, with every nested object extracted into its own class below it.</li>
+        <li><strong>Copy or Download:</strong> Click <em>Copy</em> to paste the classes straight into a module, or <em>Download</em> to save them as a `converted.py` file.</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-fg">A Worked Example: One Response In, Typed Classes Out</h3>
+      <p>
+        Below is the exact output for a small but realistic payload: a user record containing a nested object, a list of records where one field is present on only some of them, and a header-style key that is not a legal Python attribute name.
+      </p>
+      <div class="rounded-lg border border-border bg-surface p-4">
+        <h4 class="font-semibold text-fg mb-2">Input JSON</h4>
+        <pre class="overflow-x-auto font-mono text-xs leading-relaxed text-fg"><code>{sampleJson}</code></pre>
+      </div>
+      <div class="rounded-lg border border-border bg-surface p-4">
+        <h4 class="font-semibold text-fg mb-2">Generated Python</h4>
+        <pre class="overflow-x-auto font-mono text-xs leading-relaxed text-fg"><code>{generatedPython}</code></pre>
+      </div>
+      <p>
+        Four inference decisions in that output are worth pointing out. `rating` is a `float` while `id` and `views` are `int`, because only one of them carried a decimal point. `profile` was lifted into its own `Profile` class instead of being inlined. The two elements of `posts` were merged into a single `Post` class covering the union of their keys, and because `pinned` appears on only one of them it is typed `Optional[bool]` — the ragged-payload case hand-written models usually get wrong. Finally, `content-type` cannot be an attribute name, so it becomes `content_type` with the original key preserved in the field metadata; identifier-safe keys are left untouched, so a payload made entirely of them can still be constructed with `Root(**payload)`.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Key Capabilities & Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🐍 Real Dataclasses, Not Dictionaries</h4>
+          <p class="text-xs">`@dataclass` models with PEP 585 annotations for Python 3.9+, giving you a constructor, equality, `repr` and `asdict` out of the box.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧩 Nested Classes & Shape Deduplication</h4>
+          <p class="text-xs">Nested objects become named classes, and identical shapes collapse into one — a thousand-record array still generates a single class.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🕳️ Honest Nullability</h4>
+          <p class="text-xs">Nulls and keys missing from some records become `Optional[X]` in the annotation only — never a default value that would reorder your constructor.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔑 Original Keys Preserved</h4>
+          <p class="text-xs">A key that cannot be an attribute name is folded to snake_case, with the exact wire name kept in the field metadata for your deserializer.</p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-fg">Where the Type Inference Stops Guessing</h3>
+      <p>
+        Inferring types from a single sample is a best-effort exercise, and it is far more useful to know exactly where it gives up than to pretend it never does.
+      </p>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>`int` versus `float`:</strong> JavaScript's `JSON.parse` cannot tell `1.0` from `1`, so a price that happened to be `19.0` in your sample is annotated `int`. Widen it by hand where a field is genuinely fractional.</li>
+        <li><strong>Fields that were only ever null:</strong> with no other evidence, the attribute is annotated `Any` rather than `Optional[Any]`, since `Any` already admits `None`.</li>
+        <li><strong>Heterogeneous arrays:</strong> every branch is kept, so `[1, "two"]` becomes `list[Union[int, str]]`. An empty array has nothing to infer from and becomes `list[Any]`. An array mixing objects with non-objects degrades to a union rather than merging into a class.</li>
+        <li><strong>Very large integers:</strong> values beyond 2^53 have already lost precision during parsing, before the generator ever sees them.</li>
+        <li><strong>Documents that are not objects:</strong> a top-level array of records generates the element class plus an alias — `Root = list[RootItem]` — so the document itself still has a name you can annotate against.</li>
+      </ul>
+      <p>
+        Treat the result as a very good first draft: exactly right for the sample you supplied, and worth a read-through before it lands in your codebase. If you need a runtime contract rather than static annotations, the <a href="/json-to-json-schema/" class="text-accent hover:underline">JSON Schema generator</a> infers one from the same payload, and if the same shape has to exist in your frontend too, the <a href="/json-to-typescript/" class="text-accent hover:underline">TypeScript interface generator</a> produces the equivalent declarations from the identical inference pass.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">The Sample You Paste Here Is Almost Always Real Production Data</h3>
+      <p>
+        Code generation makes the privacy question sharper than it is for a formatter, and for a structural reason: to get correct types you have to paste a <em>real</em> response. A hand-written toy example produces hand-written toy types, so what actually ends up in the input pane is typically copied straight out of a DevTools Network tab or a `curl` against staging. It carries real customer names, real email addresses, real internal identifiers — and, in the key names alone, a fairly complete map of your internal data model.
+      </p>
+      <p>
+        That payload never leaves this tab. Your JSON is parsed in a Web Worker inside your browser, and the classes are generated from the parsed value in the same page; no backend endpoint is involved in producing the output, there is no account to create, and there is no ad network sitting in the page alongside your data. Many free online generators do this work server-side instead, which makes the honest answer to "where did my payload go" something closer to "a machine you cannot inspect."
+      </p>
+      <p>
+        Rather than asking you to take that on trust, the entire project is open source: you or your security team can read the inference and emission code, fork it, or self-host it from the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>. And if the response you pasted turns out to be malformed before it can be typed at all, the <a href="/json-validator/" class="text-accent hover:underline">JSON validator</a> will point at the exact line and column that broke it.
+      </p>
+
+</ToolPageLayout>
