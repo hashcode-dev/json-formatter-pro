@@ -13,10 +13,19 @@ interface Props {
   includeFaq?: boolean;
   customFaq?: Array<{ q: string; a: string }>;
   keywords?: string;
+  /** See StructuredData: false for pages with no tool interface. */
+  includeWebApp?: boolean;
 }
 
-const { title, description, path, includeFaq = false, customFaq, keywords } =
-  Astro.props;
+const {
+  title,
+  description,
+  path,
+  includeFaq = false,
+  customFaq,
+  keywords,
+  includeWebApp = true,
+} = Astro.props;
 
 const GA_ID = "G-TKJSHMQD3E";
 ---
@@ -38,6 +47,7 @@ const GA_ID = "G-TKJSHMQD3E";
       customFaq={customFaq}
       path={path}
       pageTitle={title}
+      includeWebApp={includeWebApp}
     />
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
     ></script>

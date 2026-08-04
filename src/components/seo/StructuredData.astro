@@ -7,8 +7,20 @@ interface Props {
   customFaq?: Array<{ q: string; a: string }>;
   path?: string;
   pageTitle?: string;
+  /**
+   * Emit the suite-level WebApplication entity. Set false on pages that carry no
+   * tool interface (e.g. the alternatives comparison page), where declaring a
+   * WebApplication would describe software the page does not actually provide.
+   */
+  includeWebApp?: boolean;
 }
-const { includeFaq = false, customFaq, path = "/", pageTitle } = Astro.props;
+const {
+  includeFaq = false,
+  customFaq,
+  path = "/",
+  pageTitle,
+  includeWebApp = true,
+} = Astro.props;
 
 const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? SITE_URL;
 
@@ -96,7 +108,7 @@ const webSite = isHomepage
   : null;
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(webApp)} />
+{includeWebApp && <script type="application/ld+json" set:html={JSON.stringify(webApp)} />}
 <script type="application/ld+json" set:html={JSON.stringify(organization)} />
 {faq && <script type="application/ld+json" set:html={JSON.stringify(faq)} />}
 {breadcrumb && <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />}
