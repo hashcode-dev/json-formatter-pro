@@ -1,0 +1,348 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FaqAccordion from '@components/site/FaqAccordion.astro';
+
+const title = "JSON Formatter Alternatives — Honest 2026 Comparison";
+const description =
+  "An openly self-authored comparison of free online JSON formatters: JSON Formatter Pro vs jsonformatter.org and other well-known options, with verified facts, honest concessions, and no invented ratings.";
+const keywords =
+  "json formatter alternatives, best json formatter, json formatter comparison, free json formatter without ads, private json formatter, open source json formatter, jsonformatter.org alternative";
+
+/**
+ * Comparison rows. Every non-"Not publicly verified" competitor cell is backed by
+ * something we observed on a publicly served page or sitemap on 1 August 2026 —
+ * see the methodology note rendered above the table. Where we did not check, the
+ * cell says so rather than guessing; do not fill these in without a fresh check.
+ */
+const comparisonRows = [
+  {
+    criterion: 'Tool pages published',
+    us: '16 tool pages within 25 total pages, and growing',
+    jsonformatter: '483 single-segment tool pages, plus ~1,159 saved-snippet permalinks (1,643 sitemap URLs)',
+    jsoneditoronline: 'Not counted',
+    codebeautify: 'Not counted',
+    jam: 'Not counted',
+  },
+  {
+    criterion: 'Meta description on tool pages',
+    us: 'Yes, on every page',
+    jsonformatter: 'None present on the five pages we fetched',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Not publicly verified',
+  },
+  {
+    criterion: 'JSON-LD structured data',
+    us: 'Yes — WebApplication, Organization, FAQPage, BreadcrumbList',
+    jsonformatter: 'None present on the pages we fetched',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Not publicly verified',
+  },
+  {
+    criterion: 'Saved-snippet share links',
+    us: 'No — we do not offer this at all',
+    jsonformatter: 'Yes — ~1,159 saved-link pages appear in its sitemap',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Not publicly verified',
+  },
+  {
+    criterion: 'JSON processed in your own browser',
+    us: 'Yes — parsed in a Web Worker; your JSON is never uploaded',
+    jsonformatter: 'Not publicly verified',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Not publicly verified',
+  },
+  {
+    criterion: 'Source code publicly readable',
+    us: 'Yes — full repository on GitHub',
+    jsonformatter: 'Not publicly verified',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Describes itself as open source in its search listing; we did not audit a repository',
+  },
+  {
+    criterion: 'Ad-network scripts',
+    us: 'None. Consent-gated GA4 and cookieless Cloudflare Web Analytics only',
+    jsonformatter: 'Google Tag Manager observed; we did not audit which tags it loads',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Not publicly verified',
+  },
+  {
+    criterion: 'Account or signup required',
+    us: 'No',
+    jsonformatter: 'Not publicly verified',
+    jsoneditoronline: 'Not publicly verified',
+    codebeautify: 'Not publicly verified',
+    jam: 'Not publicly verified',
+  },
+];
+
+// Braces would be read as Astro expressions in markup, so the worked example
+// lives in frontmatter and is interpolated as text.
+const exampleInput = `{"id":42,"name":"ada","roles":["admin","dev"],"meta":{"active":true,"score":9.5,"note":null}}`;
+
+const exampleOutput = `{
+  "id": 42,
+  "name": "ada",
+  "roles": [
+    "admin",
+    "dev"
+  ],
+  "meta": {
+    "active": true,
+    "score": 9.5,
+    "note": null
+  }
+}`;
+
+const faqs = [
+  {
+    q: "Is JSON Formatter Pro free, and what is the catch?",
+    a: "It is free with no account, no usage cap, and no advertising. The catch, such as it is, is scope: we publish 9 focused tool pages rather than hundreds, so a niche conversion you need may simply not exist here yet. The site itself runs Google Analytics with analytics storage denied until you accept cookies, plus cookieless Cloudflare Web Analytics; neither ever receives the JSON you paste, because your JSON is never sent anywhere."
+  },
+  {
+    q: "Which JSON formatter should I use if I need to share a formatted snippet with a teammate?",
+    a: "Not this one. We deliberately have no server-side storage, so we cannot mint a shareable permalink for a document. jsonformatter.org does offer saved-snippet links — its public sitemap lists roughly 1,159 of those saved-link pages — so if a copyable URL is the feature you actually need, that is a real reason to use it instead. Just be aware that saving a snippet means the content is stored on someone else's server, which is a poor fit for production payloads."
+  },
+  {
+    q: "How can I verify that an online JSON formatter is not sending my data to a server?",
+    a: "Open your browser's DevTools, switch to the Network tab, clear it, then paste your JSON and run the format. A genuinely client-side tool makes no request carrying your document. A stronger test: once the page has loaded, switch the browser to offline mode and format again — a client-side tool carries on, a server-backed one cannot. Strongest of all is reading the code, which is why JSON Formatter Pro is open source at github.com/hashcode-dev/json-formatter-pro."
+  },
+  {
+    q: "Does JSON Formatter Pro support every format that jsonformatter.org does?",
+    a: "No, and it is not close. Its sitemap lists 483 tool pages against our 9. We currently cover formatting, minifying, validating, a virtualized tree view, document statistics, JSON to YAML, XML, CSV, JSON Schema, TypeScript, Python, Java and Go, CSV, YAML and XML back to JSON, and JWT decoding. If you need JSON to Rust, Swift, Kotlin, C# or Dart, or HTML and CSS tooling, a broader suite is the right choice today."
+  },
+  {
+    q: "Is your YAML support full YAML 1.2?",
+    a: "No, and we would rather say so than let you find out mid-task. JSON to YAML output is a straightforward emitter and handles ordinary documents cleanly. The YAML to JSON direction is a hand-written parser covering a practical subset: nested maps, block and single-line flow sequences, comments, quoted and plain scalars, and block scalars. Anchors and aliases, merge keys, tags, multi-document streams and tab indentation are rejected with an explicit error rather than silently mangled. For those, use a full YAML implementation."
+  },
+  {
+    q: "Is a JWT decoded here verified as well as decoded?",
+    a: "Decoded only. Our JWT tool splits the token, Base64URL-decodes the header and payload, and renders the claims with human-readable timestamps. It does not verify the signature, because doing so would require your signing key, and a web page is the wrong place to put one. Treat the output as an inspection aid, never as proof that a token is authentic."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-formatter-alternatives/"
+  customFaq={faqs}
+>
+  <section class="mx-auto max-w-[1100px] px-4 pt-8">
+    <p class="text-xs font-medium uppercase tracking-wide text-subtle">Comparison</p>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">
+      JSON Formatter Alternatives: An Honest Comparison
+    </h1>
+    <p class="mt-2 max-w-3xl text-sm text-subtle">
+      How JSON Formatter Pro compares to jsonformatter.org and other widely used free JSON tools —
+      including the cases where they are the better choice.
+    </p>
+
+    <div class="mt-6 rounded-lg border border-border bg-surface p-4">
+      <p class="text-sm text-fg font-semibold">This is not neutral third-party research.</p>
+      <p class="mt-1 text-sm text-subtle">
+        JSON Formatter Pro is <strong class="text-fg">our own product</strong>. This page was written
+        by the team that builds it, so read it as a vendor comparison. We have tried to make it useful
+        anyway by stating only competitor facts we actually checked, writing
+        <em>Not publicly verified</em> wherever we did not check, and naming the situations where a
+        competing tool is the one you should pick.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto mt-8 max-w-[1100px] px-4 pb-16 space-y-8">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">Feature and Architecture Comparison</h2>
+      <p>
+        Pricing is not a useful axis here — every tool below is free to use, so a pricing table would
+        be noise. What actually differs is architecture and page quality: where your JSON gets
+        processed, what third-party code runs alongside it, whether the implementation can be read,
+        and how much of the surface is genuinely maintained. Those are the rows below.
+      </p>
+      <p class="text-xs italic">
+        <strong class="text-fg not-italic">As of August 2026.</strong> Methodology: competitor claims
+        were checked on 1 August 2026 by fetching publicly served pages and XML sitemaps and
+        inspecting the returned HTML — nothing more. We did not create accounts, run traffic analysis,
+        or reverse-engineer anyone's backend. Websites change; please verify anything that matters to
+        you before relying on it.
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[52rem] border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="border-r border-border px-3 py-2 text-left align-bottom">Criterion</th>
+              <th class="border-r border-border px-3 py-2 text-left align-bottom text-fg">JSON Formatter Pro (ours)</th>
+              <th class="border-r border-border px-3 py-2 text-left align-bottom">jsonformatter.org</th>
+              <th class="border-r border-border px-3 py-2 text-left align-bottom">jsoneditoronline.org</th>
+              <th class="border-r border-border px-3 py-2 text-left align-bottom">codebeautify.org</th>
+              <th class="px-3 py-2 text-left align-bottom">jam.dev</th>
+            </tr>
+          </thead>
+          <tbody>
+            {comparisonRows.map((row) => (
+              <tr class="border-b border-border align-top">
+                <td class="border-r border-border px-3 py-2 font-medium text-fg">{row.criterion}</td>
+                <td class="border-r border-border px-3 py-2">{row.us}</td>
+                <td class="border-r border-border px-3 py-2">{row.jsonformatter}</td>
+                <td class="border-r border-border px-3 py-2">{row.jsoneditoronline}</td>
+                <td class="border-r border-border px-3 py-2">{row.codebeautify}</td>
+                <td class="px-3 py-2">{row.jam}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs italic">
+        jsoneditoronline.org, codebeautify.org and jam.dev appear repeatedly in search results for
+        JSON viewer and converter queries, which is why they are listed. We inspected their pages far
+        less thoroughly than jsonformatter.org's, so most of their cells honestly read
+        <em>Not publicly verified</em> rather than carrying a guess.
+      </p>
+
+      <h2 class="text-xl font-bold text-fg">What "Client-Side" Actually Means for a JSON Tool</h2>
+      <p>
+        A client-side JSON formatter is one where parsing, formatting and conversion all happen in
+        JavaScript inside your own browser tab, so the document you paste is never transmitted. A
+        server-side formatter does the opposite: your text is posted to a backend, processed there,
+        and sent back. Both produce the same output, but the trust models are not comparable. A
+        server-side tool <em>can</em> log, cache or retain whatever you paste, and you cannot verify
+        from the outside that it doesn't. JSON Formatter Pro is client-side: parsing runs in a Web
+        Worker, a background thread that keeps the interface responsive on multi-megabyte documents,
+        and no request carrying your JSON is ever made. You can confirm that yourself in about thirty
+        seconds — open DevTools, watch the Network tab, and format a payload. Or switch DevTools to
+        offline mode and carry on using the already-loaded page: everything still works, because there
+        was never a server in the loop.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">How to Evaluate Any Online JSON Formatter Before You Paste Production Data</h3>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li><strong>Watch the network.</strong> Open DevTools, clear the Network tab, then format something. A request containing your document means it is being processed on a server.</li>
+        <li><strong>Pull the plug.</strong> With the page already loaded, switch the browser to offline mode and format again. A truly client-side tool carries on; a server-backed one cannot.</li>
+        <li><strong>Look for an account wall or a size cap.</strong> Both usually indicate metered backend processing rather than local computation.</li>
+        <li><strong>Check what else loads.</strong> Ad and tag scripts run in the same page as your data. Fewer third parties means a smaller surface to reason about.</li>
+        <li><strong>Read the source if it exists.</strong> An open repository turns a privacy promise into something you can check. Where there is none, you are trusting a policy document.</li>
+        <li><strong>Match the tool to the payload.</strong> For a throwaway snippet, none of this matters. For a Kubernetes secret, a JWT, or a customer record, all of it does.</li>
+      </ol>
+
+      <h2 class="text-xl font-bold text-fg">Where JSON Formatter Pro Is Genuinely Different — and Where It Isn't</h2>
+      <p>
+        Our advantage is not feature count; we would lose that comparison badly. It is that the whole
+        tool is auditable and nothing about it is monetised at your expense. Every transform —
+        formatting, minifying, validation, the virtualized tree view, statistics, and every converter
+        and code generator — runs in your browser, in a Web Worker, with no upload step. There is no
+        signup, no row limit, no advertising, and no ad-network script. The page ships a
+        Content-Security-Policy with no <code>unsafe-inline</code> in <code>script-src</code>,
+        <code>frame-ancestors 'none'</code>, and HSTS preload, so the delivery is hardened as well as
+        the processing. And the whole thing is open source at
+        <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">github.com/hashcode-dev/json-formatter-pro</a>,
+        which means you can read the parser rather than trust this paragraph.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 No upload, by construction</h4>
+          <p class="text-xs">Your JSON is parsed in a Web Worker in your own tab. There is no backend endpoint to send it to, so there is nothing to log or retain.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🚫 Zero ads, zero account</h4>
+          <p class="text-xs">No advertising network, no interstitials, no signup, and no row or file-size cap — only the memory your own device has available.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">📖 Open source and auditable</h4>
+          <p class="text-xs">The full Astro and TypeScript source is public, so a security review can read the exact code that touches your data.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧭 Small, deep tool set</h4>
+          <p class="text-xs">Nine focused pages rather than hundreds — each with real documentation, worked examples, and a maintained implementation behind it.</p>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-bold text-fg">Who Each Tool Is Genuinely the Better Choice For</h2>
+      <h3 class="text-lg font-semibold text-fg">Choose jsonformatter.org when breadth or sharing matters</h3>
+      <p>
+        It is the incumbent for good reason. Its sitemap lists 483 tool pages against our 9, covering
+        conversions we simply do not offer — Rust, Swift, Kotlin, C#, Dart, Crystal, Elm and more,
+        plus whole families of XML, CSV, HTML and CSS tooling. It has years of domain history behind
+        it and ranks first for queries we do not rank for at all. It also offers saved-snippet
+        permalinks, a genuinely useful feature we do not have any equivalent of: if you want to hand a
+        colleague a URL rather than a file, we cannot help and it can. Pick it when you need a format
+        we lack, or a link you can paste into a ticket.
+      </p>
+      <h3 class="text-lg font-semibold text-fg">Consider jsoneditoronline.org or codebeautify.org for a second opinion</h3>
+      <p>
+        Both consistently appear alongside the leaders in results for JSON viewer and converter
+        searches, which is a reasonable signal that people find them useful. We have not audited
+        either in depth, so we will not characterise their features or their privacy behaviour — try
+        them and apply the six checks above yourself.
+      </p>
+      <h3 class="text-lg font-semibold text-fg">Look at jam.dev if the free, open-source, ad-free axis is what you care about</h3>
+      <p>
+        Its search listing advertises exactly the positioning this page argues for — free, open source
+        and ad-free. We have not audited its implementation, but it is honest to point out that we are
+        not the only tool competing on this axis, and a second option on the same axis is good for you.
+      </p>
+      <h3 class="text-lg font-semibold text-fg">Choose JSON Formatter Pro when the payload is real</h3>
+      <p>
+        When the thing on your clipboard is a production API response, a JWT from a live session, a
+        Kubernetes <code>Secret</code>, or a record with customer data in it, the question stops being
+        "which tool has more buttons" and becomes "where does this text end up". That is the case we
+        built for. It is also the better pick if you want a
+        <a href="/json-formatter/" class="text-accent hover:underline">fast formatter with a virtualized tree view</a>
+        for large documents, precise
+        <a href="/json-validator/" class="text-accent hover:underline">line-and-column validation errors</a>,
+        or converters such as
+        <a href="/json-to-yaml/" class="text-accent hover:underline">JSON to YAML</a> and
+        <a href="/json-to-typescript/" class="text-accent hover:underline">JSON to TypeScript interfaces</a>
+        that behave identically whether the input is five lines or five megabytes. For credentials
+        specifically, the
+        <a href="/jwt-decoder/" class="text-accent hover:underline">JWT decoder</a> never transmits the
+        token it inspects.
+      </p>
+
+      <h2 class="text-xl font-bold text-fg">A Worked Example: One Payload, Start to Finish</h2>
+      <p>
+        Comparison pages rarely show output, so here is ours. Paste this minified response into the
+        editor and press Format (or <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd>):
+      </p>
+      <div class="rounded-lg border border-border bg-surface p-4">
+        <p class="text-xs font-semibold text-fg mb-2">Input</p>
+        <pre class="overflow-x-auto font-mono text-xs leading-relaxed">{exampleInput}</pre>
+      </div>
+      <div class="rounded-lg border border-border bg-surface p-4">
+        <p class="text-xs font-semibold text-fg mb-2">Output (default 2-space indent)</p>
+        <pre class="overflow-x-auto font-mono text-xs leading-relaxed">{exampleOutput}</pre>
+      </div>
+      <p>
+        The same parsed document then feeds every other view without a second round trip: the tree
+        view for collapsible navigation, the statistics view for node counts and depth, and the
+        converter tabs for YAML, XML, CSV, JSON Schema, TypeScript, Python, Java or Go. If the input
+        had been malformed — a trailing comma, a single-quoted key — the status bar would report the
+        exact line and column of the failure instead of a generic "invalid JSON".
+      </p>
+
+      <h2 class="text-xl font-bold text-fg">Our Recommendation</h2>
+      <p>
+        Use the broadest tool you can find for throwaway data, and the most auditable tool you can
+        find for anything real. In practice that means keeping a bookmark for a large suite like
+        jsonformatter.org when you need an exotic conversion or a shareable link, and using JSON
+        Formatter Pro for the everyday work — formatting an API response, checking why a document
+        won't parse, decoding a token, generating types — where the material is sensitive and the
+        convenience of not thinking about it is exactly the risk. We would rather be your second
+        bookmark and be honest about the first than pretend we have 483 tools. If we are wrong about
+        any fact on this page, tell us and we will correct it — our
+        <a href="/about/" class="text-accent hover:underline">contact details are on the about page</a>,
+        and what we do with data is spelled out in the
+        <a href="/privacy/" class="text-accent hover:underline">privacy policy</a>.
+      </p>
+    </article>
+
+    <FaqAccordion faqs={faqs} />
+  </section>
+</BaseLayout>

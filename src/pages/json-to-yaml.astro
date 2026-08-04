@@ -72,5 +72,19 @@ const faqs = [
           <p class="text-xs">Perform sensitive infrastructure conversions locally. No servers, zero data logging, complete peace of mind.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">What Happens to the Secret You Just Pasted?</h3>
+      <p>
+        A lot of what gets converted here isn't a toy example — it's a Kubernetes <code>Secret</code>, a <code>ConfigMap</code>, or a Terraform/CDK output containing a live database URL, an API key, or a base64-encoded credential. It's worth pausing on where that text actually goes. With many free online converters, pasting your data means sending it to a server you have no visibility into, with only a privacy policy's word that it isn't logged, cached, or retained.
+      </p>
+      <p>
+        This converter doesn't work that way: the parsing and YAML serialization happen inside a Web Worker running in your own browser tab, so the JSON never crosses the network to get converted. And rather than asking you to trust that claim, the project is open source — you or your security team can read the exact conversion code instead of taking our word for it: <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">view the source on GitHub</a>.
+      </p>
+      <p>
+        The same architecture removes the usual "free tier" limits, too. A deeply nested Helm values file or a multi-megabyte exported manifest converts the same way a five-line snippet does — there's no row cap or file-size wall bolted on, just the memory available on your own device.
+      </p>
+      <p>
+        Need the reverse? The <a href="/yaml-to-json/" class="text-accent hover:underline">YAML to JSON converter</a> takes a manifest or CI config and returns JSON — useful when a tool or API expects JSON but your source of truth is YAML.
+      </p>
+
 </ToolPageLayout>

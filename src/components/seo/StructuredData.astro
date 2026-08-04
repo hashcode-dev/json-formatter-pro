@@ -1,6 +1,6 @@
 ---
 import faqData from "@/content/faq.json";
-import { SITE_URL } from "@lib/site";
+import { SITE_URL, canonicalPath } from "@lib/site";
 
 interface Props {
   includeFaq?: boolean;
@@ -31,7 +31,8 @@ const webApp = {
 const organization = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "JSON Formatter Pro",
+  name: "Hash Code Technologies & Software Solutions",
+  alternateName: "JSON Formatter Pro",
   url: siteUrl,
   logo: new URL("/favicon.svg", siteUrl).toString(),
   description:
@@ -63,7 +64,8 @@ const breadcrumbItems = [
   { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
 ];
 segments.forEach((seg, i) => {
-  const url = new URL("/" + segments.slice(0, i + 1).join("/"), siteUrl).toString();
+  const segmentPath = canonicalPath("/" + segments.slice(0, i + 1).join("/"));
+  const url = new URL(segmentPath, siteUrl).toString();
   const label = i === segments.length - 1 && pageTitle
     ? pageTitle
     : seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -90,14 +92,6 @@ const webSite = isHomepage
       "@type": "WebSite",
       name: "JSON Formatter Pro",
       url: siteUrl,
-      potentialAction: {
-        "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${siteUrl}/?q={search_term_string}`,
-        },
-        "query-input": "required name=search_term_string",
-      },
     }
   : null;
 ---

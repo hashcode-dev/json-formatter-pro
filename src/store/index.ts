@@ -5,13 +5,22 @@ import type { FormatOptions, JsonError, JsonStats, JsonValue } from '@lib/json/t
 import type { Theme } from '@hooks/useTheme';
 
 export type CoreMode = 'formatted' | 'tree' | 'stats';
-export type ToolMode = 'yaml' | 'xml' | 'csv' | 'typescript' | 'schema' | 'jwt';
+/**
+ * `yaml`/`xml`/`csv` convert JSON *out*, as do the code generators
+ * (`typescript`/`python`/`java`/`go`); `csvToJson`/`yamlToJson`/`xmlToJson` go
+ * the other way, so their input pane holds the source format rather than JSON
+ * (see src/components/formatter/input-formats.ts).
+ */
+export type ToolMode =
+  | 'yaml' | 'xml' | 'csv' | 'typescript' | 'python' | 'java' | 'go' | 'schema' | 'jwt'
+  | 'csvToJson' | 'yamlToJson' | 'xmlToJson';
 export type OutputMode = CoreMode | ToolMode;
 export type Status = 'idle' | 'parsing' | 'valid' | 'invalid';
 
 /** Opt-in views: hidden until the user explicitly opens the tool. */
 export const TOOL_MODES: readonly ToolMode[] = [
-  'yaml', 'xml', 'csv', 'typescript', 'schema', 'jwt',
+  'yaml', 'xml', 'csv', 'typescript', 'python', 'java', 'go', 'schema', 'jwt',
+  'csvToJson', 'yamlToJson', 'xmlToJson',
 ];
 
 export function isToolMode(m: OutputMode): m is ToolMode {

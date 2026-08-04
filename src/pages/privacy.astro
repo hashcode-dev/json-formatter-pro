@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 <BaseLayout
   title="Privacy Policy - JSON Formatter Pro: Secure & Private"
-  description="JSON Formatter Pro is a private, client-side JSON formatter. Your JSON is processed entirely in your browser and never transmitted to any server. No tracking, no data collection."
+  description="JSON Formatter Pro is a private, client-side JSON formatter. Your JSON is processed entirely in your browser and never transmitted to any server. No ad-network scripts; anonymous, consent-based analytics only."
   path="/privacy"
   keywords="private JSON formatter, secure JSON tool, client-side formatter, no server JSON tool, privacy policy, data security"
 >
@@ -27,27 +27,27 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
     <h2 class="mt-8 text-base font-semibold text-fg">Network requests</h2>
     <p class="mt-2">
-      Once the page is loaded, JSON Formatter Pro makes no network requests with your content.
-      No third-party scripts, fonts, or trackers are loaded at runtime.
+      Once the page is loaded, JSON Formatter Pro makes no network requests with your content — your
+      pasted, typed, or uploaded JSON is never sent anywhere. The page does load two third-party
+      analytics scripts on every visit (see below); neither one ever receives your JSON content, and
+      JSON Formatter Pro does not run any advertising or ad-network scripts.
     </p>
 
     <h2 class="mt-8 text-base font-semibold text-fg">Analytics</h2>
     <p class="mt-2">
-      If enabled by the site operator, Cloudflare Web Analytics may be used for aggregate, cookieless page
-      view counts. It does not receive your JSON content and does not identify individual users.
-    </p>
-
-    <h2 class="mt-8 text-base font-semibold text-fg">Advertising & Third-Party Services</h2>
-    <p class="mt-2">
-      JSON Formatter Pro may display advertisements through Google AdSense or other advertising partners. These partners may:
+      We use two analytics services, both limited to anonymous, aggregate usage data:
     </p>
     <ul class="mt-2 list-disc space-y-1 pl-6">
-      <li>Use cookies and similar tracking technologies to serve ads based on your browsing activity</li>
-      <li>Collect information about your visits to display personalized ads</li>
-      <li>Use Google Analytics for analytics purposes</li>
+      <li><strong>Google Analytics (GA4):</strong> off by default; only activates once you click "Accept" on the cookie banner.</li>
+      <li><strong>Cloudflare Web Analytics:</strong> cookieless, always on, used for aggregate page-view counts.</li>
     </ul>
     <p class="mt-2">
-      You can control ad personalization through your Google Ads Settings at <a href="https://adssettings.google.com" class="text-accent hover:underline" target="_blank" rel="noopener noreferrer">adssettings.google.com</a>.
+      Neither service receives your JSON content or identifies you individually.
+    </p>
+
+    <h2 class="mt-8 text-base font-semibold text-fg">Advertising</h2>
+    <p class="mt-2">
+      JSON Formatter Pro does not display advertisements and does not run any ad-network scripts.
     </p>
 
     <h2 class="mt-8 text-base font-semibold text-fg">Cookies</h2>
@@ -56,8 +56,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     </p>
     <ul class="mt-2 list-disc space-y-1 pl-6">
       <li><strong>Functional:</strong> Theme preference, localStorage persistence (retained indefinitely until user clears)</li>
-      <li><strong>Analytics:</strong> Cloudflare Web Analytics (non-identifying, aggregate only)</li>
-      <li><strong>Advertising:</strong> Google AdSense and advertising partner cookies (retained per their policies, typically 13 months)</li>
+      <li><strong>Analytics:</strong> Google Analytics (only after you accept) and Cloudflare Web Analytics (non-identifying, aggregate only, no cookie)</li>
     </ul>
     <p class="mt-2">
       You can disable cookies in your browser settings. Note that disabling cookies may affect tool functionality.
@@ -68,10 +67,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       <strong>Browser Storage:</strong> Your formatter input and preferences are retained in browser localStorage until you manually clear them.
     </p>
     <p class="mt-2">
-      <strong>Analytics Data:</strong> Cloudflare Web Analytics data is retained in accordance with Cloudflare's privacy practices.
-    </p>
-    <p class="mt-2">
-      <strong>Google AdSense Cookies:</strong> Retained per Google's policies, typically 13 months from last activity.
+      <strong>Analytics Data:</strong> Google Analytics and Cloudflare Web Analytics data are each retained in accordance with their respective privacy practices.
     </p>
 
     <h2 class="mt-8 text-base font-semibold text-fg">GDPR & User Rights (EU/EEA Users)</h2>
@@ -116,7 +112,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     </p>
     <ul class="mt-2 list-disc space-y-1 pl-6">
       <li><strong>Email:</strong> hashcode.dev@gmail.com</li>
-      <li><strong>Support:</strong> <a href="/contact" class="text-accent hover:underline">Contact Us</a></li>
+      <li><strong>Support:</strong> <a href="/contact/" class="text-accent hover:underline">Contact Us</a></li>
     </ul>
   </article>
 </BaseLayout>

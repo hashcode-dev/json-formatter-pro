@@ -20,10 +20,24 @@ interface Props {
   onOpenPalette: () => void;
   onOpenHelp: () => void;
   canAct: boolean;
+  /**
+   * Whether Format and Minify apply. They rewrite the input as JSON, so they
+   * are off in modes whose input pane holds another format (JWT, CSV/YAML/XML
+   * for the reverse converters) — Copy and Download stay on and follow the
+   * output pane instead.
+   */
+  canFormat: boolean;
+  /** What the input pane holds ("JSON", "CSV", …), used in the disabled hints. */
+  inputFormatLabel: string;
+  /** `accept` for the file picker, so a CSV page offers .csv files. */
+  uploadAccept: string;
 }
 
 export function Toolbar(p: Props): JSX.Element {
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const jsonOnlyTitle = p.canFormat
+    ? undefined
+    : `Not available while the input pane holds ${p.inputFormatLabel}`;
 
   return (
     <div
@@ -35,7 +49,8 @@ export function Toolbar(p: Props): JSX.Element {
         type="button"
         onClick={p.onFormat}
         className="btn-primary"
-        disabled={!p.canAct}
+        disabled={!p.canFormat}
+        title={jsonOnlyTitle}
         aria-keyshortcuts={`${modKey}+Enter`}
       >
         <WandIcon />
@@ -47,7 +62,8 @@ export function Toolbar(p: Props): JSX.Element {
         type="button"
         onClick={p.onMinify}
         className="btn"
-        disabled={!p.canAct}
+        disabled={!p.canFormat}
+        title={jsonOnlyTitle}
         aria-keyshortcuts={`${modKey}+⇧+M`}
       >
         <MinifyIcon />
@@ -83,9 +99,9 @@ export function Toolbar(p: Props): JSX.Element {
       <input
         ref={fileRef}
         type="file"
-        accept=".json,.jsonc,.ndjson,.txt,application/json,text/plain"
+        accept={p.uploadAccept}
         className="hidden"
-        aria-label="Upload JSON file"
+        aria-label={`Upload ${p.inputFormatLabel} file`}
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) p.onUpload(file);

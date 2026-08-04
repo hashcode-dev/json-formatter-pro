@@ -32,7 +32,17 @@ const TOOL_TABS: Array<TabDef<ToolMode> & { group: string; hint: string }> = [
   { id: 'csv', label: 'CSV', tag: 'CONVERT', group: 'Converters', hint: 'Tabular CSV / TSV' },
   { id: 'typescript', label: 'TypeScript', tag: 'TYPES', group: 'Types & Spec', hint: 'Typed TS interfaces' },
   { id: 'schema', label: 'Schema', tag: 'SPEC', group: 'Types & Spec', hint: 'Draft-07 JSON Schema' },
+  // Source-code generators (src/lib/json/codegen.ts): same JSON input, a typed
+  // model in the target language out.
+  { id: 'python', label: 'Python', tag: 'CODE', group: 'Code Generators', hint: 'Typed dataclasses' },
+  { id: 'java', label: 'Java', tag: 'CODE', group: 'Code Generators', hint: 'POJOs with getters' },
+  { id: 'go', label: 'Go', tag: 'CODE', group: 'Code Generators', hint: 'Structs with JSON tags' },
   { id: 'jwt', label: 'JWT Inspector', tag: 'SECURITY', group: 'Security', hint: 'Decode header & claims' },
+  // The reverse direction: these read the *input* pane as CSV/YAML/XML and put
+  // JSON in the output pane (see src/components/formatter/input-formats.ts).
+  { id: 'csvToJson', label: 'CSV → JSON', tag: 'PARSE', group: 'To JSON', hint: 'Parse CSV or TSV rows' },
+  { id: 'yamlToJson', label: 'YAML → JSON', tag: 'PARSE', group: 'To JSON', hint: 'Parse a YAML document' },
+  { id: 'xmlToJson', label: 'XML → JSON', tag: 'PARSE', group: 'To JSON', hint: 'Parse XML elements & attributes' },
 ];
 
 /** Derived so a new tool tab cannot introduce a group the menu forgets to render. */
@@ -40,11 +50,27 @@ const TOOL_GROUPS = [...new Set(TOOL_TABS.map((t) => t.group))];
 
 export function OutputPanel({ mode, activeTool, onModeChange, onCloseTool, children }: Props): JSX.Element {
   const toolTab = TOOL_TABS.find((t) => t.id === activeTool);
+  const tablistRef = useRef<HTMLDivElement | null>(null);
+
+  // The tab strip scrolls horizontally and hides its scrollbar, so on narrow
+  // viewports a tool tab appended after the three core tabs can sit past the
+  // right edge with no visual affordance that it exists. That is the state a
+  // phone user lands in on a converter page — the tab describing the view
+  // they came for is the one off-screen — so pull the active tab into view
+  // whenever it changes.
+  useEffect(() => {
+    const strip = tablistRef.current;
+    const active = strip?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
+    if (!strip || !active) return;
+    if (strip.scrollWidth <= strip.clientWidth) return;
+    active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [mode, activeTool]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex shrink-0 items-center border-b border-border bg-surface">
         <div
+          ref={tablistRef}
           role="tablist"
           aria-label="Output views"
           className="flex min-w-0 flex-1 items-center gap-1 px-2 overflow-x-auto no-scrollbar"
@@ -174,7 +200,9 @@ function AddToolMenu({
         <div
           role="menu"
           aria-label="Add a tool view"
-          className="absolute right-0 top-9 z-30 w-64 space-y-2 rounded-lg border border-border bg-elevated p-2 shadow-pop animate-slide-up"
+          // Twelve tools across five groups now, so the menu scrolls rather
+          // than running off the bottom of a short viewport.
+          className="absolute right-0 top-9 z-30 max-h-[70vh] w-64 space-y-2 overflow-y-auto rounded-lg border border-border bg-elevated p-2 shadow-pop animate-slide-up"
         >
           {TOOL_GROUPS.map((group) => {
             const items = available.filter((t) => t.group === group);

@@ -2,8 +2,19 @@ import { formatBytes } from './format-bytes';
 
 export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 export const SOFT_WARN_BYTES = 5 * 1024 * 1024;
-const ALLOWED_MIME = new Set(['application/json', 'text/plain', 'text/json', '']);
-const ALLOWED_EXT = /\.(json|txt|jsonc|ndjson)$/i;
+/**
+ * Text formats the editor can hold. Beyond JSON this covers the sources the
+ * reverse converters read (CSV/TSV, YAML, XML) — every one of them is plain
+ * text, so the allowlist only exists to catch obvious mistakes like dropping a
+ * PDF or an image on the editor.
+ */
+const ALLOWED_MIME = new Set([
+  'application/json', 'text/json', 'text/plain', '',
+  'text/csv', 'text/tab-separated-values',
+  'text/yaml', 'application/yaml', 'application/x-yaml',
+  'application/xml', 'text/xml',
+]);
+const ALLOWED_EXT = /\.(json|jsonc|ndjson|txt|csv|tsv|yaml|yml|xml)$/i;
 
 export interface UploadResult {
   ok: true;
@@ -31,7 +42,7 @@ export async function readTextFile(file: File): Promise<UploadResult | UploadFai
     return {
       ok: false,
       reason: 'bad-type',
-      message: `Unsupported file type: ${file.type || 'unknown'}. Use .json or .txt.`,
+      message: `Unsupported file type: ${file.type || 'unknown'}. Use a text file (.json, .csv, .yaml, .xml, .txt).`,
     };
   }
   try {

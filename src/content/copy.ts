@@ -18,8 +18,12 @@ export const FEATURES: Array<{ title: string; body: string }> = [
     body: 'Virtualized JSON tree viewer with expand/collapse, path breadcrumbs, and fast key/value search. Navigate and explore complex JSON structures.',
   },
   {
-    title: 'JSON Diff Viewer',
-    body: 'Side-by-side comparison and diff view of your original and formatted JSON output for effortless review.',
+    title: 'Two-Way Format Converters',
+    body: 'Convert JSON to YAML, XML, and CSV — and back again. Paste a Kubernetes manifest, a spreadsheet export, or a SOAP response and get clean JSON out.',
+  },
+  {
+    title: 'Typed Code Generation',
+    body: 'Generate TypeScript interfaces, Python dataclasses, Java POJOs, and Go structs (with json tags) straight from a sample API response.',
   },
   {
     title: 'Detailed JSON Statistics',
@@ -32,7 +36,7 @@ export const FEATURES: Array<{ title: string; body: string }> = [
 ];
 
 export const WHY: Array<{ title: string; body: string }> = [
-  { title: 'Private & Secure', body: 'No backend server for your JSON data. Zero telemetry, no data collection, no third-party scripts. Your JSON never leaves your device.' },
+  { title: 'Private & Secure', body: 'No backend server for your JSON data — nothing you paste, type, or upload is ever transmitted or collected. Your JSON never leaves your device.' },
   { title: 'Lightning Fast', body: 'JSON parsing runs off the main thread in a Web Worker. Tree view is virtualized for instant loading of large JSON files.' },
   { title: 'Accessible & Inclusive', body: 'WCAG 2.2 AA compliant JSON tool. Keyboard-first, reduced-motion friendly, full accessibility support for all users.' },
   { title: 'Works Offline', body: 'Free JSON formatter that works offline after the first load. No CDNs, no fonts fetched at runtime, fully self-contained.' },

@@ -72,5 +72,16 @@ const faqs = [
           <p class="text-xs">Runs strictly inside your browser memory. Your proprietary business data and schemas are never exposed to remote servers.</p>
         </div>
       </div>
-    
+
+      <h3 class="text-lg font-semibold text-fg">Why Schema Inference Belongs In Your Browser, Not Someone Else's Server</h3>
+      <p>
+        A generated JSON Schema isn't just abstract structure — it's a fairly literal blueprint of your API's data contract: every property name, nesting level, and required field pulled straight from a real payload. If that sample came from a production endpoint (which it usually does, since that's the whole point of inferring a schema from real data), pasting it into a tool that uploads it to a third-party server means handing over a detailed map of your internal data model to whoever operates that server. It's easy to overlook this because the output feels like "just a schema," but the input you paste to get there can be just as sensitive as the API response itself.
+      </p>
+      <p>
+        This tool avoids that tradeoff by never sending your payload anywhere. Schema inference runs entirely in a Web Worker inside your own browser tab — no account, no API key, no upload step to click through. Because the recursive AST walk happens off the main thread, pasting a large or deeply nested payload (dozens of nested objects and arrays copied straight from a real response) still produces a complete schema without locking up the page.
+      </p>
+      <p>
+        The code that does this inference is open source, so you don't have to take the "runs locally" claim on faith — you can read it yourself, audit it, or self-host it from the <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub repository</a>.
+      </p>
+
 </ToolPageLayout>
