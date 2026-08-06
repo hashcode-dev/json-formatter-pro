@@ -15,6 +15,8 @@ interface Props {
   keywords?: string;
   /** See StructuredData: false for pages with no tool interface. */
   includeWebApp?: boolean;
+  /** See StructuredData: emit a dated TechArticle entity for editorial pages. */
+  articlePage?: boolean;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   customFaq,
   keywords,
   includeWebApp = true,
+  articlePage = false,
 } = Astro.props;
 
 const GA_ID = "G-TKJSHMQD3E";
@@ -48,6 +51,8 @@ const GA_ID = "G-TKJSHMQD3E";
       path={path}
       pageTitle={title}
       includeWebApp={includeWebApp}
+      articlePage={articlePage}
+      description={description}
     />
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
     ></script>
