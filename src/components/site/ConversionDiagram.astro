@@ -1,0 +1,146 @@
+---
+/**
+ * A self-contained, theme-aware SVG "worked example" infographic: an input
+ * card on the left, an arrow, and the tool's real output on the right. Inline
+ * SVG (not a binary asset) so it is server-rendered, crawlable, tiny, and flips
+ * with light/dark via the site's CSS custom properties. Data comes from
+ * src/content/examples.ts (drawn from the tools' own unit tests).
+ */
+import type { ConversionExample } from "@/content/examples";
+
+type Props = ConversionExample;
+const { fromLabel, toLabel, fromLines, toLines, caption } = Astro.props;
+
+// Layout geometry (SVG user units).
+const CARD_W = 300;
+const GAP = 80;
+const SVG_W = CARD_W * 2 + GAP; // 680
+const RIGHT_X = CARD_W + GAP; // 380
+const PAD_X = 13;
+const LABEL_Y = 20;
+const DIVIDER_Y = 30;
+const CODE_TOP = 48; // baseline of first code line
+const LINE_H = 18;
+const BOTTOM_PAD = 14;
+
+const maxLines = Math.max(fromLines.length, toLines.length);
+const cardH = CODE_TOP + (maxLines - 1) * LINE_H + BOTTOM_PAD;
+const SVG_H = cardH + 2;
+const midY = 1 + cardH / 2;
+
+const a11yLabel = `Example: ${fromLabel} input on the left is converted to ${toLabel} output on the right.`;
+---
+
+<figure class="cd-figure">
+  <svg
+    viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+    class="cd-svg"
+    role="img"
+    aria-label={a11yLabel}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <title>{`${fromLabel} to ${toLabel} conversion example`}</title>
+    <desc>{a11yLabel}</desc>
+
+    <defs>
+      <marker
+        id="cd-arrowhead"
+        markerWidth="7"
+        markerHeight="7"
+        refX="5"
+        refY="3"
+        orient="auto"
+      >
+        <path class="cd-arrowhead" d="M0,0 L6,3 L0,6 Z"></path>
+      </marker>
+    </defs>
+
+    {/* Input card */}
+    <g>
+      <rect class="cd-card" x="1" y="1" width={CARD_W - 2} height={cardH} rx="10"></rect>
+      <text class="cd-label" x={1 + PAD_X} y={LABEL_Y}>{fromLabel}</text>
+      <line class="cd-divider" x1="1" y1={DIVIDER_Y} x2={CARD_W - 1} y2={DIVIDER_Y}></line>
+      {fromLines.map((line, i) => (
+        <text class="cd-code" x={1 + PAD_X} y={CODE_TOP + i * LINE_H}>{line}</text>
+      ))}
+    </g>
+
+    {/* Arrow */}
+    <g>
+      <line
+        class="cd-arrow"
+        x1={CARD_W + 11}
+        y1={midY}
+        x2={RIGHT_X - 11}
+        y2={midY}
+        marker-end="url(#cd-arrowhead)"
+      ></line>
+      <text class="cd-arrow-label" x={(CARD_W + RIGHT_X) / 2} y={midY - 9} text-anchor="middle">convert</text>
+    </g>
+
+    {/* Output card */}
+    <g>
+      <rect class="cd-card" x={RIGHT_X + 1} y="1" width={CARD_W - 2} height={cardH} rx="10"></rect>
+      <text class="cd-label" x={RIGHT_X + PAD_X} y={LABEL_Y}>{toLabel}</text>
+      <line class="cd-divider" x1={RIGHT_X + 1} y1={DIVIDER_Y} x2={RIGHT_X + CARD_W - 1} y2={DIVIDER_Y}></line>
+      {toLines.map((line, i) => (
+        <text class="cd-code" x={RIGHT_X + PAD_X} y={CODE_TOP + i * LINE_H}>{line}</text>
+      ))}
+    </g>
+  </svg>
+  <figcaption class="cd-cap">{caption}</figcaption>
+</figure>
+
+<style>
+  .cd-figure {
+    margin: 0;
+  }
+  .cd-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 680px;
+  }
+  .cd-card {
+    fill: rgb(var(--surface));
+    stroke: rgb(var(--border));
+    stroke-width: 1.5;
+  }
+  .cd-label {
+    fill: rgb(var(--accent));
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .cd-divider {
+    stroke: rgb(var(--border));
+    stroke-width: 1;
+  }
+  .cd-code {
+    fill: rgb(var(--fg));
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12.5px;
+    white-space: pre;
+  }
+  .cd-arrow {
+    stroke: rgb(var(--subtle));
+    stroke-width: 2;
+  }
+  .cd-arrowhead {
+    fill: rgb(var(--subtle));
+  }
+  .cd-arrow-label {
+    fill: rgb(var(--subtle));
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .cd-cap {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: rgb(var(--subtle));
+  }
+</style>

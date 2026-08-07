@@ -20,6 +20,14 @@ export const SITE_MODIFIED = '2026-08-06';
 /** Legal entity behind the site — used as the schema author/publisher. */
 export const ORG_NAME = 'Hash Code Technologies & Software Solutions';
 
+/** URL-safe anchor slug from heading text, e.g. for in-page FAQ jump links. */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 /**
  * Normalizes an internal route path to the trailing-slash form Astro's
  * static build actually serves for directory routes (e.g. `/json-formatter`

@@ -2,6 +2,9 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { FormatterApp } from "@components/formatter/FormatterApp";
 import FaqAccordion from "@components/site/FaqAccordion.astro";
+import ConversionDiagram from "@components/site/ConversionDiagram.astro";
+import { CONVERSION_EXAMPLES } from "@/content/examples";
+import { TOOL_INTROS } from "@/content/tool-intros";
 import type { OutputMode } from "@store/index";
 
 interface Props {
@@ -27,6 +30,12 @@ const {
   mode,
   faqs,
 } = Astro.props;
+
+// Per-tool worked-example diagram, matched on the page's bare slug (paths vary
+// in trailing-slash form across pages, so normalize before the lookup).
+const slug = path.replace(/^\/+|\/+$/g, "");
+const example = CONVERSION_EXAMPLES[slug];
+const intro = TOOL_INTROS[slug];
 ---
 
 <BaseLayout title={title} description={description} keywords={keywords} path={path} customFaq={faqs}>
@@ -62,6 +71,20 @@ const {
 
   <section class="mx-auto mt-12 max-w-[1400px] px-4 pb-16 space-y-8">
     <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      {intro && (
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-fg">{intro.heading}</h2>
+          <p>{intro.body}</p>
+        </section>
+      )}
+      {example && (
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-fg">
+            Worked example: {example.fromLabel} &rarr; {example.toLabel}
+          </h2>
+          <ConversionDiagram {...example} />
+        </section>
+      )}
       <slot />
     </article>
 
