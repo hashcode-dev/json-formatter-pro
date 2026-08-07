@@ -5,6 +5,7 @@ import FaqAccordion from "@components/site/FaqAccordion.astro";
 import ConversionDiagram from "@components/site/ConversionDiagram.astro";
 import { CONVERSION_EXAMPLES } from "@/content/examples";
 import { TOOL_INTROS } from "@/content/tool-intros";
+import { CONVERSION_TABLES } from "@/content/conversion-tables";
 import type { OutputMode } from "@store/index";
 
 interface Props {
@@ -36,6 +37,7 @@ const {
 const slug = path.replace(/^\/+|\/+$/g, "");
 const example = CONVERSION_EXAMPLES[slug];
 const intro = TOOL_INTROS[slug];
+const table = CONVERSION_TABLES[slug];
 ---
 
 <BaseLayout title={title} description={description} keywords={keywords} path={path} customFaq={faqs}>
@@ -83,6 +85,29 @@ const intro = TOOL_INTROS[slug];
             Worked example: {example.fromLabel} &rarr; {example.toLabel}
           </h2>
           <ConversionDiagram {...example} />
+        </section>
+      )}
+      {table && (
+        <section class="space-y-3">
+          <h2 class="text-xl font-bold text-fg">{table.caption}</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-left text-sm">
+              <thead>
+                <tr>
+                  <th scope="col" class="border-b border-border py-2 pr-4 font-semibold text-fg">{table.headers[0]}</th>
+                  <th scope="col" class="border-b border-border py-2 font-semibold text-fg">{table.headers[1]}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {table.rows.map((row) => (
+                  <tr>
+                    <td class="border-b border-border/60 py-2 pr-4 align-top font-mono text-xs text-fg">{row[0]}</td>
+                    <td class="border-b border-border/60 py-2 align-top">{row[1]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
       <slot />
