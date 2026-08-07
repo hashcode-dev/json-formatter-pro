@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && node scripts/postbuild-optimize.mjs",
+    "build": "astro build && node scripts/postbuild-optimize.mjs && node scripts/generate-og.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro check",

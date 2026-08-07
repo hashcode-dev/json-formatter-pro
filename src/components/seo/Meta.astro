@@ -15,7 +15,7 @@ const {
   title,
   description,
   path = '/',
-  image = '/og.jpg',
+  image,
   type = 'website',
   noindex = false,
   keywords,
@@ -23,7 +23,12 @@ const {
 
 const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? SITE_URL;
 const canonical = new URL(canonicalPath(path), siteUrl).toString();
-const ogImage = new URL(image, siteUrl).toString();
+
+// Per-page Open Graph image (generated post-build by scripts/generate-og.mjs).
+// Slug must match slugFor() there: "/" → "home", trailing slashes trimmed.
+const ogSlug = (path || '/').replace(/^\/+|\/+$/g, '') || 'home';
+const ogImage = new URL(image ?? `/og/${ogSlug}.png`, siteUrl).toString();
+const ogImageType = ogImage.endsWith('.png') ? 'image/png' : 'image/jpeg';
 ---
 <title>{title}</title>
 <meta name="description" content={description} />
@@ -42,6 +47,7 @@ const ogImage = new URL(image, siteUrl).toString();
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:type" content={ogImageType} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:locale" content="en_US" />
