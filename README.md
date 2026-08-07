@@ -2,6 +2,12 @@
 
 A fast, private, client-side JSON formatter, validator, and beautifier.
 
+**Live site: [www.formatjson.in](https://www.formatjson.in)**
+
+Format, validate, beautify and minify JSON; explore it as a collapsible tree; convert
+two-way between JSON and YAML, XML and CSV; generate types for TypeScript, Go, Java and
+Python; and decode JWTs. Everything runs in your browser — no JSON is ever uploaded.
+
 ## Stack
 
 - **Astro 5** (static output, islands architecture)

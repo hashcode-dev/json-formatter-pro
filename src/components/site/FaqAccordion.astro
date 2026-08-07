@@ -1,4 +1,6 @@
 ---
+import { slugify } from "@lib/site";
+
 interface Props {
   faqs: Array<{ q: string; a: string }>;
 }
@@ -10,9 +12,9 @@ const { faqs } = Astro.props;
   <h2 id="faq-heading" class="text-xl font-bold text-fg">Frequently Asked Questions (FAQ)</h2>
   <div class="divide-y divide-border rounded-lg border border-border bg-surface">
     {faqs.map((item) => (
-      <details class="group">
-        <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-sm font-medium text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
-          <span>{item.q}</span>
+      <details class="group scroll-mt-24" id={slugify(item.q)}>
+        <summary class="flex cursor-pointer items-center justify-between gap-4 p-4 text-fg [&::-webkit-details-marker]:hidden hover:bg-muted/50">
+          <h3 class="m-0 text-sm font-medium text-fg">{item.q}</h3>
           <span class="text-subtle transition-transform group-open:rotate-45 font-bold">＋</span>
         </summary>
         <p class="px-4 pb-4 text-sm text-subtle leading-relaxed">{item.a}</p>

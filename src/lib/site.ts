@@ -2,6 +2,33 @@
 export const SITE_URL = 'https://www.formatjson.in';
 
 /**
+ * Freshness/authorship signals for JSON-LD (see StructuredData.astro).
+ *
+ * These feed `datePublished`/`dateModified` on the WebApplication entity, which
+ * Google AI Mode and Bing Copilot weight as recency signals. `SITE_PUBLISHED`
+ * is the project's first-commit date and should not change. `SITE_MODIFIED`
+ * MUST be bumped whenever site content is meaningfully updated — it is a hand-
+ * maintained honest date, not an auto-updating build timestamp (bumping it on
+ * every deploy without a real content change is exactly the "freshness
+ * inflation" Google's structured-data guidelines warn against). Individual
+ * pages may override via the `datePublished`/`dateModified` props.
+ * ISO 8601 date form (YYYY-MM-DD).
+ */
+export const SITE_PUBLISHED = '2026-07-16';
+export const SITE_MODIFIED = '2026-08-06';
+
+/** Legal entity behind the site — used as the schema author/publisher. */
+export const ORG_NAME = 'Hash Code Technologies & Software Solutions';
+
+/** URL-safe anchor slug from heading text, e.g. for in-page FAQ jump links. */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
  * Normalizes an internal route path to the trailing-slash form Astro's
  * static build actually serves for directory routes (e.g. `/json-formatter`
  * -> `/json-formatter/`), so canonical tags, schema URLs, and internal links
