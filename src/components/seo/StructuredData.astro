@@ -1,16 +1,57 @@
 ---
 import faqData from "@/content/faq.json";
-import { SITE_URL, canonicalPath } from "@lib/site";
+import {
+  SITE_URL,
+  SITE_PUBLISHED,
+  SITE_MODIFIED,
+  ORG_NAME,
+  canonicalPath,
+} from "@lib/site";
 
 interface Props {
   includeFaq?: boolean;
   customFaq?: Array<{ q: string; a: string }>;
   path?: string;
   pageTitle?: string;
+  /**
+   * Emit the suite-level WebApplication entity. Set false on pages that carry no
+   * tool interface (e.g. the alternatives comparison page), where declaring a
+   * WebApplication would describe software the page does not actually provide.
+   */
+  includeWebApp?: boolean;
+  /**
+   * Freshness signals. Default to the site-wide dates in site.ts; a page may
+   * override when its own content was published/updated on a different date.
+   * ISO 8601 date form (YYYY-MM-DD).
+   */
+  datePublished?: string;
+  dateModified?: string;
+  /**
+   * Emit a TechArticle entity carrying the freshness/authorship signals. Use on
+   * editorial pages that have no tool interface (e.g. the alternatives
+   * comparison), where the dated entity should be the article, not a
+   * WebApplication. Requires `description`.
+   */
+  articlePage?: boolean;
+  description?: string;
 }
-const { includeFaq = false, customFaq, path = "/", pageTitle } = Astro.props;
+const {
+  includeFaq = false,
+  customFaq,
+  path = "/",
+  pageTitle,
+  includeWebApp = true,
+  datePublished = SITE_PUBLISHED,
+  dateModified = SITE_MODIFIED,
+  articlePage = false,
+  description,
+} = Astro.props;
 
 const siteUrl = import.meta.env.PUBLIC_SITE_URL ?? SITE_URL;
+
+// Stable @id for the Organization so other entities (author/publisher) can
+// reference it instead of duplicating the object.
+const orgId = new URL("/#organization", siteUrl).toString();
 
 const webApp = {
   "@context": "https://schema.org",
@@ -26,12 +67,17 @@ const webApp = {
   browserRequirements: "Requires JavaScript and a modern browser.",
   isAccessibleForFree: true,
   inLanguage: "en",
+  datePublished,
+  dateModified,
+  author: { "@id": orgId },
+  publisher: { "@id": orgId },
 };
 
 const organization = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Hash Code Technologies & Software Solutions",
+  "@id": orgId,
+  name: ORG_NAME,
   alternateName: "JSON Formatter Pro",
   url: siteUrl,
   logo: new URL("/favicon.svg", siteUrl).toString(),
@@ -94,10 +140,31 @@ const webSite = isHomepage
       url: siteUrl,
     }
   : null;
+
+// TechArticle — freshness/authorship signal for editorial pages that carry no
+// WebApplication (opt-in via `articlePage`). The dated entity here is the
+// article itself rather than the software suite.
+const pageUrl = new URL(canonicalPath(path), siteUrl).toString();
+const article = articlePage
+  ? {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      headline: pageTitle,
+      ...(description ? { description } : {}),
+      mainEntityOfPage: pageUrl,
+      url: pageUrl,
+      inLanguage: "en",
+      datePublished,
+      dateModified,
+      author: { "@id": orgId },
+      publisher: { "@id": orgId },
+    }
+  : null;
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(webApp)} />
+{includeWebApp && <script type="application/ld+json" set:html={JSON.stringify(webApp)} />}
 <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+{article && <script type="application/ld+json" set:html={JSON.stringify(article)} />}
 {faq && <script type="application/ld+json" set:html={JSON.stringify(faq)} />}
 {breadcrumb && <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />}
 {webSite && <script type="application/ld+json" set:html={JSON.stringify(webSite)} />}
