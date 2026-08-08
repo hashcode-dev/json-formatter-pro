@@ -102,7 +102,7 @@ const exampleOutput = `{
 const faqs = [
   {
     q: "Is JSON Formatter Pro free, and what is the catch?",
-    a: "It is free with no account, no usage cap, and no advertising. The catch, such as it is, is scope: we publish 9 focused tool pages rather than hundreds, so a niche conversion you need may simply not exist here yet. The site itself runs Google Analytics with analytics storage denied until you accept cookies, plus cookieless Cloudflare Web Analytics; neither ever receives the JSON you paste, because your JSON is never sent anywhere."
+    a: "It is free with no account, no usage cap, and no advertising. The catch, such as it is, is scope: we publish 16 focused tool pages rather than hundreds, so a niche conversion you need may simply not exist here yet. The site itself runs Google Analytics with analytics storage denied until you accept cookies, plus cookieless Cloudflare Web Analytics; neither ever receives the JSON you paste, because your JSON is never sent anywhere."
   },
   {
     q: "Which JSON formatter should I use if I need to share a formatted snippet with a teammate?",
@@ -114,7 +114,7 @@ const faqs = [
   },
   {
     q: "Does JSON Formatter Pro support every format that jsonformatter.org does?",
-    a: "No, and it is not close. Its sitemap lists 483 tool pages against our 9. We currently cover formatting, minifying, validating, a virtualized tree view, document statistics, JSON to YAML, XML, CSV, JSON Schema, TypeScript, Python, Java and Go, CSV, YAML and XML back to JSON, and JWT decoding. If you need JSON to Rust, Swift, Kotlin, C# or Dart, or HTML and CSS tooling, a broader suite is the right choice today."
+    a: "No, and it is not close. Its sitemap lists 483 tool pages against our 16. We currently cover formatting, minifying, validating, a virtualized tree view, document statistics, JSON to YAML, XML, CSV, JSON Schema, TypeScript, Python, Java and Go, CSV, YAML and XML back to JSON, and JWT decoding. If you need JSON to Rust, Swift, Kotlin, C# or Dart, or HTML and CSS tooling, a broader suite is the right choice today."
   },
   {
     q: "Is your YAML support full YAML 1.2?",
@@ -125,6 +125,54 @@ const faqs = [
     a: "Decoded only. Our JWT tool splits the token, Base64URL-decodes the header and payload, and renders the claims with human-readable timestamps. It does not verify the signature, because doing so would require your signing key, and a web page is the wrong place to put one. Treat the output as an inspection aid, never as proof that a token is authentic."
   }
 ];
+
+/**
+ * Head-to-head matrix, JSON Formatter Pro vs jsonformatter.org. Every
+ * jsonformatter.org cell was observed on its publicly served homepage on
+ * 6 August 2026; features not seen there are "Not observed" rather than a
+ * negative claim. ✅ yes · ❌ no · ⚠️ not stated / not observed.
+ */
+const vsJfRows = [
+  { feature: 'Format, validate, minify, tree view', us: '✅', them: '✅' },
+  { feature: 'Graph view', us: '❌', them: '✅' },
+  { feature: 'JSON compare / diff', us: '❌', them: '✅' },
+  { feature: 'JSON ↔ YAML / XML / CSV', us: '✅', them: '✅' },
+  { feature: 'JSON → TypeScript / Python / Java / Go', us: '✅', them: '✅' },
+  { feature: 'JSON → Rust / C# / Kotlin / Ruby / Dart / Flow', us: '❌', them: '✅' },
+  { feature: 'JSON → JSON Schema', us: '✅', them: '✅' },
+  { feature: 'Base64 / URL / TSV convert', us: '❌', them: '✅' },
+  { feature: 'JWT decoder', us: '✅', them: '⚠️ not observed' },
+  { feature: 'Saved-snippet share links', us: '❌', them: '✅' },
+  { feature: 'Optional account', us: '❌ none needed', them: '✅ optional' },
+  { feature: 'Ad-supported', us: '❌ none', them: '✅ yes' },
+  { feature: 'Processing runs in your browser', us: '✅ Web Worker', them: '⚠️ not stated' },
+  { feature: 'Source code public', us: '✅ GitHub', them: '⚠️ not stated' },
+  { feature: 'Tool pages published', us: '16', them: '483' },
+  { feature: 'Price', us: 'Free, no cap', them: 'Free (ad-supported)' },
+];
+
+// Comparison schema — the two compared tools as an ItemList of
+// SoftwareApplication entities. Deliberately NO aggregateRating/Review: there
+// are no real user reviews, and fabricating them violates Google's policy.
+const softwareApp = (name: string, url: string) => ({
+  '@type': 'SoftwareApplication',
+  name,
+  url,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Any (browser-based)',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+});
+const comparisonSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'JSON Formatter Pro vs jsonformatter.org',
+  numberOfItems: 2,
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, item: softwareApp('JSON Formatter Pro', 'https://www.formatjson.in') },
+    { '@type': 'ListItem', position: 2, item: softwareApp('jsonformatter.org', 'https://jsonformatter.org/') },
+  ],
+};
 ---
 
 <BaseLayout
@@ -156,6 +204,61 @@ const faqs = [
         competing tool is the one you should pick.
       </p>
     </div>
+  </section>
+
+  <section id="vs-jsonformatter-org" class="mx-auto mt-8 max-w-[1100px] px-4 scroll-mt-24">
+    <article class="card p-6 md:p-8 space-y-6 text-sm text-subtle leading-relaxed">
+      <h2 class="text-xl font-bold text-fg">JSON Formatter Pro vs jsonformatter.org</h2>
+      <p>
+        <strong class="text-fg">JSON Formatter Pro</strong> and
+        <strong class="text-fg">jsonformatter.org</strong> are both free online JSON tools, but they
+        optimise for different things. jsonformatter.org is the <strong class="text-fg">broader</strong>
+        suite — hundreds of tool pages, extra views (graph, compare), more target languages, and saved
+        shareable snippets — funded by ads. JSON Formatter Pro is the
+        <strong class="text-fg">private, ad-free</strong> option: every operation runs in your browser
+        via a Web Worker, nothing you paste is uploaded, and the code is open source. Choose
+        jsonformatter.org for breadth and sharing; choose JSON Formatter Pro when the payload is
+        sensitive or you want zero ads and verifiable privacy.
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[40rem] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th scope="col" class="border-r border-border px-3 py-2 text-left align-bottom">Feature</th>
+              <th scope="col" class="border-r border-border px-3 py-2 text-center align-bottom text-fg">JSON Formatter Pro</th>
+              <th scope="col" class="px-3 py-2 text-center align-bottom">jsonformatter.org</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vsJfRows.map((row) => (
+              <tr class="border-b border-border/60 align-top">
+                <td class="border-r border-border px-3 py-2 font-medium text-fg">{row.feature}</td>
+                <td class="border-r border-border px-3 py-2 text-center">{row.us}</td>
+                <td class="px-3 py-2 text-center">{row.them}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs italic">
+        ✅ yes · ❌ no · ⚠️ not stated / not observed. jsonformatter.org rows observed on its public
+        homepage; head-to-head data verified 6 August 2026. "Not stated" is not a negative claim —
+        it means the tool does not state it publicly.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h3 class="font-semibold text-fg mb-1 text-base">Choose jsonformatter.org when</h3>
+          <p class="text-xs">You need a conversion we don't have yet (Rust, C#, Kotlin, Ruby, Dart, Base64/URL/TSV), a graph or diff view, or a shareable saved-snippet URL.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h3 class="font-semibold text-fg mb-1 text-base">Choose JSON Formatter Pro when</h3>
+          <p class="text-xs">The payload is a real API response, secret, or personal data; you want zero ads and <a href="/json-formatter/" class="text-accent hover:underline">verifiable client-side</a> privacy; or you need a <a href="/jwt-decoder/" class="text-accent hover:underline">JWT decoder</a> alongside formatting.</p>
+        </div>
+      </div>
+      <script type="application/ld+json" set:html={JSON.stringify(comparisonSchema)} />
+    </article>
   </section>
 
   <section class="mx-auto mt-8 max-w-[1100px] px-4 pb-16 space-y-8">
@@ -269,7 +372,7 @@ const faqs = [
       <h2 class="text-xl font-bold text-fg">Who Each Tool Is Genuinely the Better Choice For</h2>
       <h3 class="text-lg font-semibold text-fg">Choose jsonformatter.org when breadth or sharing matters</h3>
       <p>
-        It is the incumbent for good reason. Its sitemap lists 483 tool pages against our 9, covering
+        It is the incumbent for good reason. Its sitemap lists 483 tool pages against our 16, covering
         conversions we simply do not offer — Rust, Swift, Kotlin, C#, Dart, Crystal, Elm and more,
         plus whole families of XML, CSV, HTML and CSS tooling. It has years of domain history behind
         it and ranks first for queries we do not rank for at all. It also offers saved-snippet
