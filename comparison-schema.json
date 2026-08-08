@@ -1,0 +1,53 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.formatjson.in/json-formatter-pro-vs-jsonformatter-org/#webpage",
+      "url": "https://www.formatjson.in/json-formatter-pro-vs-jsonformatter-org/",
+      "name": "JSON Formatter Pro vs jsonformatter.org (2026): Private & Ad-Free",
+      "description": "An honest 2026 comparison of JSON Formatter Pro (formatjson.in) and jsonformatter.org — features, privacy, breadth, and price.",
+      "inLanguage": "en",
+      "datePublished": "2026-08-06",
+      "dateModified": "2026-08-06",
+      "isPartOf": { "@id": "https://www.formatjson.in/#website" },
+      "author": { "@id": "https://www.formatjson.in/#organization" },
+      "publisher": { "@id": "https://www.formatjson.in/#organization" },
+      "about": { "@id": "https://www.formatjson.in/#app" },
+      "mentions": [
+        { "@id": "https://www.formatjson.in/#app" },
+        { "@id": "https://jsonformatter.org/#app" }
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://www.formatjson.in/#app",
+      "name": "JSON Formatter Pro",
+      "alternateName": "formatjson.in",
+      "url": "https://www.formatjson.in",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (browser-based)",
+      "browserRequirements": "Requires JavaScript and a modern browser.",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "Format, validate, and minify JSON in-browser",
+        "Virtualized JSON tree view",
+        "Convert JSON to YAML, XML, CSV, TypeScript, Python, Java, Go, JSON Schema",
+        "Convert YAML, XML, CSV back to JSON",
+        "Decode JSON Web Tokens (JWT)"
+      ],
+      "publisher": { "@id": "https://www.formatjson.in/#organization" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://jsonformatter.org/#app",
+      "name": "jsonformatter.org",
+      "url": "https://jsonformatter.org/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (browser-based)",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  ]
+}
