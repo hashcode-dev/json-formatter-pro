@@ -1,0 +1,138 @@
+---
+/**
+ * Layout for /learn/ how-to guides. An article (not a tool), so it uses
+ * BaseLayout with includeWebApp={false} and articlePage={true} — the dated
+ * entity is a TechArticle, not a WebApplication. Per-page datePublished/
+ * dateModified carry the freshness signal how-to content leans on.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import FaqAccordion from "@components/site/FaqAccordion.astro";
+import { ORG_NAME } from "@lib/site";
+
+interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  path: string;
+  heading: string;
+  dek: string;
+  datePublished: string;
+  dateModified: string;
+  faqs?: Array<{ q: string; a: string }>;
+}
+const { title, description, keywords, path, heading, dek, datePublished, dateModified, faqs } = Astro.props;
+
+const updated = new Date(`${dateModified}T00:00:00Z`).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path={path}
+  includeWebApp={false}
+  articlePage={true}
+  customFaq={faqs}
+  datePublished={datePublished}
+  dateModified={dateModified}
+>
+  <div class="mx-auto max-w-[720px] px-4 pt-8 pb-16">
+    <nav aria-label="Breadcrumb" class="text-xs text-subtle">
+      <a href="/" class="hover:text-fg">Home</a>
+      <span aria-hidden="true"> / </span>
+      <a href="/learn/" class="hover:text-fg">Guides</a>
+    </nav>
+
+    <header class="mt-4">
+      <p class="text-xs font-medium uppercase tracking-wide text-accent">Guide</p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">{heading}</h1>
+      <p class="mt-2 text-sm text-subtle">{dek}</p>
+      <p class="mt-3 text-xs text-subtle">Updated {updated} · by {ORG_NAME}</p>
+    </header>
+
+    <article class="article-body mt-8">
+      <slot />
+    </article>
+
+    {faqs && (
+      <div class="mt-10">
+        <FaqAccordion faqs={faqs} />
+      </div>
+    )}
+
+    <aside class="mt-10 rounded-lg border border-border bg-surface px-4 py-3 text-sm text-subtle">
+      <slot name="related">
+        Prefer a tool? Format, validate, and convert JSON in your browser with
+        <a href="/json-formatter/" class="text-accent hover:underline">JSON Formatter Pro</a> — nothing you paste is uploaded.
+      </slot>
+    </aside>
+
+    <p class="mt-8 text-sm">
+      <a href="/learn/" class="text-accent hover:underline">&larr; All guides</a>
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .article-body {
+    color: rgb(var(--subtle));
+    font-size: 0.975rem;
+    line-height: 1.7;
+  }
+  .article-body :global(h2) {
+    color: rgb(var(--fg));
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 2.2rem 0 0.8rem;
+    text-wrap: balance;
+  }
+  .article-body :global(h3) {
+    color: rgb(var(--fg));
+    font-size: 1.06rem;
+    font-weight: 600;
+    margin: 1.6rem 0 0.6rem;
+  }
+  .article-body :global(p) { margin: 0 0 1rem; }
+  .article-body :global(ul),
+  .article-body :global(ol) { margin: 0 0 1rem; padding-left: 1.4rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .article-body :global(li) { padding-left: 0.2rem; }
+  .article-body :global(strong) { color: rgb(var(--fg)); font-weight: 600; }
+  .article-body :global(a) { color: rgb(var(--accent)); text-decoration: none; }
+  .article-body :global(a:hover) { text-decoration: underline; }
+  .article-body :global(code) {
+    font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, Consolas, monospace);
+    font-size: 0.86em;
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--border));
+    border-radius: 5px;
+    padding: 0.1em 0.4em;
+  }
+  .article-body :global(pre) {
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--border));
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    margin: 0 0 1.2rem;
+    line-height: 1.6;
+  }
+  .article-body :global(pre code) {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.82rem;
+    color: rgb(var(--fg));
+    white-space: pre;
+  }
+  .article-body :global(.answer) {
+    border-left: 2px solid rgb(var(--accent));
+    padding-left: 0.95rem;
+    margin: 0 0 1.2rem;
+    color: rgb(var(--fg));
+  }
+</style>

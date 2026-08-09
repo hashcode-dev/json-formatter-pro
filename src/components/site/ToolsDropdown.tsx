@@ -19,6 +19,7 @@ const CATEGORIES: Category[] = [
     title: 'Format & Validate',
     icon: '🛠️',
     items: [
+      { name: 'JSON Editor', desc: 'Edit JSON live with inline validation', href: '/json-editor/', mode: 'formatted', icon: '✏️' },
       { name: 'JSON Formatter', desc: 'Beautify with 2/4 spaces or tabs', href: '/json-formatter/', mode: 'formatted', icon: '✨' },
       { name: 'JSON Minifier', desc: 'Strip whitespace to minimal payload', href: '/json-minifier/', mode: 'formatted', icon: '⚡' },
       { name: 'JSON Validator', desc: 'Tolerant AST parser with auto-fix hints', href: '/json-validator/', mode: 'formatted', icon: '✅' },
