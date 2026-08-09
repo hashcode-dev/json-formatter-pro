@@ -1,0 +1,83 @@
+---
+import ToolPageLayout from "@/layouts/ToolPageLayout.astro";
+
+const title = "Online JSON Editor - Edit & Validate JSON Live, Free & Private";
+const description =
+  "Edit JSON online in a live in-browser editor with inline error highlighting, bracket matching, code folding, and one-click formatting. 100% client-side, nothing uploaded, no signup.";
+const keywords =
+  "json editor, json editor online, edit json online, format json editor, online json editor free, json editor with validation, jsoneditor, live json editor";
+
+const faqs = [
+  {
+    q: "How is the JSON editor different from the JSON formatter?",
+    a: "They share the same engine but serve different moments. The formatter is for taking a finished document and beautifying it once. The editor is for authoring and fixing JSON interactively: you type or paste, and it validates continuously, highlighting errors inline as you go and reformatting on demand. If you are hand-writing a config or correcting a broken payload, use the editor; if you just need to pretty-print a response, the formatter is quicker."
+  },
+  {
+    q: "Does it validate my JSON while I type?",
+    a: "Yes. The editor is built on CodeMirror 6 with a tolerant JSON parser, so a misplaced comma, an unclosed bracket, an unquoted key, or a trailing comma is flagged inline the moment it appears, with the exact line and column. You fix problems in place instead of finding out later when an API or config loader rejects the document."
+  },
+  {
+    q: "Is my JSON private while I edit it?",
+    a: "Completely. All parsing, validation, and formatting run locally in your browser via a Web Worker — there is no server endpoint that ever receives your JSON. You can confirm it in DevTools: no network request carries your document, and the editor keeps working if you go offline after the page loads. The source is open on GitHub if you want to read exactly what it does."
+  },
+  {
+    q: "Can I edit large JSON documents without the tab freezing?",
+    a: "Yes. Parsing is offloaded to a background Web Worker and the tree view renders only the rows on screen (virtualization), so multi-megabyte documents stay responsive while you edit. There is no row or file-size cap beyond your own device's memory."
+  }
+];
+---
+
+<ToolPageLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/json-editor"
+  eyebrow="JSON Editor"
+  heading="Online JSON Editor"
+  subtitle="Edit, validate, and format JSON in a live in-browser editor with inline error highlighting — 100% client-side, nothing uploaded."
+  mode="formatted"
+  faqs={faqs}
+>
+      <h2 class="text-xl font-bold text-fg">Edit JSON Live, With Errors Caught As You Type</h2>
+      <p>
+        Most "JSON tools" assume you already have a finished document to paste and reformat. Often you don't &mdash; you're hand-writing a Kubernetes <code>ConfigMap</code> value, tweaking a <code>package.json</code> snippet, or repairing a payload that a service just rejected. That's editing, not formatting, and it needs a different kind of tool: one that watches the document as you change it and tells you the instant something breaks.
+      </p>
+      <p>
+        <strong>JSON Formatter Pro's editor</strong> is built on CodeMirror 6 &mdash; the same editor core used in modern developer tools &mdash; with a tolerant JSON parser wired into it. As you type, syntax errors are underlined inline with the exact line and column, brackets are matched, structure can be folded, and a single action reformats the whole document once it is valid. It is a genuine editor, not a read-only preview.
+      </p>
+
+      <h3 class="text-lg font-semibold text-fg">Editor, formatter, or viewer — which do you want?</h3>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Editor (this page):</strong> author or fix JSON by hand with live validation. Best when the document is changing.</li>
+        <li><strong><a href="/json-formatter/" class="text-accent hover:underline">Formatter</a>:</strong> beautify a finished document in one step. Best when you just need it readable.</li>
+        <li><strong><a href="/json-viewer/" class="text-accent hover:underline">Viewer</a>:</strong> explore a large, unfamiliar document as a collapsible tree. Best when you're navigating, not editing.</li>
+        <li><strong><a href="/json-validator/" class="text-accent hover:underline">Validator</a>:</strong> a focused pass/fail check against the JSON specs. Best when you only need to know <em>if</em> it's valid.</li>
+      </ul>
+      <p class="text-sm">
+        They all open the same document, so you can start in the editor and switch to the tree or stats views without re-pasting anything.
+      </p>
+
+      <h2 class="text-xl font-bold text-fg">Private by construction</h2>
+      <p>
+        Editing often means working with data you shouldn't hand to a stranger's server &mdash; a secret, a token, a customer record you're mid-way through correcting. This editor never uploads it: parsing and validation happen inside a Web Worker in your own browser tab, so there is no endpoint to log or retain what you type. You can verify that in about thirty seconds &mdash; open DevTools, watch the Network tab, and edit; nothing leaves the page &mdash; or read the parser yourself, since the whole tool is open source on <a href="https://github.com/hashcode-dev/json-formatter-pro" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">GitHub</a>.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">✍️ Live inline validation</h4>
+          <p class="text-xs">Errors are underlined as you type, with the exact line and column and a hint for common mistakes like trailing commas or single quotes.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🧩 Real editor features</h4>
+          <p class="text-xs">Syntax highlighting, bracket matching, code folding, and one-keystroke reformatting &mdash; CodeMirror 6 under the hood.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🔒 Nothing uploaded</h4>
+          <p class="text-xs">All work happens in a Web Worker in your browser. No server sees your JSON; it keeps working offline once loaded.</p>
+        </div>
+        <div class="rounded-lg border border-border bg-surface p-4">
+          <h4 class="font-semibold text-fg mb-1">🌲 Switch views, same document</h4>
+          <p class="text-xs">Flip the document you're editing into a collapsible tree or a structural stats panel without copying it anywhere.</p>
+        </div>
+      </div>
+</ToolPageLayout>

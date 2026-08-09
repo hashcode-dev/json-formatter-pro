@@ -9,7 +9,7 @@
 import type { ConversionExample } from "@/content/examples";
 
 type Props = ConversionExample;
-const { fromLabel, toLabel, fromLines, toLines, caption } = Astro.props;
+const { fromLabel, toLabel, fromLines, toLines, caption, arrowLabel = "convert" } = Astro.props;
 
 // Layout geometry (SVG user units).
 const CARD_W = 300;
@@ -75,7 +75,7 @@ const a11yLabel = `Example: ${fromLabel} input on the left is converted to ${toL
         y2={midY}
         marker-end="url(#cd-arrowhead)"
       ></line>
-      <text class="cd-arrow-label" x={(CARD_W + RIGHT_X) / 2} y={midY - 9} text-anchor="middle">convert</text>
+      <text class="cd-arrow-label" x={(CARD_W + RIGHT_X) / 2} y={midY - 9} text-anchor="middle">{arrowLabel}</text>
     </g>
 
     {/* Output card */}

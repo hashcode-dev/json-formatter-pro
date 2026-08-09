@@ -15,9 +15,20 @@ export interface ConversionExample {
   fromLines: string[];
   toLines: string[];
   caption: string;
+  /** Label on the arrow between the two panels. Defaults to "convert". */
+  arrowLabel?: string;
 }
 
 export const CONVERSION_EXAMPLES: Record<string, ConversionExample> = {
+  'json-editor': {
+    fromLabel: 'Editing — invalid',
+    toLabel: 'Validated & fixed',
+    fromLines: ['{', '  "name": "api",', '  "port": 8080,', '  "tags": ["web",],', '}'],
+    toLines: ['{', '  "name": "api",', '  "port": 8080,', '  "tags": ["web"]', '}'],
+    caption:
+      'Type or paste JSON and the editor flags errors — like these trailing commas — inline as you go, then reformats the moment it is valid.',
+    arrowLabel: 'validate',
+  },
   'json-formatter': {
     fromLabel: 'JSON (minified)',
     toLabel: 'Formatted',

@@ -1,0 +1,67 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+const title = "JSON Guides & Tutorials — JSON Formatter Pro";
+const description =
+  "Practical, example-first guides to working with JSON in JavaScript, Python, Java, Go, and more — from the team behind JSON Formatter Pro.";
+const keywords =
+  "json tutorial, json guides, how to work with json, json examples, javascript json, python json";
+
+// Add new guides here as they ship.
+const guides = [
+  {
+    href: "/learn/array-to-json-javascript/",
+    title: "How to Convert an Array to JSON in JavaScript",
+    dek: "Use JSON.stringify() to turn any array into a JSON string — arrays of objects, pretty-printing, and the gotchas.",
+    updated: "August 2026",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  path="/learn"
+  includeWebApp={false}
+>
+  <div class="mx-auto max-w-[760px] px-4 pt-8 pb-16">
+    <nav aria-label="Breadcrumb" class="text-xs text-subtle">
+      <a href="/" class="hover:text-fg">Home</a>
+      <span aria-hidden="true"> / </span>
+      <span class="text-fg">Guides</span>
+    </nav>
+
+    <header class="mt-4">
+      <p class="text-xs font-medium uppercase tracking-wide text-accent">Guides</p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">JSON guides &amp; tutorials</h1>
+      <p class="mt-2 max-w-2xl text-sm text-subtle">
+        Short, example-first answers to the JSON questions developers actually search for — how to
+        convert, parse, and fix JSON across languages. Every guide links to the matching in-browser
+        tool, and nothing you paste is ever uploaded.
+      </p>
+    </header>
+
+    <ul class="mt-8 flex flex-col gap-3" aria-label="Guides">
+      {guides.map((g) => (
+        <li>
+          <a
+            href={g.href}
+            class="block rounded-lg border border-border bg-surface p-4 transition-colors hover:border-accent"
+          >
+            <h2 class="text-base font-semibold text-fg">{g.title}</h2>
+            <p class="mt-1 text-sm text-subtle">{g.dek}</p>
+            <p class="mt-2 text-xs text-subtle">Updated {g.updated}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <aside class="mt-10 rounded-lg border border-border bg-surface px-4 py-3 text-sm text-subtle">
+      Looking for a tool rather than a tutorial? Browse the
+      <a href="/json-formatter/" class="text-accent hover:underline">JSON formatter</a>,
+      <a href="/json-editor/" class="text-accent hover:underline">editor</a>, and
+      <a href="/json-viewer/" class="text-accent hover:underline">viewer</a> — all free and client-side.
+    </aside>
+  </div>
+</BaseLayout>
