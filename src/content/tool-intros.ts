@@ -19,6 +19,11 @@ export interface ToolIntro {
 }
 
 export const TOOL_INTROS: Record<string, ToolIntro> = {
+  'json-editor': {
+    heading: 'What is a JSON editor?',
+    body:
+      'A JSON editor is an interactive workspace for writing, changing, and fixing JSON by hand, rather than just pasting a document to reformat it once. As you type, a good editor validates continuously — flagging a misplaced comma, an unclosed bracket, or an unquoted key the moment it appears, with the line and column called out — so you correct mistakes in place instead of discovering them downstream. It adds the conveniences developers expect from a code editor: syntax highlighting, bracket matching, code folding, and one-keystroke reformatting. JSON Formatter Pro’s editor is built on CodeMirror 6 and runs entirely in your browser, so the config, API response, or secret you are editing is never uploaded to a server. It parses in a background Web Worker to stay responsive on large documents, and lets you switch the same document between the raw editor, a collapsible tree, and structural stats without re-pasting anything.',
+  },
   'json-formatter': {
     heading: 'What is a JSON formatter?',
     body:

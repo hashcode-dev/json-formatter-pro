@@ -17,6 +17,9 @@ interface Props {
   includeWebApp?: boolean;
   /** See StructuredData: emit a dated TechArticle entity for editorial pages. */
   articlePage?: boolean;
+  /** Per-page freshness override (ISO date). Defaults to the site-wide dates. */
+  datePublished?: string;
+  dateModified?: string;
 }
 
 const {
@@ -28,6 +31,8 @@ const {
   keywords,
   includeWebApp = true,
   articlePage = false,
+  datePublished,
+  dateModified,
 } = Astro.props;
 
 const GA_ID = "G-TKJSHMQD3E";
@@ -53,6 +58,8 @@ const GA_ID = "G-TKJSHMQD3E";
       includeWebApp={includeWebApp}
       articlePage={articlePage}
       description={description}
+      datePublished={datePublished}
+      dateModified={dateModified}
     />
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
     ></script>
